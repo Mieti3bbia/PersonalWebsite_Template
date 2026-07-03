@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 
 @Component({
   selector: 'app-home-page',
@@ -30,4 +30,26 @@
     </main>
   `
 })
-export class HomePage {}
+export class HomePage implements OnInit, OnDestroy {
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private hasPlayedScrollAnimation = false;
+
+  private readonly handleFirstScroll = (): void => {
+    if (this.hasPlayedScrollAnimation) {
+      return;
+    }
+
+    this.hasPlayedScrollAnimation = true;
+    this.elementRef.nativeElement.classList.add('home-scroll-started');
+    window.removeEventListener('scroll', this.handleFirstScroll);
+  };
+
+  ngOnInit(): void {
+    this.elementRef.nativeElement.classList.add('home-scroll-waiting');
+    window.addEventListener('scroll', this.handleFirstScroll, { passive: true });
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.handleFirstScroll);
+  }
+}

@@ -45,6 +45,15 @@ export interface ContactRequest {
 
           <button type="submit">Invia</button>
         </form>
+
+        <div class="contact-map" aria-label="Google Maps location">
+          <iframe
+            title="Google Maps location"
+            src="https://www.google.com/maps?q=Milan,Italy&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
       </section>
     </main>
   `
@@ -73,9 +82,11 @@ export class ContactPage {
 
     this.lastContactRequest = contactRequest;
     console.info('Contact request ready for server handling:', contactRequest);
+    form.reset();
   }
 
   private readFormValue(formData: FormData, key: string): string {
     return String(formData.get(key) ?? '').trim();
   }
 }
+
