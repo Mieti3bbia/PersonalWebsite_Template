@@ -4,6 +4,7 @@ export interface ContactRequest {
   firstName: string;
   lastName: string;
   email: string;
+  type: string;
   subject: string;
   message: string;
   createdAt: string;
@@ -34,6 +35,22 @@ export interface ContactRequest {
           </label>
 
           <label>
+            <span>Tipologia</span>
+            <select
+              name="type"
+              required
+              [class.is-placeholder]="!selectedType"
+              (change)="selectedType = typeSelect.value"
+              #typeSelect
+            >
+              <option value="" disabled hidden selected></option>
+              <option value="tipo1">tipo1</option>
+              <option value="tipo2">tipo2</option>
+              <option value="tipo3">tipo3</option>
+            </select>
+          </label>
+
+          <label>
             <span>Oggetto</span>
             <input name="subject" type="text" required>
           </label>
@@ -60,6 +77,7 @@ export interface ContactRequest {
 })
 export class ContactPage {
   protected lastContactRequest: ContactRequest | null = null;
+  protected selectedType = '';
 
   protected handleSubmit(event: SubmitEvent, form: HTMLFormElement): void {
     event.preventDefault();
@@ -74,6 +92,7 @@ export class ContactPage {
       firstName: this.readFormValue(formData, 'firstName'),
       lastName: this.readFormValue(formData, 'lastName'),
       email: this.readFormValue(formData, 'email'),
+      type: this.readFormValue(formData, 'type'),
       subject: this.readFormValue(formData, 'subject'),
       message: this.readFormValue(formData, 'message'),
       createdAt: new Date().toISOString(),
@@ -83,6 +102,7 @@ export class ContactPage {
     this.lastContactRequest = contactRequest;
     console.info('Contact request ready for server handling:', contactRequest);
     form.reset();
+    this.selectedType = '';
   }
 
   private readFormValue(formData: FormData, key: string): string {

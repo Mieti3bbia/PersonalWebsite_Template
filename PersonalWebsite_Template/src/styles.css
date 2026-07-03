@@ -1481,3 +1481,85 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     transition: none;
   }
 }
+
+/* Remove final separator in home collaboration list */
+.collaboration-grid .home-word:last-child,
+.collaboration-grid span:last-child {
+  border-bottom: 0;
+}
+
+/* Home words fade in/out by viewport, like aboutme */
+.collaboration-grid .home-word {
+  opacity: 0;
+  transform: translateY(42px);
+  clip-path: inset(100% 0 0 0);
+  animation: none;
+  transition:
+    opacity 760ms cubic-bezier(0.19, 1, 0.22, 1),
+    transform 760ms cubic-bezier(0.19, 1, 0.22, 1),
+    clip-path 760ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.collaboration-grid .home-word.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collaboration-grid .home-word,
+  .collaboration-grid .home-word.is-visible {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+}
+
+/* Robust home word visibility state */
+.collaboration-grid .home-word {
+  transition:
+    opacity 520ms ease,
+    transform 520ms cubic-bezier(0.19, 1, 0.22, 1),
+    clip-path 520ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.collaboration-grid .home-word.is-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  clip-path: inset(0 0 0 0) !important;
+}
+
+/* Contact select field */
+.contact-form select {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.72);
+  border-radius: 0;
+  background: transparent;
+  color: #111;
+  padding: 12px 0;
+  font-size: clamp(20px, 2vw, 30px);
+  line-height: 1.05;
+  outline: none;
+  appearance: auto;
+}
+
+.contact-form select:focus {
+  border-bottom-color: #111;
+}
+
+@media (max-width: 520px) {
+  .contact-form select {
+    font-size: 22px;
+  }
+}
+
+.contact-form select.is-placeholder {
+  color: rgba(17, 17, 17, 0.42);
+}
+
+.contact-form span {
+  font-size: 10px;
+  text-transform: lowercase;
+}

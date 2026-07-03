@@ -1,4 +1,4 @@
-﻿import { Component, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
+﻿import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 
 @Component({
   selector: 'app-home-page',
@@ -30,26 +30,39 @@
     </main>
   `
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements AfterViewInit, OnDestroy {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
-  private hasPlayedScrollAnimation = false;
+  private words: HTMLElement[] = [];
+  private animationFrame = 0;
 
-  private readonly handleFirstScroll = (): void => {
-    if (this.hasPlayedScrollAnimation) {
-      return;
-    }
+  private readonly updateVisibility = (): void => {
+    cancelAnimationFrame(this.animationFrame);
 
-    this.hasPlayedScrollAnimation = true;
-    this.elementRef.nativeElement.classList.add('home-scroll-started');
-    window.removeEventListener('scroll', this.handleFirstScroll);
+    this.animationFrame = requestAnimationFrame(() => {
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+      this.words.forEach((word) => {
+        const rect = word.getBoundingClientRect();
+        const isVisible = rect.top < viewportHeight * 0.88 && rect.bottom > viewportHeight * 0.12;
+        word.classList.toggle('is-visible', isVisible);
+      });
+    });
   };
 
-  ngOnInit(): void {
-    this.elementRef.nativeElement.classList.add('home-scroll-waiting');
-    window.addEventListener('scroll', this.handleFirstScroll, { passive: true });
+  ngAfterViewInit(): void {
+    this.words = Array.from(
+      this.elementRef.nativeElement.querySelectorAll('.home-word')
+    ) as HTMLElement[];
+
+    window.addEventListener('scroll', this.updateVisibility, { passive: true });
+    window.addEventListener('resize', this.updateVisibility, { passive: true });
+
+    this.updateVisibility();
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('scroll', this.handleFirstScroll);
+    window.removeEventListener('scroll', this.updateVisibility);
+    window.removeEventListener('resize', this.updateVisibility);
+    cancelAnimationFrame(this.animationFrame);
   }
 }
