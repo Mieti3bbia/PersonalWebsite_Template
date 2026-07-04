@@ -1117,26 +1117,26 @@ app-home-page.scroll-animations-ready .scroll-slide {
 
 /* Fullscreen projects index */
 .projects-fullscreen-page {
-  --project-bg: #f7f5f0;
+  --project-bg: #070707;
   min-height: 100vh;
   padding-top: 72px;
-  background: var(--project-bg);
-  transition: background 420ms ease;
+  background: #070707;
+  transition: none;
 }
 
 .projects-fullscreen-page:has(.project-fullscreen-one:hover),
 .projects-fullscreen-page:has(.project-fullscreen-one:focus-visible) {
-  --project-bg: #c8d8c0;
+  --project-bg: #070707;
 }
 
 .projects-fullscreen-page:has(.project-fullscreen-two:hover),
 .projects-fullscreen-page:has(.project-fullscreen-two:focus-visible) {
-  --project-bg: #d9c7bb;
+  --project-bg: #070707;
 }
 
 .projects-fullscreen-page:has(.project-fullscreen-three:hover),
 .projects-fullscreen-page:has(.project-fullscreen-three:focus-visible) {
-  --project-bg: #bfc8d8;
+  --project-bg: #070707;
 }
 
 .projects-fullscreen-list {
@@ -1153,7 +1153,7 @@ app-home-page.scroll-animations-ready .scroll-slide {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #111;
+  color: #f7f5f0;
   text-align: center;
   text-decoration: none;
   font-size: clamp(68px, 16vw, 230px);
@@ -1169,7 +1169,7 @@ app-home-page.scroll-animations-ready .scroll-slide {
 }
 
 .projects-fullscreen-list:has(.project-fullscreen-link:hover) .project-fullscreen-link:not(:hover) {
-  opacity: 0.34;
+  opacity: 1;
 }
 
 @media (max-width: 900px) {
@@ -1562,4 +1562,336 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 .contact-form span {
   font-size: 10px;
   text-transform: lowercase;
+}
+
+/* Vehicle tracker 3D section */
+.vehicle-tracker {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.38fr) minmax(280px, 1fr) minmax(180px, 0.32fr);
+  gap: clamp(22px, 4vw, 56px);
+  align-items: center;
+  padding: 96px 34px 72px;
+  overflow: hidden;
+  background: #070707;
+  color: #f7f5f0;
+}
+
+.vehicle-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.vehicle-copy p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.vehicle-copy h2 {
+  margin: 0;
+  font-weight: 400;
+  font-size: clamp(42px, 7vw, 112px);
+  line-height: 0.95;
+}
+
+.vehicle-stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: min(74vh, 760px);
+}
+
+.vehicle-stage canvas {
+  display: block;
+  width: 100%;
+  height: min(74vh, 760px);
+}
+
+.vehicle-stage:before,
+.vehicle-stage:after {
+  content: "";
+  position: absolute;
+  inset: 12% 8%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vehicle-stage:after {
+  inset: 21% 18%;
+  opacity: 0.48;
+}
+
+.vehicle-controls {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: end;
+  gap: 14px;
+}
+
+.vehicle-controls button {
+  width: min(180px, 100%);
+  border: 1px solid rgba(247, 245, 240, 0.62);
+  border-radius: 0;
+  background: transparent;
+  color: #f7f5f0;
+  padding: 11px 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.vehicle-controls button:hover,
+.vehicle-controls button:focus-visible {
+  background: #f7f5f0;
+  color: #070707;
+  border-color: #f7f5f0;
+}
+
+@media (max-width: 900px) {
+  .vehicle-tracker {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 78px 20px 48px;
+  }
+
+  .vehicle-copy {
+    text-align: center;
+  }
+
+  .vehicle-stage {
+    min-height: 58vh;
+  }
+
+  .vehicle-stage canvas {
+    height: 58vh;
+  }
+
+  .vehicle-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: stretch;
+  }
+
+  .vehicle-controls button {
+    width: 100%;
+    padding-inline: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .vehicle-copy h2 {
+    font-size: clamp(34px, 14vw, 62px);
+  }
+
+  .vehicle-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Vehicle tracker: hover only rotates the planet, no color fade on controls */
+.vehicle-controls button {
+  transition: none;
+}
+
+.vehicle-controls button:hover,
+.vehicle-controls button:focus-visible {
+  background: transparent;
+  color: #f7f5f0;
+  border-color: rgba(247, 245, 240, 0.62);
+}
+
+/* Projects planet layer */
+.projects-planet-page {
+  --project-bg: #070707;
+  position: relative;
+  overflow: hidden;
+  background: #070707;
+  color: #f7f5f0;
+}
+
+.projects-planet-page:has(.project-fullscreen-one:hover),
+.projects-planet-page:has(.project-fullscreen-one:focus-visible),
+.projects-planet-page:has(.project-fullscreen-two:hover),
+.projects-planet-page:has(.project-fullscreen-two:focus-visible),
+.projects-planet-page:has(.project-fullscreen-three:hover),
+.projects-planet-page:has(.project-fullscreen-three:focus-visible) {
+  --project-bg: #070707;
+}
+
+.projects-planet-stage {
+  position: absolute;
+  inset: 72px 0 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.projects-planet-stage canvas {
+  display: block;
+  width: min(76vw, 920px);
+  height: min(76vh, 760px);
+  opacity: 0.92;
+}
+
+.projects-planet-stage:before,
+.projects-planet-stage:after {
+  content: "";
+  position: absolute;
+  width: min(78vw, 960px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(247, 245, 240, 0.1);
+  border-radius: 50%;
+}
+
+.projects-planet-stage:after {
+  width: min(48vw, 560px);
+  opacity: 0.58;
+}
+
+.projects-planet-list {
+  position: relative;
+  z-index: 2;
+}
+
+.projects-planet-list .project-fullscreen-link {
+  color: #f7f5f0;
+  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.projects-planet-list:has(.project-fullscreen-link:hover) .project-fullscreen-link:not(:hover) {
+  opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+  .projects-planet-stage {
+    inset-top: 106px;
+  }
+
+  .projects-planet-stage canvas {
+    width: min(110vw, 620px);
+    height: min(58vh, 560px);
+  }
+
+  .projects-planet-stage:before {
+    width: min(110vw, 660px);
+  }
+
+  .projects-planet-stage:after {
+    width: min(72vw, 390px);
+  }
+}
+
+/* Projects: fixed planet scene, no legacy hover color fade */
+.projects-fullscreen-page.projects-planet-page,
+.projects-fullscreen-page.projects-planet-page:hover,
+.projects-fullscreen-page.projects-planet-page:has(.project-fullscreen-link:hover),
+.projects-fullscreen-page.projects-planet-page:has(.project-fullscreen-link:focus-visible) {
+  --project-bg: #070707 !important;
+  background: #070707 !important;
+  transition: none !important;
+}
+
+.projects-planet-page .projects-planet-stage {
+  inset: 72px 0 0 !important;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.projects-planet-fallback {
+  position: absolute;
+  z-index: 1;
+  width: min(58vw, 600px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.5), transparent 0 14%),
+    radial-gradient(circle at 62% 68%, rgba(66, 57, 48, 0.62), transparent 0 18%),
+    radial-gradient(circle at 48% 42%, rgba(170, 153, 127, 0.5), transparent 0 24%),
+    linear-gradient(115deg, #f1eadc 0%, #a99a82 38%, #5d5147 68%, #161616 100%);
+  background-size: 160% 160%;
+  box-shadow:
+    inset -34px -24px 58px rgba(0, 0, 0, 0.56),
+    inset 20px 16px 42px rgba(255, 255, 255, 0.22),
+    0 0 70px rgba(247, 245, 240, 0.16);
+  opacity: 0.9;
+  transform: rotate3d(0.15, 1, 0.1, -18deg);
+  transition: transform 620ms ease, background-position 620ms ease;
+  animation: projects-fallback-spin 18s linear infinite;
+}
+
+.projects-planet-page.project-one-active .projects-planet-fallback {
+  background-position: 8% 42%;
+  transform: rotate3d(0.15, 1, 0.1, -18deg);
+}
+
+.projects-planet-page.project-two-active .projects-planet-fallback {
+  background-position: 54% 38%;
+  transform: rotate3d(-0.25, 1, -0.08, 62deg);
+}
+
+.projects-planet-page.project-three-active .projects-planet-fallback {
+  background-position: 94% 58%;
+  transform: rotate3d(0.34, 1, 0.16, 142deg);
+}
+
+.projects-planet-page .projects-planet-stage canvas {
+  position: relative;
+  z-index: 3;
+  width: min(76vw, 920px);
+  height: min(76vh, 760px);
+}
+
+.projects-planet-page .projects-planet-list {
+  position: relative;
+  z-index: 4;
+}
+
+.projects-planet-page .project-fullscreen-link,
+.projects-planet-page .project-fullscreen-link:hover,
+.projects-planet-page .project-fullscreen-link:focus-visible {
+  color: #f7f5f0 !important;
+  transition: opacity 180ms ease, transform 180ms ease !important;
+}
+
+.projects-planet-page .projects-planet-list:has(.project-fullscreen-link:hover) .project-fullscreen-link:not(:hover) {
+  opacity: 1 !important;
+}
+
+@keyframes projects-fallback-spin {
+  0% {
+    filter: brightness(0.94);
+  }
+
+  50% {
+    filter: brightness(1.08);
+  }
+
+  100% {
+    filter: brightness(0.94);
+  }
+}
+
+@media (max-width: 900px) {
+  .projects-planet-page .projects-planet-stage {
+    top: 106px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+  }
+
+  .projects-planet-fallback {
+    width: min(86vw, 420px);
+  }
+
+  .projects-planet-page .projects-planet-stage canvas {
+    width: min(102vw, 520px);
+    height: min(58vh, 520px);
+  }
 }

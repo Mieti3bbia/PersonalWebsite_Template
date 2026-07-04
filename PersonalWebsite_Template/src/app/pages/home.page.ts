@@ -1,4 +1,4 @@
-﻿import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 
 @Component({
   selector: 'app-home-page',
