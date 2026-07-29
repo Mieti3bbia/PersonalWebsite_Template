@@ -7,27 +7,6 @@ import * as THREE from 'three';
   imports: [RouterLink],
   template: `
     <main class="projects-page projects-sun-page">
-      <nav class="projects-fullscreen-list projects-menu" aria-label="Project navigation">
-        <a
-          class="project-fullscreen-link project-fullscreen-one slide-in"
-          routerLink="/projects/project1"
-          (mouseenter)="focusProject('project1')"
-          (focus)="focusProject('project1')"
-        >project1</a>
-        <a
-          class="project-fullscreen-link project-fullscreen-two slide-in"
-          routerLink="/projects/project2"
-          (mouseenter)="focusProject('project2')"
-          (focus)="focusProject('project2')"
-        >project2</a>
-        <a
-          class="project-fullscreen-link project-fullscreen-three slide-in"
-          routerLink="/projects/project3"
-          (mouseenter)="focusProject('project3')"
-          (focus)="focusProject('project3')"
-        >project3</a>
-      </nav>
-
       <section class="vehicle-tracker project-sun-tracker" aria-label="Vehicle tracker">
         <div class="vehicle-copy">
           <p>/ Vehicle tracker /</p>
@@ -39,9 +18,9 @@ import * as THREE from 'three';
         </div>
 
         <div class="vehicle-controls" aria-label="Vehicle tracker controls">
-          <button type="button" (mouseenter)="focusVehicle('flight12')" (focus)="focusVehicle('flight12')">flight 12</button>
-          <button type="button" (mouseenter)="focusVehicle('crew12')" (focus)="focusVehicle('crew12')">crew 12</button>
-          <button type="button" (mouseenter)="focusVehicle('crs34')" (focus)="focusVehicle('crs34')">crs 34</button>
+          <button type="button" routerLink="/projects/project1" (mouseenter)="focusVehicle('project1')" (focus)="focusVehicle('project1')">project1</button>
+          <button type="button" routerLink="/projects/project2" (mouseenter)="focusVehicle('project2')" (focus)="focusVehicle('project2')">project2</button>
+          <button type="button" routerLink="/projects/project3" (mouseenter)="focusVehicle('project3')" (focus)="focusVehicle('project3')">project3</button>
         </div>
       </section>
     </main>
@@ -55,44 +34,8 @@ import * as THREE from 'three';
       color: #f7f5f0;
     }
 
-    .projects-menu {
-      min-height: calc(76svh - 72px);
-      display: grid;
-      grid-template-rows: repeat(3, 1fr);
-      place-items: center;
-      padding: 22px clamp(20px, 4vw, 44px) 34px;
-      row-gap: clamp(18px, 4vh, 42px);
-      background: #070707;
-    }
-
-    .project-fullscreen-link {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #f7f5f0 !important;
-      text-align: center;
-      text-decoration: none;
-      text-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
-      font-size: clamp(36px, 5.6vw, 78px);
-      line-height: 1.08;
-      overflow-wrap: anywhere;
-      transition: transform 180ms ease, opacity 180ms ease !important;
-    }
-
-    .project-fullscreen-link:hover,
-    .project-fullscreen-link:focus-visible {
-      transform: scale(1.035);
-      outline: none;
-    }
-
-    .projects-menu:has(.project-fullscreen-link:hover) .project-fullscreen-link:not(:hover) {
-      opacity: 1 !important;
-    }
-
     .project-sun-tracker {
       min-height: 100svh;
-      border-top: 1px solid rgba(247, 245, 240, 0.1);
       background: #070707;
     }
 
@@ -125,17 +68,6 @@ import * as THREE from 'three';
     @media (max-width: 900px) {
       main.projects-sun-page {
         padding-top: 106px;
-      }
-
-      .projects-menu {
-        min-height: calc(70svh - 106px);
-        padding-block: 20px 28px;
-        row-gap: clamp(14px, 4vh, 30px);
-      }
-
-      .project-fullscreen-link {
-        font-size: clamp(24px, 8vw, 42px);
-        line-height: 1.1;
       }
 
       .project-sun-tracker {
@@ -172,21 +104,11 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
     this.initSun();
   }
 
-  protected focusProject(project: 'project1' | 'project2' | 'project3'): void {
+  protected focusVehicle(vehicle: 'project1' | 'project2' | 'project3'): void {
     const rotations = {
-      project1: new THREE.Euler(0.12, 0, 0.06),
-      project2: new THREE.Euler(-0.22, 0.74, -0.08),
-      project3: new THREE.Euler(0.34, -0.72, 0.12)
-    };
-
-    this.targetRotation = rotations[project];
-  }
-
-  protected focusVehicle(vehicle: 'flight12' | 'crew12' | 'crs34'): void {
-    const rotations = {
-      flight12: new THREE.Euler(0.1, 0.08, 0.04),
-      crew12: new THREE.Euler(-0.2, 0.68, -0.1),
-      crs34: new THREE.Euler(0.32, -0.68, 0.16)
+      project1: new THREE.Euler(0.1, 0.08, 0.04),
+      project2: new THREE.Euler(-0.2, 0.68, -0.1),
+      project3: new THREE.Euler(0.32, -0.68, 0.16)
     };
 
     this.targetRotation = rotations[vehicle];
@@ -207,7 +129,7 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-    this.camera.position.set(0, 0, 5.4);
+    this.camera.position.set(0, 0, 5.9);
 
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3));
@@ -226,7 +148,7 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
 
     const sunMaterial = this.createSunMaterial(realSunTexture);
     this.sunMaterial = sunMaterial;
-    this.surface = new THREE.Mesh(new THREE.SphereGeometry(1.62, 320, 320), sunMaterial);
+    this.surface = new THREE.Mesh(new THREE.SphereGeometry(1.58, 320, 320), sunMaterial);
     this.lavaJets = this.createLavaJets();
 
     this.sun.add(this.surface, this.lavaJets);
@@ -247,9 +169,9 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.sun.rotation.x += (this.targetRotation.x - this.sun.rotation.x) * 0.035;
-    this.sun.rotation.y += (this.targetRotation.y - this.sun.rotation.y) * 0.035 + 0.0012;
-    this.sun.rotation.z += (this.targetRotation.z - this.sun.rotation.z) * 0.035;
+    this.sun.rotation.x += (this.targetRotation.x - this.sun.rotation.x) * 0.025;
+    this.sun.rotation.y += (this.targetRotation.y - this.sun.rotation.y) * 0.025 + 0.00022;
+    this.sun.rotation.z += (this.targetRotation.z - this.sun.rotation.z) * 0.025;
 
     const elapsed = this.clock.getElapsedTime();
 
