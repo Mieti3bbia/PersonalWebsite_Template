@@ -1523,8 +1523,13 @@ app-home-page.scroll-animations-ready .scroll-slide {
 
 /* Final requested scale adjustments */
 .splash-overlay h1 {
-  font-size: clamp(38px, 7.5vw, 112px);
+  font-size: clamp(32px, 6.4vw, 96px);
   line-height: 1.08;
+}
+
+.splash-overlay h1 span {
+  display: block;
+  white-space: nowrap;
 }
 
 .project-fullscreen-link {
@@ -1568,7 +1573,7 @@ button,
 
 @media (max-width: 900px) {
   .splash-overlay h1 {
-    font-size: clamp(34px, 12vw, 72px);
+    font-size: clamp(27px, 8.5vw, 48px);
   }
 
   .project-fullscreen-link {

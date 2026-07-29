@@ -13,7 +13,10 @@ import { RouterLink } from '@angular/router';
         >
         <div class="splash-overlay">
           <p>/ Design portfolio /</p>
-          <h1 class="slide-in">Nome Cognome</h1>
+          <h1 class="slide-in">
+            <span>Maria Sole</span>
+            <span>Montironi Lasca</span>
+          </h1>
           <a class="home-cta" routerLink="/contact">Book now</a>
         </div>
       </section>
