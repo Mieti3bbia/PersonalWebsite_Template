@@ -65,6 +65,17 @@ import * as THREE from 'three';
       border-color: rgba(255, 236, 177, 0.04);
     }
 
+    .project-sun-tracker .vehicle-controls {
+      justify-items: center;
+    }
+
+    .project-sun-tracker .vehicle-controls button {
+      width: min(230px, 100%);
+      min-height: 52px;
+      padding: 15px 22px;
+      font-size: 14px;
+    }
+
     @media (max-width: 900px) {
       main.projects-sun-page {
         padding-top: 106px;
@@ -170,8 +181,12 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
     }
 
     this.sun.rotation.x += (this.targetRotation.x - this.sun.rotation.x) * 0.025;
-    this.sun.rotation.y += (this.targetRotation.y - this.sun.rotation.y) * 0.025 + 0.00022;
+    this.sun.rotation.y += (this.targetRotation.y - this.sun.rotation.y) * 0.025;
     this.sun.rotation.z += (this.targetRotation.z - this.sun.rotation.z) * 0.025;
+
+    if (this.surface) {
+      this.surface.rotation.y += 0.00038;
+    }
 
     const elapsed = this.clock.getElapsedTime();
 
