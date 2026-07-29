@@ -10,13 +10,13 @@
   gap: 24px;
   min-height: 72px;
   padding: 18px 34px;
-  background: rgba(247, 245, 240, 0.88);
+  background: #332A32;
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .logo {
-  color: #111;
+  color: #F207CB;
   font-size: 21px;
   line-height: 1;
   text-decoration: none;
@@ -41,7 +41,7 @@
 
 .nav-links a,
 .icon-link {
-  color: #111;
+  color: #F207CB;
   text-decoration: none;
 }
 
@@ -87,9 +87,9 @@
 
 .site-footer {
   padding: 24px 34px;
-  border-top: 1px solid rgba(17, 17, 17, 0.12);
-  background: #f7f5f0;
-  color: #111;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  background: #000;
+  color: #593854;
   font-size: 12px;
   text-align: center;
 }

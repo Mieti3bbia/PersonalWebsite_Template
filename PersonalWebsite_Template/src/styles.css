@@ -11,6 +11,10 @@
 
 * { box-sizing: border-box; }
 
+:root {
+  --subtext-color: #593854;
+}
+
 html {
   min-height: 100%;
   background: #f7f5f0;
@@ -37,6 +41,32 @@ img { max-width: 100%; }
 main { min-height: 100vh; }
 
 .page-section { background: #f7f5f0; }
+
+app-home-page,
+app-home-page main,
+app-home-page .page-section {
+  background: #000;
+  color: var(--subtext-color);
+}
+
+app-home-page .splash-overlay {
+  color: var(--subtext-color);
+}
+
+app-home-page .client-strip,
+app-home-page .collaboration-strip,
+app-home-page .collaboration-grid span {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.detail-page .text-columns,
+.detail-page .project-rich-layout,
+.detail-page .about-story,
+.detail-page .curriculum-panel,
+.detail-page .projects-hover-list,
+.detail-page .project-hover-card {
+  border-color: rgba(255, 255, 255, 0.18);
+}
 
 .splash {
   position: relative;
@@ -72,6 +102,7 @@ main { min-height: 100vh; }
 .eyebrow,
 .splash-overlay p,
 .project-card p {
+  color: var(--subtext-color);
   margin: 0;
   font-size: 13px;
   line-height: 1.3;
@@ -90,6 +121,30 @@ main { min-height: 100vh; }
 .splash-overlay h1 {
   margin-top: 12px;
   font-size: clamp(60px, 15vw, 220px);
+}
+
+.home-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  margin-top: clamp(18px, 3vh, 34px);
+  border: 1px solid #F207CB;
+  color: #F207CB;
+  padding: 13px 28px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.home-cta:hover,
+.home-cta:focus-visible {
+  background: transparent;
+  color: #F207CB;
+  outline: 1px solid #F207CB;
+  outline-offset: 4px;
 }
 
 .hero {
@@ -234,7 +289,58 @@ main { min-height: 100vh; }
 
 .detail-page {
   padding-top: 72px;
-  background: #f7f5f0;
+  background: #000;
+  color: var(--subtext-color);
+}
+
+.detail-page .page-section {
+  background: #000;
+}
+
+.detail-page input,
+.detail-page textarea,
+.detail-page select,
+.detail-page button {
+  color: var(--subtext-color);
+}
+
+.detail-page .contact-form input,
+.detail-page .contact-form textarea,
+.detail-page .contact-form select {
+  border-bottom-color: var(--subtext-color);
+  background: #000;
+  color: #fff;
+}
+
+.detail-page .contact-form select option {
+  background: #000;
+  color: #fff;
+}
+
+.detail-page .contact-form input:focus,
+.detail-page .contact-form textarea:focus,
+.detail-page .contact-form select:focus {
+  border-bottom-color: var(--subtext-color);
+}
+
+.detail-page .contact-form select.is-placeholder {
+  color: var(--subtext-color);
+}
+
+.detail-page .contact-form input::placeholder,
+.detail-page .contact-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.detail-page .contact-form button {
+  border-color: var(--subtext-color);
+  color: #fff;
+}
+
+.detail-page .contact-form button:hover,
+.detail-page .contact-form button:focus-visible {
+  background: transparent;
+  color: #fff;
 }
 
 .detail-hero,
@@ -306,6 +412,7 @@ main { min-height: 100vh; }
 }
 
 .text-columns p {
+  color: var(--subtext-color);
   margin: 0;
   font-size: clamp(22px, 2.6vw, 42px);
   line-height: 1.05;
@@ -316,6 +423,7 @@ main { min-height: 100vh; }
 }
 
 .contact-list {
+  color: var(--subtext-color);
   display: flex;
   flex-wrap: wrap;
   gap: 14px 28px;
@@ -355,6 +463,7 @@ main { min-height: 100vh; }
 }
 
 .contact-form span {
+  color: var(--subtext-color);
   font-size: 13px;
   text-transform: uppercase;
 }
@@ -509,6 +618,187 @@ main { min-height: 100vh; }
   line-height: 1;
 }
 
+.clients-section {
+  display: grid;
+  gap: clamp(28px, 5vw, 58px);
+  padding: clamp(54px, 9vw, 112px) clamp(20px, 4vw, 34px);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+}
+
+.clients-section p {
+  margin: 0;
+  color: var(--subtext-color);
+  font-size: clamp(18px, 2.2vw, 32px);
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.clients-logo-grid {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.client-logo {
+  min-height: clamp(118px, 15vw, 190px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #050505;
+  color: #fff;
+  padding: 18px;
+  overflow: hidden;
+}
+
+.client-logo strong,
+.client-logo span {
+  display: block;
+  line-height: 1;
+}
+
+.client-logo-kataklo {
+  grid-column: span 2;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.75);
+}
+
+.client-logo-kataklo strong {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(34px, 5vw, 78px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.client-logo-kataklo span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1.8vw, 25px);
+  font-weight: 300;
+}
+
+.client-logo-pwc {
+  grid-column: span 2;
+  background: #f7f7f7;
+  color: #000;
+}
+
+.client-logo-pwc strong {
+  font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+  font-size: clamp(62px, 9vw, 142px);
+  letter-spacing: 0;
+}
+
+.client-logo-aiep {
+  grid-column: span 2;
+  background: #f7f7f7;
+  color: #000;
+  flex-direction: row;
+  gap: clamp(12px, 2vw, 28px);
+}
+
+.client-logo-aiep strong {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(28px, 4.7vw, 68px);
+  font-weight: 700;
+}
+
+.client-logo-aiep span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(24px, 3.6vw, 52px);
+  font-weight: 300;
+}
+
+.client-logo-vivarai {
+  grid-column: span 3;
+  flex-direction: row;
+  gap: clamp(12px, 2vw, 24px);
+}
+
+.client-logo-vivarai strong {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(44px, 7vw, 108px);
+  font-weight: 900;
+}
+
+.client-logo-vivarai span {
+  display: grid;
+  place-items: center;
+  width: clamp(70px, 10vw, 150px);
+  aspect-ratio: 1;
+  background: #fff;
+  color: #e50020;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(54px, 8vw, 126px);
+  font-weight: 900;
+}
+
+.client-logo-rai {
+  grid-column: span 3;
+  background: #0010a8;
+}
+
+.client-logo-rai strong {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(72px, 12vw, 180px);
+  font-weight: 900;
+}
+
+.clients-fade {
+  opacity: 0;
+  transform: translateY(42px);
+  clip-path: inset(100% 0 0 0);
+  transition:
+    opacity 520ms ease,
+    transform 520ms cubic-bezier(0.19, 1, 0.22, 1),
+    clip-path 520ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.clients-fade.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clients-fade,
+  .clients-fade.is-visible {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .clients-logo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .client-logo,
+  .client-logo-kataklo,
+  .client-logo-pwc,
+  .client-logo-aiep,
+  .client-logo-vivarai,
+  .client-logo-rai {
+    grid-column: 1;
+  }
+
+  .client-logo {
+    min-height: 150px;
+  }
+}
+
+@media (max-width: 520px) {
+  .client-logo-aiep,
+  .client-logo-vivarai {
+    flex-direction: column;
+  }
+}
+
 .contact-form-section {
   display: flex;
   min-height: calc(100vh - 72px);
@@ -596,6 +886,7 @@ main { min-height: 100vh; }
 }
 
 .curriculum-panel p {
+  color: var(--subtext-color);
   margin: 0 0 10px;
   font-size: 13px;
   text-transform: uppercase;
@@ -625,6 +916,7 @@ main { min-height: 100vh; }
 }
 
 .project-description {
+  color: var(--subtext-color);
   max-width: 720px;
   margin: 0;
   font-size: clamp(22px, 2.8vw, 40px);
@@ -1244,8 +1536,8 @@ app-home-page.scroll-animations-ready .scroll-slide {
   width: min(760px, 100%);
   aspect-ratio: 16 / 9;
   margin: 14px auto 0;
-  border: 1px solid rgba(17, 17, 17, 0.16);
-  background: #ddd7cc;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #000;
   overflow: hidden;
 }
 
@@ -1254,7 +1546,24 @@ app-home-page.scroll-animations-ready .scroll-slide {
   width: 100%;
   height: 100%;
   border: 0;
-  filter: grayscale(1) contrast(0.92);
+  filter: invert(0.92) hue-rotate(180deg) saturate(0.55) contrast(0.95) brightness(0.72);
+}
+
+button,
+.home-cta,
+.vehicle-controls button,
+.contact-form button {
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-weight: 700;
+}
+
+.eyebrow,
+.splash-overlay p,
+.project-card p,
+.clients-section p,
+.vehicle-copy p {
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-weight: 200;
 }
 
 @media (max-width: 900px) {
@@ -1307,6 +1616,7 @@ app-home-page.scroll-animations-ready .scroll-slide {
 }
 
 .project-rich-layout p {
+  color: var(--subtext-color);
   margin: 0 0 24px;
   font-size: clamp(20px, 2.5vw, 38px);
   line-height: 1.12;
@@ -1432,6 +1742,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 }
 
 .about-story-pair p {
+  color: var(--subtext-color);
   margin: 0;
   font-size: clamp(24px, 3.2vw, 48px);
   line-height: 1.08;
@@ -1584,6 +1895,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 }
 
 .vehicle-copy p {
+  color: var(--subtext-color);
   margin: 0 0 14px;
   font-size: 13px;
   text-transform: uppercase;

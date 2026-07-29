@@ -1,17 +1,20 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
+  imports: [RouterLink],
   template: `
     <main>
       <section class="splash page-section" aria-label="Splash page">
         <img
-          src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1800&q=85"
-          alt="Design editoriale con modella e styling contemporaneo"
+          src="/assets/home/anteprima-imperfetto-divenire.png"
+          alt="Fashion collection sketches for Imperfetto Divenire"
         >
         <div class="splash-overlay">
           <p>/ Design portfolio /</p>
           <h1 class="slide-in">Nome Cognome</h1>
+          <a class="home-cta" routerLink="/contact">Book now</a>
         </div>
       </section>
 
@@ -27,12 +30,41 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angula
           <span class="home-word">Creative consulting</span>
         </div>
       </section>
+
+      <section class="clients-section page-section" aria-label="Current and former clients">
+        <p class="clients-fade">Current and former clients</p>
+
+        <div class="clients-logo-grid clients-fade">
+          <div class="client-logo client-logo-kataklo" aria-label="Kataklo athletic dance theatre">
+            <strong>kataklo</strong>
+            <span>athletic dance theatre</span>
+          </div>
+
+          <div class="client-logo client-logo-pwc" aria-label="PWC">
+            <strong>PWC</strong>
+          </div>
+
+          <div class="client-logo client-logo-aiep" aria-label="ariella vidach AiEP">
+            <strong>ariella vidach</strong>
+            <span>AiEP</span>
+          </div>
+
+          <div class="client-logo client-logo-vivarai" aria-label="Viva Rai 2">
+            <strong>VivaRai</strong>
+            <span>2</span>
+          </div>
+
+          <div class="client-logo client-logo-rai" aria-label="Rai">
+            <strong>Rai</strong>
+          </div>
+        </div>
+      </section>
     </main>
   `
 })
 export class HomePage implements AfterViewInit, OnDestroy {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
-  private words: HTMLElement[] = [];
+  private fadeElements: HTMLElement[] = [];
   private animationFrame = 0;
 
   private readonly updateVisibility = (): void => {
@@ -41,17 +73,17 @@ export class HomePage implements AfterViewInit, OnDestroy {
     this.animationFrame = requestAnimationFrame(() => {
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-      this.words.forEach((word) => {
-        const rect = word.getBoundingClientRect();
+      this.fadeElements.forEach((element) => {
+        const rect = element.getBoundingClientRect();
         const isVisible = rect.top < viewportHeight * 0.88 && rect.bottom > viewportHeight * 0.12;
-        word.classList.toggle('is-visible', isVisible);
+        element.classList.toggle('is-visible', isVisible);
       });
     });
   };
 
   ngAfterViewInit(): void {
-    this.words = Array.from(
-      this.elementRef.nativeElement.querySelectorAll('.home-word')
+    this.fadeElements = Array.from(
+      this.elementRef.nativeElement.querySelectorAll('.home-word, .clients-fade')
     ) as HTMLElement[];
 
     window.addEventListener('scroll', this.updateVisibility, { passive: true });

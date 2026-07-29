@@ -9,8 +9,7 @@ import * as THREE from 'three';
     <main class="projects-page projects-sun-page">
       <section class="vehicle-tracker project-sun-tracker" aria-label="Vehicle tracker">
         <div class="vehicle-copy">
-          <p>/ Vehicle tracker /</p>
-          <h2>Orbital view</h2>
+          <h2>portfolio</h2>
         </div>
 
         <div class="vehicle-stage sun-stage">
@@ -18,9 +17,9 @@ import * as THREE from 'three';
         </div>
 
         <div class="vehicle-controls" aria-label="Vehicle tracker controls">
-          <button type="button" routerLink="/projects/project1" (mouseenter)="focusVehicle('project1')" (focus)="focusVehicle('project1')">project1</button>
-          <button type="button" routerLink="/projects/project2" (mouseenter)="focusVehicle('project2')" (focus)="focusVehicle('project2')">project2</button>
-          <button type="button" routerLink="/projects/project3" (mouseenter)="focusVehicle('project3')" (focus)="focusVehicle('project3')">project3</button>
+          <button type="button" routerLink="/projects/project1" (mouseenter)="focusVehicle('project1')" (focus)="focusVehicle('project1')">Costume Design</button>
+          <button type="button" routerLink="/projects/project2" (mouseenter)="focusVehicle('project2')" (focus)="focusVehicle('project2')">Fashion Design</button>
+          <button type="button" routerLink="/projects/project3" (mouseenter)="focusVehicle('project3')" (focus)="focusVehicle('project3')">Teachings</button>
         </div>
       </section>
     </main>
@@ -37,6 +36,11 @@ import * as THREE from 'three';
     .project-sun-tracker {
       min-height: 100svh;
       background: #070707;
+    }
+
+    .project-sun-tracker .vehicle-copy h2 {
+      color: #F2072B;
+      font-size: clamp(50px, 8.1vw, 129px);
     }
 
     .sun-stage {
@@ -67,13 +71,27 @@ import * as THREE from 'three';
 
     .project-sun-tracker .vehicle-controls {
       justify-items: center;
+      gap: 18px;
+      margin-top: clamp(18px, 3vh, 34px);
     }
 
     .project-sun-tracker .vehicle-controls button {
-      width: min(230px, 100%);
-      min-height: 52px;
-      padding: 15px 22px;
-      font-size: 14px;
+      width: min(280px, 100%);
+      min-height: 66px;
+      border-radius: 12px;
+      border-color: #F207CB;
+      color: #F207CB;
+      padding: 22px 32px;
+      font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 20px;
+    }
+
+    .project-sun-tracker .vehicle-controls button:hover,
+    .project-sun-tracker .vehicle-controls button:focus-visible {
+      border-color: #F207CB;
+      background: transparent;
+      color: #F207CB;
     }
 
     @media (max-width: 900px) {
@@ -82,15 +100,50 @@ import * as THREE from 'three';
       }
 
       .project-sun-tracker {
-        min-height: auto;
+        min-height: calc(100svh - 106px);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+        align-content: center;
+        justify-items: center;
+        gap: clamp(12px, 2.6vh, 22px);
+        padding: 22px 20px 34px;
+        text-align: center;
+      }
+
+      .project-sun-tracker .vehicle-copy h2 {
+        width: 100%;
+        max-width: 100%;
+        font-size: clamp(28px, 10.1vw, 49px);
+        line-height: 0.96;
+        overflow-wrap: anywhere;
+      }
+
+      .project-sun-tracker .vehicle-copy {
+        width: 100%;
+        text-align: center;
       }
 
       .sun-stage {
-        min-height: 58vh;
+        width: min(100%, 360px);
+        min-height: clamp(220px, 36vh, 320px);
       }
 
       .sun-stage canvas {
-        height: 58vh;
+        height: clamp(220px, 36vh, 320px);
+      }
+
+      .project-sun-tracker .vehicle-controls {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .project-sun-tracker .vehicle-controls button {
+        width: min(320px, 100%);
+        min-height: 58px;
+        padding: 16px 22px;
       }
     }
   `]

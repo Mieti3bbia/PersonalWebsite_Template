@@ -65,8 +65,8 @@ export interface ContactRequest {
 
         <div class="contact-map" aria-label="Google Maps location">
           <iframe
-            title="Google Maps location"
-            src="https://www.google.com/maps?q=Milan,Italy&output=embed"
+            title="Milano Zona Navigli map"
+            src="https://www.google.com/maps?q=Milano%20Zona%20Navigli&z=15&output=embed"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
