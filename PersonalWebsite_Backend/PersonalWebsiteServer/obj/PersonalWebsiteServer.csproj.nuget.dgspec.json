@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj": {}
+    "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Template\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj": {
+    "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Template\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj",
+        "projectUniqueName": "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Template\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj",
         "projectName": "PersonalWebsiteServer",
-        "projectPath": "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj",
+        "projectPath": "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Template\\PersonalWebsite_Backend\\PersonalWebsiteServer\\PersonalWebsiteServer.csproj",
         "packagesPath": "C:\\Users\\Saverio\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Backend\\PersonalWebsiteServer\\obj\\",
+        "outputPath": "C:\\Users\\Saverio\\Desktop\\PersonalWebsite_Template\\PersonalWebsite_Backend\\PersonalWebsiteServer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Saverio\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -45,6 +45,10 @@
           "targetAlias": "net10.0",
           "dependencies": {
             "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
               "version": "[10.0.0, )"
             }
