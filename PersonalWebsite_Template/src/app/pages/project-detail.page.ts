@@ -11,24 +11,24 @@ interface PortfolioProject {
 }
 
 const PROJECTS: Record<string, PortfolioProject> = {
-  project1: {
-    title: 'project1',
+  'costume-design': {
+    title: 'Costume Design',
     kicker: '/ Fashion research /',
     description: 'A focused project built around visual research, garment language and editorial direction.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel turpis ac arcu facilisis gravida. Suspendisse potenti. Curabitur at lorem sed nibh luctus consequat vitae sed erat.',
     image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1400&q=85',
     secondaryImage: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85'
   },
-  project2: {
-    title: 'project2',
+  'fashion-design': {
+    title: 'Fashion Design',
     kicker: '/ Graphic identity /',
     description: 'A visual system exploring typography, image hierarchy and contemporary brand identity.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent non lectus sed arcu tempor efficitur. Donec et nisl vel nibh fermentum cursus in in justo.',
     image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1400&q=80',
     secondaryImage: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1200&q=85'
   },
-  project3: {
-    title: 'project3',
+  teachings: {
+    title: 'Teachings',
     kicker: '/ Digital fashion /',
     description: 'A digital fashion direction project connecting material references, motion and image-based storytelling.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel justo at augue posuere cursus. Sed vitae lacus sed neque viverra aliquet at id est.',
@@ -44,7 +44,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
     <main class="detail-page project-detail-page">
       <section class="project-detail-layout page-section">
         <div class="project-detail-copy">
-          <a class="back-link" routerLink="/projects">/ Back to projects /</a>
+          <a class="back-link" routerLink="/portfolio">/ Back to portfolio /</a>
           <p class="eyebrow">{{ project.kicker }}</p>
           <h1 class="slide-in">{{ project.title }}</h1>
           <p class="project-description">{{ project.description }}</p>
@@ -64,6 +64,6 @@ const PROJECTS: Record<string, PortfolioProject> = {
 })
 export class ProjectDetailPage {
   private readonly route = inject(ActivatedRoute);
-  private readonly slug = this.route.snapshot.paramMap.get('slug') ?? 'project1';
-  protected readonly project = PROJECTS[this.slug] ?? PROJECTS['project1'];
+  private readonly slug = this.route.snapshot.paramMap.get('slug') ?? 'costume-design';
+  protected readonly project = PROJECTS[this.slug] ?? PROJECTS['costume-design'];
 }

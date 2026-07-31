@@ -17,9 +17,9 @@ import * as THREE from 'three';
         </div>
 
         <div class="vehicle-controls" aria-label="Vehicle tracker controls">
-          <button type="button" routerLink="/projects/project1" (mouseenter)="focusVehicle('project1')" (focus)="focusVehicle('project1')">Costume Design</button>
-          <button type="button" routerLink="/projects/project2" (mouseenter)="focusVehicle('project2')" (focus)="focusVehicle('project2')">Fashion Design</button>
-          <button type="button" routerLink="/projects/project3" (mouseenter)="focusVehicle('project3')" (focus)="focusVehicle('project3')">Teachings</button>
+          <button type="button" routerLink="/portfolio/costume-design" (mouseenter)="focusVehicle('project1')" (focus)="focusVehicle('project1')">Costume Design</button>
+          <button type="button" routerLink="/portfolio/fashion-design" (mouseenter)="focusVehicle('project2')" (focus)="focusVehicle('project2')">Fashion Design</button>
+          <button type="button" routerLink="/portfolio/teachings" (mouseenter)="focusVehicle('project3')" (focus)="focusVehicle('project3')">Teachings</button>
         </div>
       </section>
     </main>
