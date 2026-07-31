@@ -659,16 +659,31 @@ app-home-page .collaboration-grid span {
   text-transform: uppercase;
 }
 
-.clients-logo-grid {
-  width: min(1180px, 100%);
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+.clients-ticker {
+  width: 100%;
+  overflow: hidden;
+  border-block: 1px solid rgba(255, 255, 255, 0.18);
+  background: #050505;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.clients-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: clients-ticker-loop 28s linear infinite;
+  will-change: transform;
+}
+
+.clients-ticker-set {
+  display: flex;
+  align-items: stretch;
   gap: 14px;
+  padding: 14px 7px;
 }
 
 .client-logo {
-  min-height: clamp(118px, 15vw, 190px);
+  flex: 0 0 clamp(220px, 24vw, 360px);
+  min-height: clamp(86px, 10vw, 128px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -688,37 +703,34 @@ app-home-page .collaboration-grid span {
 }
 
 .client-logo-kataklo {
-  grid-column: span 2;
   text-shadow: 0 0 18px rgba(255, 255, 255, 0.75);
 }
 
 .client-logo-kataklo strong {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(34px, 5vw, 78px);
+  font-size: clamp(28px, 4vw, 58px);
   font-weight: 400;
   letter-spacing: 0.04em;
 }
 
 .client-logo-kataklo span {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(13px, 1.8vw, 25px);
+  font-size: clamp(12px, 1.4vw, 18px);
   font-weight: 300;
 }
 
 .client-logo-pwc {
-  grid-column: span 2;
   background: #f7f7f7;
   color: #000;
 }
 
 .client-logo-pwc strong {
   font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-  font-size: clamp(62px, 9vw, 142px);
+  font-size: clamp(48px, 6vw, 92px);
   letter-spacing: 0;
 }
 
 .client-logo-aiep {
-  grid-column: span 2;
   background: #f7f7f7;
   color: #000;
   flex-direction: row;
@@ -727,49 +739,58 @@ app-home-page .collaboration-grid span {
 
 .client-logo-aiep strong {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(28px, 4.7vw, 68px);
+  font-size: clamp(24px, 3.5vw, 48px);
   font-weight: 700;
 }
 
 .client-logo-aiep span {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(24px, 3.6vw, 52px);
+  font-size: clamp(20px, 2.8vw, 38px);
   font-weight: 300;
 }
 
 .client-logo-vivarai {
-  grid-column: span 3;
   flex-direction: row;
-  gap: clamp(12px, 2vw, 24px);
+  gap: clamp(10px, 1.5vw, 18px);
+  padding-inline: clamp(16px, 2.4vw, 28px);
 }
 
 .client-logo-vivarai strong {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(44px, 7vw, 108px);
+  font-size: clamp(30px, 4vw, 58px);
   font-weight: 900;
 }
 
 .client-logo-vivarai span {
   display: grid;
   place-items: center;
-  width: clamp(70px, 10vw, 150px);
+  width: clamp(44px, 5.4vw, 66px);
   aspect-ratio: 1;
   background: #fff;
   color: #e50020;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(54px, 8vw, 126px);
+  font-size: clamp(34px, 4.5vw, 56px);
   font-weight: 900;
 }
 
 .client-logo-rai {
-  grid-column: span 3;
   background: #0010a8;
 }
 
 .client-logo-rai strong {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(72px, 12vw, 180px);
+  font-size: clamp(58px, 7vw, 104px);
   font-weight: 900;
+}
+
+@keyframes clients-ticker-loop {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .clients-fade {
@@ -796,11 +817,15 @@ app-home-page .collaboration-grid span {
     clip-path: none;
     transition: none;
   }
+
+  .clients-ticker-track {
+    animation: none;
+  }
 }
 
 @media (max-width: 900px) {
-  .clients-logo-grid {
-    grid-template-columns: 1fr;
+  .client-logo {
+    flex-basis: clamp(190px, 68vw, 280px);
   }
 
   .client-logo,
@@ -2249,5 +2274,103 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   .projects-planet-page .projects-planet-stage canvas {
     width: min(102vw, 520px);
     height: min(58vh, 520px);
+  }
+}
+
+/* Final about page full-width layout */
+.about-page .about-layout {
+  min-height: calc(100svh - 72px);
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  gap: clamp(28px, 5vw, 56px);
+  width: 100%;
+  padding: clamp(104px, 12vw, 142px) clamp(20px, 4vw, 34px) clamp(48px, 7vw, 76px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+}
+
+.about-page .about-layout > div {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  padding-bottom: clamp(24px, 4vw, 42px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.about-page .about-layout h1 {
+  max-width: min(1120px, 100%);
+}
+
+.about-page .about-layout img {
+  width: min(920px, 100%);
+  height: min(62svh, 620px);
+  min-height: 340px;
+  justify-self: center;
+  object-position: center;
+}
+
+.about-page .about-body {
+  display: grid;
+  gap: 0;
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border-top: 0;
+}
+
+.about-page .about-body p {
+  width: 100%;
+  margin: 0;
+  padding: clamp(18px, 2.6vw, 32px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--subtext-color);
+  font-size: clamp(18px, 2.2vw, 34px);
+  line-height: 1.16;
+  opacity: 0;
+  transform: translateY(42px);
+  clip-path: inset(100% 0 0 0);
+  text-align: center;
+  transition:
+    opacity 520ms ease,
+    transform 520ms cubic-bezier(0.19, 1, 0.22, 1),
+    clip-path 520ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.about-page .about-body p.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
+}
+
+.about-page .about-body p:last-child {
+  border-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-page .about-body p,
+  .about-page .about-body p.is-visible {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .about-page .about-layout {
+    min-height: auto;
+    padding-top: 38px;
+  }
+
+  .about-page .about-layout img {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
+
+  .about-page .about-body p {
+    padding-inline: 20px;
+    font-size: clamp(16px, 5.4vw, 26px);
   }
 }
