@@ -2385,3 +2385,246 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     font-size: clamp(16px, 5.4vw, 26px);
   }
 }
+
+/* Teachings portfolio template */
+.teachings-page {
+  min-height: calc(100svh - 72px);
+  padding: clamp(104px, 12vw, 142px) clamp(20px, 4vw, 34px) clamp(58px, 8vw, 92px);
+  background: #000;
+  color: #fff;
+}
+
+.teachings-header {
+  width: min(1120px, 100%);
+  margin-inline: auto;
+  margin-bottom: clamp(28px, 5vw, 52px);
+  text-align: center;
+}
+
+.teachings-header h1 {
+  margin: 0;
+  color: var(--subtext-color);
+  font-weight: 400;
+  font-size: clamp(44px, 7vw, 96px);
+  line-height: 1.08;
+  text-transform: lowercase;
+}
+
+.teachings-card-list {
+  display: grid;
+  gap: clamp(22px, 4vw, 42px);
+  width: min(1120px, 100%);
+  margin-inline: auto;
+}
+
+.teaching-card {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgba(247, 245, 240, 0.32);
+  background: #332A32;
+  box-shadow: 0 24px 76px rgba(0, 0, 0, 0.38);
+}
+
+.teaching-card:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-left: 4px solid #593854;
+  pointer-events: none;
+}
+
+.teaching-card:after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(89, 56, 84, 0.9), transparent);
+  pointer-events: none;
+}
+
+.teaching-card-body {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1fr);
+  gap: clamp(28px, 6vw, 92px);
+  align-items: center;
+  min-height: clamp(240px, 26vw, 350px);
+  padding: clamp(22px, 4vw, 46px);
+}
+
+.teaching-card-copy {
+  color: #fff;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(12px, 1.1vw, 16px);
+  line-height: 1.38;
+}
+
+.teaching-card-copy p {
+  margin: 0;
+}
+
+.teaching-card-copy p:first-child {
+  margin-bottom: 14px;
+  color: #593854;
+  font-size: clamp(16px, 1.6vw, 24px);
+  line-height: 1.08;
+}
+
+.teaching-preview {
+  position: relative;
+  display: grid;
+  width: min(100%, 520px);
+  height: auto;
+  min-height: 0;
+  justify-self: center;
+  border: 1px solid rgba(247, 245, 240, 0.44);
+  background:
+    linear-gradient(135deg, rgba(89, 56, 84, 0.42), transparent 42%),
+    rgba(0, 0, 0, 0.18);
+  color: #fff;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(12px, 1.1vw, 16px);
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.teaching-preview:hover,
+.teaching-preview:focus-visible {
+  border-color: #593854;
+  background: rgba(89, 56, 84, 0.26);
+  color: #593854;
+  transform: translateY(-2px);
+}
+
+.teaching-preview span {
+  place-self: center;
+}
+
+.teaching-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+.teaching-card:nth-child(2) .teaching-preview img {
+  object-position: center;
+}
+
+.teaching-preview iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.teachings-back-link {
+  display: block;
+  width: max-content;
+  margin: clamp(32px, 5vw, 58px) auto 0;
+  color: #593854;
+}
+
+@media (max-width: 900px) {
+  .teachings-page {
+    min-height: auto;
+    padding-top: 38px;
+  }
+
+  .teachings-header {
+    text-align: center;
+  }
+
+  .teachings-header h1 {
+    width: 100%;
+    font-size: clamp(30px, 9vw, 58px);
+    line-height: 1.12;
+  }
+
+  .teaching-card-title {
+    min-height: 58px;
+  }
+
+  .teaching-card-body {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    min-height: auto;
+    padding: 22px;
+  }
+
+  .teaching-card-copy {
+    font-size: clamp(11px, 3.4vw, 15px);
+  }
+
+  .teaching-card-copy p:first-child {
+    font-size: clamp(15px, 4.6vw, 22px);
+  }
+
+  .teaching-preview {
+    width: min(100%, 520px);
+    height: auto;
+    font-size: clamp(11px, 3.4vw, 15px);
+  }
+}
+
+/* Contact form mobile responsiveness */
+@media (max-width: 900px) {
+  .contact-page .contact-form-section {
+    width: 100%;
+    padding: 38px 20px 54px;
+    gap: 26px;
+    overflow: hidden;
+  }
+
+  .contact-page .contact-form-section h1 {
+    max-width: 100%;
+    font-size: clamp(42px, 15vw, 76px);
+    line-height: 1.08;
+    text-align: center;
+  }
+
+  .contact-page .contact-form {
+    width: 100%;
+    max-width: 100%;
+    gap: 16px;
+  }
+
+  .contact-page .contact-form label {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .contact-page .contact-form input,
+  .contact-page .contact-form textarea,
+  .contact-page .contact-form select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    font-size: clamp(18px, 5.2vw, 22px);
+    line-height: 1.18;
+  }
+
+  .contact-page .contact-form textarea {
+    min-height: 150px;
+    max-height: 44svh;
+  }
+
+  .contact-page .contact-form button {
+    width: 100%;
+    min-height: 56px;
+    padding: 16px 20px;
+    font-size: 18px;
+  }
+
+  .contact-page .contact-map {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+}

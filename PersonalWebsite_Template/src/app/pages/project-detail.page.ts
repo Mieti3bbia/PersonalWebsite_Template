@@ -10,6 +10,38 @@ interface PortfolioProject {
   secondaryImage: string;
 }
 
+interface TeachingCard {
+  title: string;
+  author: string;
+  school: string;
+  previewImage: string;
+  pdfUrl: string;
+}
+
+const TEACHING_CARDS: TeachingCard[] = [
+  {
+    title: 'Paura d amare',
+    author: 'Nicoletta Atzeni',
+    school: 'IED Milano',
+    previewImage: '/assets/home/anteprima-imperfetto-divenire.png',
+    pdfUrl: ''
+  },
+  {
+    title: 'Pezzi di vetro',
+    author: 'Nicoletta Atzeni',
+    school: 'IED Milano',
+    previewImage: '/assets/teachings/pezzi-di-vetro-preview.png',
+    pdfUrl: '/assets/teachings/pezzi-di-vetro.pdf'
+  },
+  {
+    title: 'Placeholder title',
+    author: 'Placeholder author',
+    school: 'Placeholder school',
+    previewImage: '',
+    pdfUrl: ''
+  }
+];
+
 const PROJECTS: Record<string, PortfolioProject> = {
   'costume-design': {
     title: 'Costume Design',
@@ -42,23 +74,61 @@ const PROJECTS: Record<string, PortfolioProject> = {
   imports: [RouterLink],
   template: `
     <main class="detail-page project-detail-page">
-      <section class="project-detail-layout page-section">
-        <div class="project-detail-copy">
-          <a class="back-link" routerLink="/portfolio">/ Back to portfolio /</a>
-          <p class="eyebrow">{{ project.kicker }}</p>
-          <h1 class="slide-in">{{ project.title }}</h1>
-          <p class="project-description">{{ project.description }}</p>
-        </div>
-        <img [src]="project.image" [alt]="project.title">
-      </section>
+      @if (isTeachings) {
+        <section class="teachings-page page-section">
+          <header class="teachings-header">
+            <h1 class="slide-in">teachings</h1>
+          </header>
 
-      <section class="project-rich-layout page-section">
-        <div>
-          <p>{{ project.body }}</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi viverra, sem id mattis porttitor, arcu quam iaculis ipsum, et dignissim massa tortor id dolor.</p>
-        </div>
-        <img [src]="project.secondaryImage" [alt]="project.title + ' detail'">
-      </section>
+          <div class="teachings-card-list">
+            @for (card of teachingCards; track card.title) {
+              <article class="teaching-card">
+                <div class="teaching-card-body">
+                  <div class="teaching-card-copy">
+                    <p>"{{ card.title }}"</p>
+                    <p>{{ card.author }}</p>
+                    <p>{{ card.school }}</p>
+                  </div>
+
+                  <a
+                    class="teaching-preview"
+                    [href]="card.pdfUrl || '#'"
+                    [attr.target]="card.pdfUrl ? '_blank' : null"
+                    rel="noopener"
+                    [attr.aria-label]="card.pdfUrl ? 'Open ' + card.title + ' PDF' : 'Teaching preview placeholder'"
+                  >
+                    @if (card.previewImage) {
+                      <img [src]="card.previewImage" [alt]="card.title + ' preview'">
+                    } @else {
+                      <span>anteprima</span>
+                    }
+                  </a>
+                </div>
+              </article>
+            }
+          </div>
+
+          <a class="back-link teachings-back-link" routerLink="/portfolio">/ Go back /</a>
+        </section>
+      } @else {
+        <section class="project-detail-layout page-section">
+          <div class="project-detail-copy">
+            <a class="back-link" routerLink="/portfolio">/ Back to portfolio /</a>
+            <p class="eyebrow">{{ project.kicker }}</p>
+            <h1 class="slide-in">{{ project.title }}</h1>
+            <p class="project-description">{{ project.description }}</p>
+          </div>
+          <img [src]="project.image" [alt]="project.title">
+        </section>
+
+        <section class="project-rich-layout page-section">
+          <div>
+            <p>{{ project.body }}</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi viverra, sem id mattis porttitor, arcu quam iaculis ipsum, et dignissim massa tortor id dolor.</p>
+          </div>
+          <img [src]="project.secondaryImage" [alt]="project.title + ' detail'">
+        </section>
+      }
     </main>
   `
 })
@@ -66,4 +136,10 @@ export class ProjectDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly slug = this.route.snapshot.paramMap.get('slug') ?? 'costume-design';
   protected readonly project = PROJECTS[this.slug] ?? PROJECTS['costume-design'];
+  protected readonly isTeachings = this.slug === 'teachings';
+  protected readonly teachingCards = this.loadTeachingCards();
+
+  private loadTeachingCards(): TeachingCard[] {
+    return TEACHING_CARDS;
+  }
 }
