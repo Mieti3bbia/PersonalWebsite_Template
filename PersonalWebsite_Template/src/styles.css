@@ -127,24 +127,25 @@ app-home-page .collaboration-grid span {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
+  width: min(280px, 100%);
+  min-height: 66px;
   margin-top: clamp(18px, 3vh, 34px);
   border: 1px solid #F207CB;
+  border-radius: 12px;
   color: #F207CB;
-  padding: 13px 28px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 13px;
+  padding: 22px 32px;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 20px;
   line-height: 1;
   text-decoration: none;
-  text-transform: uppercase;
 }
 
 .home-cta:hover,
 .home-cta:focus-visible {
+  border-color: #F207CB;
   background: transparent;
   color: #F207CB;
-  outline: 1px solid #F207CB;
-  outline-offset: 4px;
 }
 
 .hero {
@@ -385,22 +386,31 @@ app-home-page .collaboration-grid span {
 .about-layout {
   min-height: calc(100vh - 72px);
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(260px, 0.72fr);
-  gap: 56px;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 34px;
+  align-items: start;
   padding: 118px 34px 54px;
 }
 
 .about-layout h1 {
   margin-top: 14px;
-  font-size: clamp(42px, 7vw, 104px);
+  font-size: clamp(44px, 7vw, 96px);
   line-height: 1.08;
   max-width: 920px;
 }
 
+.about-subtitle {
+  margin: 18px 0 0;
+  color: var(--subtext-color);
+  font-size: clamp(20px, 2.2vw, 34px);
+  line-height: 1.08;
+}
+
 .about-layout img {
-  height: min(68vh, 660px);
-  min-height: 430px;
+  width: min(920px, 100%);
+  height: min(68vh, 620px);
+  min-height: 360px;
+  justify-self: start;
 }
 
 .text-columns {
@@ -416,6 +426,21 @@ app-home-page .collaboration-grid span {
   margin: 0;
   font-size: clamp(22px, 2.6vw, 42px);
   line-height: 1.05;
+}
+
+.about-body {
+  display: grid;
+  gap: 18px;
+  max-width: 980px;
+  padding: 34px 34px 72px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.about-body p {
+  margin: 0;
+  color: var(--subtext-color);
+  font-size: clamp(14px, 1.5vw, 23px);
+  line-height: 1.16;
 }
 
 .contact-layout {
@@ -1083,8 +1108,13 @@ body {
   }
 
   .about-layout h1 {
-    font-size: clamp(34px, 11vw, 78px);
+    font-size: clamp(30px, 9vw, 58px);
     line-height: 1.12;
+  }
+
+  .about-subtitle {
+    margin-top: 12px;
+    font-size: clamp(16px, 5vw, 26px);
   }
 
   .text-columns {
@@ -1095,6 +1125,16 @@ body {
   .text-columns p {
     font-size: clamp(22px, 7vw, 36px);
     line-height: 1.12;
+  }
+
+  .about-body {
+    gap: 16px;
+    padding: 28px 20px 54px;
+  }
+
+  .about-body p {
+    font-size: clamp(12px, 3.8vw, 17px);
+    line-height: 1.18;
   }
 
   .contact-form-section {
@@ -1555,7 +1595,6 @@ app-home-page.scroll-animations-ready .scroll-slide {
 }
 
 button,
-.home-cta,
 .vehicle-controls button,
 .contact-form button {
   font-family: "911 Porscha", Arial, Helvetica, sans-serif;

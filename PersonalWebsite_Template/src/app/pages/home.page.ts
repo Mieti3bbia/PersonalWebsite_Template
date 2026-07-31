@@ -8,8 +8,8 @@ import { RouterLink } from '@angular/router';
     <main>
       <section class="splash page-section" aria-label="Splash page">
         <img
-          src="/assets/home/anteprima-imperfetto-divenire.png"
-          alt="Fashion collection sketches for Imperfetto Divenire"
+          src="/assets/home/landing-red-horizontal.jpg"
+          alt="Abstract red fashion concept image"
         >
         <div class="splash-overlay">
           <p>/ Design portfolio /</p>
@@ -18,19 +18,6 @@ import { RouterLink } from '@angular/router';
             <span>Montironi Lasca</span>
           </h1>
           <a class="home-cta" routerLink="/contact">Book now</a>
-        </div>
-      </section>
-
-      <section class="collaboration-strip page-section" aria-label="Collaborazioni e ambiti di lavoro">
-        <div class="collaboration-grid">
-          <span class="home-word">Fashion design</span>
-          <span class="home-word">Graphic design</span>
-          <span class="home-word">Art direction</span>
-          <span class="home-word">Digital fashion</span>
-          <span class="home-word">Editorial design</span>
-          <span class="home-word">Brand identity</span>
-          <span class="home-word">Lecturing</span>
-          <span class="home-word">Creative consulting</span>
         </div>
       </section>
 

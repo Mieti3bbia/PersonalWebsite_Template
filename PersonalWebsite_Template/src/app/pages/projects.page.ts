@@ -73,6 +73,7 @@ import * as THREE from 'three';
       justify-items: center;
       gap: 18px;
       margin-top: clamp(18px, 3vh, 34px);
+      transform: translateX(-54px);
     }
 
     .project-sun-tracker .vehicle-controls button {
@@ -138,6 +139,7 @@ import * as THREE from 'three';
         justify-items: center;
         width: 100%;
         margin-top: 10px;
+        transform: none;
       }
 
       .project-sun-tracker .vehicle-controls button {

@@ -1,4 +1,4 @@
-ï»¿import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-about-page',
@@ -7,75 +7,42 @@
       <section class="about-layout page-section">
         <div>
           <p class="eyebrow">/ About me /</p>
-          <h1 class="slide-in">Fashion designer, graphic designer and lecturer.</h1>
+          <h1 class="slide-in">Maria Sole Montironi Lasca</h1>
+          <p class="about-subtitle">Fashion&amp;Costume Designer e Tutor</p>
         </div>
         <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85" alt="Portrait in a creative studio">
       </section>
 
-      <section class="text-columns page-section">
-        <p>My work combines visual research, fashion culture and digital languages. I design identities, editorial systems and image-led projects with a precise, minimal and contemporary approach.</p>
-        <p>The practice moves between creative direction, teaching and commissioned work, with attention to composition, material references and the relationship between image and typography.</p>
-      </section>
-
-      <section class="about-story page-section" aria-label="About story details">
-        <article class="about-story-pair">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum, mauris non pretium tincidunt, sem justo malesuada justo, vitae egestas augue mi vel mi.</p>
-          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=85" alt="Fashion editorial research">
-        </article>
-        <article class="about-story-pair">
-          <p>Praesent rhoncus ex in lorem cursus, sed facilisis lectus aliquet. Donec porta ligula a est varius, a gravida quam aliquet.</p>
-          <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=80" alt="Visual identity study">
-        </article>
-        <article class="about-story-pair">
-          <p>Morbi faucibus lorem at augue vulputate, vel pretium nibh convallis. Etiam vel lacus sit amet nibh accumsan tincidunt.</p>
-          <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80" alt="Material and styling detail">
-        </article>
-        <article class="about-story-pair">
-          <p>Suspendisse potenti. Nulla facilisi. Curabitur bibendum, ante sed posuere viverra, sapien magna porttitor orci, vitae gravida purus lectus id libero.</p>
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=85" alt="Studio portrait work">
-        </article>
-        <article class="about-story-pair">
-          <p>Aliquam erat volutpat. Sed non finibus lectus. Pellentesque vitae magna finibus, pulvinar magna sed, iaculis magna.</p>
-          <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=900&q=85" alt="Editorial fashion image">
-        </article>
-        <article class="about-story-pair">
-          <p>Vivamus ultricies lacus ac nibh faucibus, non interdum neque porttitor. Duis nec ligula non elit cursus sagittis.</p>
-          <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=85" alt="Creative studio portrait">
-        </article>
+      <section class="about-body page-section">
+        <p>Sono una Fashion Designer, Costume Designer &amp; Maker e Tutor, ma nessuna di queste definizioni, da sola, riesce davvero a raccontare chi sono.</p>
+        <p>Il mio percorso è iniziato allo IED Istituto Europeo di Design di Milano, dove mi sono formata grazie a una borsa di studio ottenuta per merito. È lì che ho scoperto quella che oggi considero la mia più grande forza: una duplice, anzi triplice, identità.</p>
+        <p>Da una parte la moda. Dall'altra il costume.</p>
+        <p>Due mondi che spesso vengono percepiti come opposti, ma che per me non hanno mai smesso di dialogare.</p>
+        <p>La moda è sempre più orientata verso il prodotto: richiede attenzione al mercato, al target, alla riconoscibilità, alla costruzione di un'identità capace di essere desiderata e, inevitabilmente, venduta. È un universo che vive di equilibrio tra creatività e strategia.</p>
+        <p>Il costume, invece, appartiene alle arti performative. È il luogo in cui l'immaginazione sembra poter esistere senza limiti, dove ciò che conta è creare qualcosa di straordinario, capace di raccontare un personaggio, un'emozione, una drammaturgia.</p>
+        <p>Ma è proprio qui che emerge la sua complessità.</p>
+        <p>Perché il costume, per quanto libero, è profondamente legato al corpo. Deve convivere con il movimento, con la danza, con la performance, con il tempo della scena. Deve essere "di spettacolo" senza rinunciare alla funzionalità. Ogni scelta creativa deve confrontarsi con la realtà di chi quel costume lo indossa.</p>
+        <p>È in questa continua tensione tra immaginazione e fattibilità che mi sento davvero a casa.</p>
+        <p>Credo che l'incontro tra questi due mondi abbia formato il mio modo di progettare. Mi ha insegnato ad affrontare ogni progetto con curiosità, spirito critico e una forte capacità di problem solving, cercando sempre un equilibrio tra ricerca concettuale, identità estetica e realizzazione tecnica.</p>
+        <p>Amo costruire concept, sviluppare moodboard, definire un'identità progettuale, un target, un immaginario e una direzione artistica, ma provo la stessa soddisfazione quando quelle idee prendono forma attraverso un cartamodello, un prototipo, un fitting o un capo finito.</p>
+        <p>Per me il progetto non termina con un'idea. Comincia proprio da lì.</p>
+        <p>Nel mio piccolo laboratorio, che ho ricavato nella mia tana milanese, sviluppo cartamodelli, realizzo prototipi, correggo la vestibilità, confeziono capi e costumi destinati alla scena. È il luogo in cui ricerca e manualità convivono ogni giorno e dove ogni intuizione viene messa alla prova fino a diventare qualcosa di reale.</p>
+        <p>Ho scelto la libera professione affinché mi permettesse di attraversare questi mondi senza doverli separare, mantenendo viva la possibilità di continuare a imparare, sperimentare e contaminare linguaggi diversi.</p>
+        <p>Accanto alla progettazione, negli ultimi anni è nata un'altra parte fondamentale del mio lavoro: l'insegnamento.</p>
+        <p>Seguo studenti provenienti da realtà come IED, NABA, Istituto Marangoni e Ferrari Fashion School, accompagnandoli nello sviluppo dei loro progetti, delle tesi e della loro identità creativa.</p>
+        <p>Insegnare, per me, non significa soltanto trasmettere competenze tecniche.</p>
+        <p>Significa osservare nuovi punti di vista, confrontarmi ogni giorno con idee fresche, rimanere costantemente aggiornata e aiutare ogni studente a trovare una direzione autentica, senza sostituirmi alla sua voce.</p>
+        <p>È uno scambio continuo.</p>
+        <p>Credo profondamente che il design nasca dall'incontro tra ricerca, tecnica e sensibilità. E forse è proprio questa la parola che meglio racconta il mio modo di lavorare: incontro.</p>
+        <p>L'incontro tra moda e costume.</p>
+        <p>Tra l'arte performativa e il prodotto.</p>
+        <p>Tra concetto e costruzione.</p>
+        <p>Tra immaginazione e realtà.</p>
+        <p>Ogni progetto che seguo nasce da questa convinzione: le idee acquistano davvero valore solo quando trovano il modo di prendere forma, senza perdere la loro identità.</p>
       </section>
     </main>
   `
 })
-export class AboutPage implements AfterViewInit, OnDestroy {
-  private readonly elementRef = inject(ElementRef<HTMLElement>);
-  private observer?: IntersectionObserver;
-
-  ngAfterViewInit(): void {
-    const pairs = Array.from(
-      this.elementRef.nativeElement.querySelectorAll('.about-story-pair')
-    ) as HTMLElement[];
-
-    if (!('IntersectionObserver' in window)) {
-      pairs.forEach((pair) => pair.classList.add('is-visible'));
-      return;
-    }
-
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          entry.target.classList.toggle('is-visible', entry.isIntersecting);
-        });
-      },
-      {
-        threshold: 0.18,
-        rootMargin: '0px 0px -8% 0px'
-      }
-    );
-
-    pairs.forEach((pair) => this.observer?.observe(pair));
-  }
-
-  ngOnDestroy(): void {
-    this.observer?.disconnect();
-  }
+export class AboutPage {
 }
+

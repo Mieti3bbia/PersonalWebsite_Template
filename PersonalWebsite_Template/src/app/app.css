@@ -16,11 +16,28 @@
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   color: #F207CB;
   font-size: 21px;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
+  height: 36px;
+}
+
+.logo img {
+  display: block;
+  width: clamp(64px, 10vw, 100px);
+  height: 100%;
+  object-fit: contain;
+  object-position: left center;
+  flex: 0 0 auto;
+}
+
+.logo span {
+  display: inline-block;
 }
 
 .header-actions {
@@ -151,8 +168,11 @@
   }
 
   .logo {
-    font-size: 19px;
+    gap: 10px;
+    font-size: 15px;
   }
+
+  .logo img { display: none; }
 
   .header-actions {
     width: 100%;
