@@ -2417,6 +2417,15 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   margin-inline: auto;
 }
 
+.teachings-empty {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  color: #593854;
+  font-size: clamp(18px, 2.2vw, 34px);
+  line-height: 1.16;
+  text-align: center;
+}
+
 .teaching-card {
   position: relative;
   display: grid;
@@ -2474,9 +2483,9 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   position: relative;
   display: grid;
   width: min(100%, 520px);
-  height: auto;
-  min-height: 0;
+  min-height: 190px;
   justify-self: center;
+  place-items: center;
   border: 1px solid rgba(247, 245, 240, 0.44);
   background:
     linear-gradient(135deg, rgba(89, 56, 84, 0.42), transparent 42%),
@@ -2508,6 +2517,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   display: block;
   width: 100%;
   height: auto;
+  max-height: 360px;
   object-fit: contain;
   object-position: center;
 }
@@ -2571,6 +2581,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     height: auto;
     font-size: clamp(11px, 3.4vw, 15px);
   }
+
 }
 
 /* Contact form mobile responsiveness */

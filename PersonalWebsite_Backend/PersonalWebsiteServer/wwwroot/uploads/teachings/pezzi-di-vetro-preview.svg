@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Pezzi di vetro preview</title>
+  <desc id="desc">Abstract preview image for the Pezzi di vetro teaching card.</desc>
+  <rect width="1200" height="800" fill="#f6f7f9"/>
+  <path d="M160 620 420 120 580 620Z" fill="#176b87" opacity=".9"/>
+  <path d="M460 660 700 180 980 660Z" fill="#d9dee5"/>
+  <path d="M590 585 750 290 890 585Z" fill="#394b59" opacity=".85"/>
+  <text x="120" y="110" fill="#17202a" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">Pezzi di vetro</text>
+  <text x="124" y="166" fill="#607080" font-family="Arial, Helvetica, sans-serif" font-size="28">Nicoletta Atzeni · IED Milano</text>
+</svg>
