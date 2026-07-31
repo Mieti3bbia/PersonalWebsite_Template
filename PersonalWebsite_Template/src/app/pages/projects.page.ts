@@ -26,7 +26,7 @@ import * as THREE from 'three';
   `,
   styles: [`
     main.projects-sun-page {
-      min-height: 100svh;
+      min-height: calc(100svh - 72px);
       padding-top: 72px;
       overflow: hidden;
       background: #070707;
@@ -34,17 +34,18 @@ import * as THREE from 'three';
     }
 
     .project-sun-tracker {
-      min-height: 100svh;
+      min-height: calc(100svh - 72px);
+      padding: 34px;
       background: #070707;
     }
 
     .project-sun-tracker .vehicle-copy h2 {
       color: #F2072B;
-      font-size: clamp(50px, 8.1vw, 129px);
+      font-size: clamp(46px, 7.2vw, 112px);
     }
 
     .sun-stage {
-      min-height: min(78vh, 840px);
+      min-height: clamp(380px, 68svh, 720px);
     }
 
     .sun-stage:before,
@@ -55,7 +56,7 @@ import * as THREE from 'three';
 
     .sun-stage canvas {
       width: 100%;
-      height: min(78vh, 840px);
+      height: clamp(380px, 68svh, 720px);
     }
 
     .sun-stage:before {
@@ -138,7 +139,7 @@ import * as THREE from 'three';
         grid-template-columns: 1fr;
         justify-items: center;
         width: 100%;
-        margin-top: 10px;
+        margin-top: clamp(34px, 7vh, 72px);
         transform: none;
       }
 
@@ -195,7 +196,7 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-    this.camera.position.set(0, 0, 5.9);
+    this.camera.position.set(0, 0, 5.35);
 
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3));

@@ -1637,7 +1637,14 @@ button,
 
 @media (max-width: 900px) {
   .splash-overlay h1 {
-    font-size: clamp(27px, 8.5vw, 48px);
+    max-width: calc(100vw - 40px);
+    font-size: clamp(24px, 7.2vw, 38px);
+  }
+
+  .splash-overlay h1 span {
+    white-space: normal;
+    overflow-wrap: normal;
+    text-wrap: balance;
   }
 
   .project-fullscreen-link {
@@ -1648,6 +1655,10 @@ button,
   .contact-map {
     width: min(100%, 620px);
     aspect-ratio: 4 / 3;
+  }
+
+  app-home-page .clients-section p {
+    font-size: clamp(22px, 2.64vw, 38px);
   }
 }
 
