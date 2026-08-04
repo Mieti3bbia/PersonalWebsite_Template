@@ -1,10 +1,15 @@
-﻿@font-face {
+@font-face {
   font-family: "911 Porscha";
-  src:
-    url("/fonts/911porscha.woff2") format("woff2"),
-    url("/fonts/911porscha.ttf") format("truetype"),
-    url("/fonts/911porschav3.ttf") format("truetype");
+  src: url("/fonts/911porschav3.ttf") format("truetype");
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "911 Porscha";
+  src: url("/fonts/911porschav3bold.ttf") format("truetype");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -13,6 +18,8 @@
 
 :root {
   --subtext-color: #593854;
+  --title-font: "911 Porscha", Arial, Helvetica, sans-serif;
+  --cv-contact-font: "911 Porscha", Arial, Helvetica, sans-serif;
 }
 
 html {
@@ -25,7 +32,7 @@ body {
   min-height: 100%;
   color: #111;
   background: #f7f5f0;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   letter-spacing: 0;
 }
 
@@ -134,7 +141,7 @@ app-home-page .collaboration-grid span {
   border-radius: 12px;
   color: #F207CB;
   padding: 22px 32px;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-weight: 400;
   font-size: 20px;
   line-height: 1;
@@ -708,14 +715,14 @@ app-home-page .collaboration-grid span {
 }
 
 .client-logo-kataklo strong {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(28px, 4vw, 58px);
   font-weight: 400;
   letter-spacing: 0.04em;
 }
 
 .client-logo-kataklo span {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(12px, 1.4vw, 18px);
   font-weight: 300;
 }
@@ -726,7 +733,7 @@ app-home-page .collaboration-grid span {
 }
 
 .client-logo-pwc strong {
-  font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(48px, 6vw, 92px);
   letter-spacing: 0;
 }
@@ -739,13 +746,13 @@ app-home-page .collaboration-grid span {
 }
 
 .client-logo-aiep strong {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(24px, 3.5vw, 48px);
   font-weight: 700;
 }
 
 .client-logo-aiep span {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(20px, 2.8vw, 38px);
   font-weight: 300;
 }
@@ -757,7 +764,7 @@ app-home-page .collaboration-grid span {
 }
 
 .client-logo-vivarai strong {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(30px, 4vw, 58px);
   font-weight: 900;
 }
@@ -769,7 +776,7 @@ app-home-page .collaboration-grid span {
   aspect-ratio: 1;
   background: #fff;
   color: #e50020;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(34px, 4.5vw, 56px);
   font-weight: 900;
 }
@@ -779,7 +786,7 @@ app-home-page .collaboration-grid span {
 }
 
 .client-logo-rai strong {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(58px, 7vw, 104px);
   font-weight: 900;
 }
@@ -981,7 +988,7 @@ app-home-page .collaboration-grid span {
 }
 
 .site-footer {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   letter-spacing: 0;
 }
 
@@ -1386,7 +1393,7 @@ app-home-page.scroll-animations-ready .scroll-slide {
 
 .project-hover-card span,
 .project-hover-card em {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-style: normal;
   font-size: 12px;
   text-transform: uppercase;
@@ -1623,7 +1630,7 @@ app-home-page.scroll-animations-ready .scroll-slide {
 button,
 .vehicle-controls button,
 .contact-form button {
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-weight: 700;
 }
 
@@ -1632,7 +1639,7 @@ button,
 .project-card p,
 .clients-section p,
 .vehicle-copy p {
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-weight: 200;
 }
 
@@ -2032,7 +2039,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   background: transparent;
   color: #f7f5f0;
   padding: 11px 16px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: 12px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -2316,6 +2323,11 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   justify-content: center;
   gap: 0 0.28em;
   max-width: min(1120px, 100%);
+  font-family: var(--title-font);
+}
+
+.about-page .about-subtitle {
+  font-family: var(--title-font);
 }
 
 .about-page .about-layout img {
@@ -2340,8 +2352,9 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   margin: 0;
   padding: clamp(18px, 2.6vw, 32px) clamp(20px, 8vw, 120px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(89, 56, 84, 0.68);
-  font-size: clamp(18px, 2.2vw, 34px);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--title-font);
+  font-size: clamp(11px, 1.32vw, 20px);
   line-height: 1.16;
   opacity: 0;
   transform: translateY(42px);
@@ -2354,7 +2367,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 }
 
 .about-page .about-body strong {
-  color: var(--subtext-color);
+  color: #fff;
   font-weight: 700;
 }
 
@@ -2442,7 +2455,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 
   .about-page .about-body p {
     padding-inline: 20px;
-    font-size: clamp(16px, 5.4vw, 26px);
+    font-size: clamp(10px, 3.24vw, 16px);
   }
 
   .about-socials {
@@ -2489,7 +2502,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   width: min(1120px, 100%);
   margin: 0 auto;
   color: #593854;
-  font-size: clamp(18px, 2.2vw, 34px);
+  font-size: clamp(11px, 1.32vw, 20px);
   line-height: 1.16;
   text-align: center;
 }
@@ -2531,7 +2544,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 
 .teaching-card-copy {
   color: #fff;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(12px, 1.1vw, 16px);
   line-height: 1.38;
 }
@@ -2559,7 +2572,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     linear-gradient(135deg, rgba(89, 56, 84, 0.42), transparent 42%),
     rgba(0, 0, 0, 0.18);
   color: #fff;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(12px, 1.1vw, 16px);
   text-decoration: none;
   transition:
@@ -2647,7 +2660,8 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px 24px;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--cv-contact-font);
   font-size: clamp(12px, 1.1vw, 16px);
   line-height: 1.2;
   text-transform: uppercase;
@@ -2688,8 +2702,9 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 
 .cv-profile p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: clamp(18px, 2.1vw, 32px);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--cv-contact-font);
+  font-size: clamp(11px, 1.26vw, 19px);
   line-height: 1.18;
 }
 
@@ -2973,7 +2988,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   color: #593854;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(13px, 1.1vw, 16px);
   line-height: 1.3;
   text-align: center;
@@ -2993,7 +3008,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   margin: clamp(28px, 5vw, 58px) auto;
   border: 1px solid rgba(247, 245, 240, 0.62);
   color: #593854;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(14px, 1.5vw, 22px);
 }
 
@@ -3017,7 +3032,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   display: grid;
   place-items: center;
   color: #593854;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(14px, 1.5vw, 22px);
   text-align: center;
 }
@@ -3028,7 +3043,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   border-top: 1px solid rgba(255, 255, 255, 0.18);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   color: rgba(89, 56, 84, 0.68);
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(16px, 1.8vw, 29px);
   line-height: 1.22;
   text-align: left;
@@ -3046,7 +3061,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   margin-inline: auto;
   padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
   color: #593854;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-family: var(--title-font);
   font-size: clamp(12px, 1.1vw, 16px);
   line-height: 1.36;
   white-space: pre-line;
@@ -3305,7 +3320,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   .cv-contact {
     display: grid;
     gap: 10px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--title-font);
     letter-spacing: 0;
     font-size: 12px;
     overflow-wrap: anywhere;
@@ -3331,9 +3346,9 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   }
 
   .cv-profile p {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--title-font);
     letter-spacing: 0;
-    font-size: clamp(15px, 4.1vw, 18px);
+    font-size: clamp(9px, 2.46vw, 11px);
     line-height: 1.5;
     text-align: left;
   }
@@ -3341,7 +3356,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   .cv-timeline-card p,
   .cv-timeline-card li,
   .cv-featured-grid p {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--title-font);
     letter-spacing: 0;
     font-size: 14px;
     line-height: 1.48;
@@ -3668,7 +3683,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   }
 
   .about-page .about-body p {
-    font-size: clamp(15px, 5vw, 22px);
+    font-size: clamp(9px, 3vw, 13px);
     line-height: 1.22;
   }
 
