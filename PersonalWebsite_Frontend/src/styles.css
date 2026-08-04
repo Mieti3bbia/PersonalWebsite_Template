@@ -2657,7 +2657,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 .fashion-entry {
   display: grid;
   width: 100%;
-  border-bottom: 1px solid #F207CB;
+  border-bottom: 2px solid #fff;
 }
 
 .fashion-entry:last-child {
@@ -2688,6 +2688,21 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   width: 100%;
   padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.fashion-entry-title-band,
+.fashion-band {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+}
+
+.fashion-entry-title-band.is-visible,
+.fashion-band.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .fashion-video,
@@ -2786,10 +2801,10 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 }
 
 .fashion-gallery-panel {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 100%;
-  min-height: clamp(230px, 32vw, 390px);
+  height: clamp(230px, 32vw, 390px);
+  aspect-ratio: 4 / 3;
   border: 1px solid rgba(247, 245, 240, 0.62);
   color: #593854;
   font-size: clamp(14px, 1.5vw, 22px);
@@ -2887,6 +2902,10 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     gap: 12px;
   }
 
+  .fashion-gallery-panel {
+    height: clamp(210px, 68vw, 340px);
+  }
+
   .fashion-gallery-row button {
     width: 32px;
   }
@@ -2897,6 +2916,17 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 
   .fashion-description {
     font-size: clamp(15px, 4.8vw, 23px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fashion-entry-title-band,
+  .fashion-band,
+  .fashion-entry-title-band.is-visible,
+  .fashion-band.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

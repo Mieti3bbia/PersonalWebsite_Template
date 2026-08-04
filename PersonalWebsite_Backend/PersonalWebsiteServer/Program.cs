@@ -4,7 +4,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-const long MaxUploadSize = 500L * 1024L * 1024L;
+const long MaxUploadSize = 1024L * 1024L * 1024L;
 
 var builder = WebApplication.CreateBuilder(args);
 

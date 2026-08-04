@@ -1,6 +1,6 @@
 ﻿import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ChangeDetectorRef, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, ElementRef, OnDestroy, OnInit } from '@angular/core';
 
 interface PortfolioProject {
   title: string;
@@ -117,17 +117,6 @@ const PROJECTS: Record<string, PortfolioProject> = {
         </section>
       } @else if (isFashionDesign) {
         <section class="fashion-page page-section">
-          <header class="fashion-header">
-            <h1 class="slide-in">{{ project.title }}</h1>
-            @if (fashionProject.fields.length > 0) {
-              <div class="fashion-fields" aria-label="Fashion design fields">
-                @for (field of fashionProject.fields; track field) {
-                  <span>{{ field }}</span>
-                }
-              </div>
-            }
-          </header>
-
           <article class="fashion-shell">
             @for (entry of fashionProjects; track $index) {
               <section class="fashion-entry">
@@ -204,8 +193,9 @@ const PROJECTS: Record<string, PortfolioProject> = {
     </main>
   `
 })
-export class ProjectDetailPage implements OnInit {
+export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly route = inject(ActivatedRoute);
   private readonly slug = this.route.snapshot.paramMap.get('slug') ?? 'costume-design';
   protected readonly project = PROJECTS[this.slug] ?? PROJECTS['costume-design'];
@@ -217,6 +207,22 @@ export class ProjectDetailPage implements OnInit {
   protected fashionGalleryIndex = 0;
   protected teachingCards: TeachingCard[] = [];
   protected teachingsLoaded = false;
+  private fadeElements: HTMLElement[] = [];
+  private animationFrame = 0;
+
+  private readonly updateVisibility = (): void => {
+    cancelAnimationFrame(this.animationFrame);
+
+    this.animationFrame = requestAnimationFrame(() => {
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+      this.fadeElements.forEach((element) => {
+        const rect = element.getBoundingClientRect();
+        const isVisible = rect.top < viewportHeight * 0.9 && rect.bottom > viewportHeight * 0.08;
+        element.classList.toggle('is-visible', isVisible);
+      });
+    });
+  };
 
   async ngOnInit(): Promise<void> {
     if (this.isFashionDesign) {
@@ -241,6 +247,21 @@ export class ProjectDetailPage implements OnInit {
       this.teachingsLoaded = true;
       this.changeDetectorRef.detectChanges();
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.refreshFadeElements();
+
+    window.addEventListener('scroll', this.updateVisibility, { passive: true });
+    window.addEventListener('resize', this.updateVisibility, { passive: true });
+
+    this.updateVisibility();
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.updateVisibility);
+    window.removeEventListener('resize', this.updateVisibility);
+    cancelAnimationFrame(this.animationFrame);
   }
 
   protected get currentFashionImage(): string {
@@ -301,7 +322,16 @@ export class ProjectDetailPage implements OnInit {
       this.fashionLoaded = true;
       this.fashionGalleryIndex = 0;
       this.changeDetectorRef.detectChanges();
+      this.refreshFadeElements();
     }
+  }
+
+  private refreshFadeElements(): void {
+    this.fadeElements = Array.from(
+      this.elementRef.nativeElement.querySelectorAll('.fashion-entry-title-band, .fashion-band')
+    ) as HTMLElement[];
+
+    this.updateVisibility();
   }
 
   private async fetchFashionProjects(url: string): Promise<FashionProjectContent[]> {
