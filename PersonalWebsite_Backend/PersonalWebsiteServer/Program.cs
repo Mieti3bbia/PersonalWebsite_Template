@@ -1,13 +1,24 @@
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+
+const long MaxUploadSize = 500L * 1024L * 1024L;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = MaxUploadSize;
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = MaxUploadSize;
+});
 builder.Services.AddDbContext<PersonalWebsiteDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("PersonalWebsite")));
 
@@ -21,14 +32,26 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 var teachingUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "teachings");
+var fashionDesignUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "fashion-designs");
 const string publicBaseUrl = "http://localhost:5109";
 
 Directory.CreateDirectory(teachingUploadsPath);
+Directory.CreateDirectory(fashionDesignUploadsPath);
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PersonalWebsiteDbContext>();
     db.Database.EnsureCreated();
+    db.Database.ExecuteSqlRaw("""
+        CREATE TABLE IF NOT EXISTS fashion_designs (
+            id INTEGER NOT NULL CONSTRAINT PK_fashion_designs PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            explaining_video TEXT NOT NULL,
+            description TEXT NOT NULL,
+            gallery TEXT NOT NULL,
+            pdf_url TEXT NOT NULL
+        );
+        """);
 
     if (!db.Teachings.Any())
     {
@@ -93,21 +116,45 @@ app.MapGet("/api/teachings", async (HttpRequest request, PersonalWebsiteDbContex
 })
 .WithName("GetTeachings");
 
+app.MapGet("/api/fashion-designs", async (PersonalWebsiteDbContext db) =>
+{
+    var entries = await db.FashionDesigns
+        .AsNoTracking()
+        .OrderBy(entry => entry.Title)
+        .ToListAsync();
+
+    return entries
+        .Select(entry => new FashionDesignDto(
+            entry.Title,
+            ToPublicUrl(entry.ExplainingVideo, fashionDesignUploadsPath, "fashion-video.mp4", "fashion-designs"),
+            entry.Description,
+            SplitGallery(entry.Gallery)
+                .Select(path => ToPublicUrl(path, fashionDesignUploadsPath, "fashion-gallery.png", "fashion-designs"))
+                .ToArray(),
+            ToPublicUrl(entry.PdfUrl, fashionDesignUploadsPath, "fashion-design.pdf", "fashion-designs")))
+        .ToList();
+})
+.WithName("GetFashionDesigns");
+
 app.MapGet("/dashboard", async (PersonalWebsiteDbContext db) =>
 {
     var teachings = await db.Teachings
         .AsNoTracking()
         .OrderBy(teaching => teaching.Title)
         .ToListAsync();
+    var fashionDesigns = await db.FashionDesigns
+        .AsNoTracking()
+        .OrderBy(entry => entry.Title)
+        .ToListAsync();
 
-    return Results.Content(RenderDashboard(teachings), "text/html; charset=utf-8");
+    return Results.Content(RenderDashboard(teachings, fashionDesigns), "text/html; charset=utf-8");
 });
 
 app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteDbContext db) =>
 {
     var form = await request.ReadFormAsync();
-    var previewImage = await SaveUploadedFile(form.Files["previewImageFile"], teachingUploadsPath, "image");
-    var pdfUrl = await SaveUploadedFile(form.Files["pdfFile"], teachingUploadsPath, "pdf");
+    var previewImage = await SaveUploadedFile(form.Files["previewImageFile"], teachingUploadsPath, "teachings", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["pdfFile"], teachingUploadsPath, "teachings", "pdf");
 
     var teaching = new Teaching
     {
@@ -124,6 +171,28 @@ app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteD
     return Results.Redirect("/dashboard");
 });
 
+app.MapPost("/dashboard/fashion-designs", async (HttpRequest request, PersonalWebsiteDbContext db) =>
+{
+    var form = await request.ReadFormAsync();
+    var explainingVideo = await SaveUploadedFile(form.Files["explainingVideoFile"], fashionDesignUploadsPath, "fashion-designs", "video");
+    var gallery = await SaveUploadedFiles(form.Files.GetFiles("galleryFiles"), fashionDesignUploadsPath, "fashion-designs", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["fashionPdfFile"], fashionDesignUploadsPath, "fashion-designs", "pdf");
+
+    var entry = new FashionDesign
+    {
+        Title = ReadRequiredFormValue(form, "title"),
+        ExplainingVideo = explainingVideo ?? ReadRequiredFormValue(form, "explainingVideo"),
+        Description = ReadRequiredFormValue(form, "description"),
+        Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery"),
+        PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl")
+    };
+
+    db.FashionDesigns.Add(entry);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+});
+
 app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsiteDbContext db) =>
 {
     if (!request.HasFormContentType)
@@ -135,8 +204,8 @@ app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsite
     var title = ReadRequiredFormValue(form, "title");
     var author = ReadRequiredFormValue(form, "author");
     var school = ReadRequiredFormValue(form, "school");
-    var previewImage = await SaveUploadedFile(form.Files["previewImage"], teachingUploadsPath, "image");
-    var pdfUrl = await SaveUploadedFile(form.Files["pdf"], teachingUploadsPath, "pdf");
+    var previewImage = await SaveUploadedFile(form.Files["previewImage"], teachingUploadsPath, "teachings", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["pdf"], teachingUploadsPath, "teachings", "pdf");
 
     if (string.IsNullOrWhiteSpace(title) ||
         string.IsNullOrWhiteSpace(author) ||
@@ -166,6 +235,48 @@ app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsite
 })
 .DisableAntiforgery();
 
+app.MapPost("/api/fashion-designs/upload", async (HttpRequest request, PersonalWebsiteDbContext db) =>
+{
+    if (!request.HasFormContentType)
+    {
+        return Results.BadRequest(new { error = "Expected multipart/form-data." });
+    }
+
+    var form = await request.ReadFormAsync();
+    var title = ReadRequiredFormValue(form, "title");
+    var description = ReadRequiredFormValue(form, "description");
+    var explainingVideo = await SaveUploadedFile(form.Files["explainingVideo"], fashionDesignUploadsPath, "fashion-designs", "video");
+    var gallery = await SaveUploadedFiles(form.Files.GetFiles("gallery"), fashionDesignUploadsPath, "fashion-designs", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["pdf"], fashionDesignUploadsPath, "fashion-designs", "pdf");
+
+    if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description))
+    {
+        return Results.BadRequest(new { error = "title and description are required." });
+    }
+
+    var entry = new FashionDesign
+    {
+        Title = title,
+        ExplainingVideo = explainingVideo ?? string.Empty,
+        Description = description,
+        Gallery = string.Join('|', gallery),
+        PdfUrl = pdfUrl ?? string.Empty
+    };
+
+    db.FashionDesigns.Add(entry);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/api/fashion-designs/{entry.Id}", new FashionDesignDto(
+        entry.Title,
+        ToPublicUrl(entry.ExplainingVideo, fashionDesignUploadsPath, "fashion-video.mp4", "fashion-designs"),
+        entry.Description,
+        SplitGallery(entry.Gallery)
+            .Select(path => ToPublicUrl(path, fashionDesignUploadsPath, "fashion-gallery.png", "fashion-designs"))
+            .ToArray(),
+        ToPublicUrl(entry.PdfUrl, fashionDesignUploadsPath, "fashion-design.pdf", "fashion-designs")));
+})
+.DisableAntiforgery();
+
 app.MapPost("/dashboard/teachings/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
 {
     var teaching = await db.Teachings.FindAsync(id);
@@ -179,6 +290,19 @@ app.MapPost("/dashboard/teachings/{id:int}/delete", async (int id, PersonalWebsi
     return Results.Redirect("/dashboard");
 });
 
+app.MapPost("/dashboard/fashion-designs/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
+{
+    var entry = await db.FashionDesigns.FindAsync(id);
+
+    if (entry is not null)
+    {
+        db.FashionDesigns.Remove(entry);
+        await db.SaveChangesAsync();
+    }
+
+    return Results.Redirect("/dashboard");
+});
+
 app.Run();
 
 static string ReadRequiredFormValue(IFormCollection form, string key)
@@ -186,7 +310,7 @@ static string ReadRequiredFormValue(IFormCollection form, string key)
     return form[key].ToString().Trim();
 }
 
-static async Task<string?> SaveUploadedFile(IFormFile? file, string uploadsPath, string kind)
+static async Task<string?> SaveUploadedFile(IFormFile? file, string uploadsPath, string resourceFolder, string kind)
 {
     if (file is null || file.Length == 0)
     {
@@ -194,9 +318,12 @@ static async Task<string?> SaveUploadedFile(IFormFile? file, string uploadsPath,
     }
 
     var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-    var allowedExtensions = kind == "pdf"
-        ? [".pdf"]
-        : new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg" };
+    var allowedExtensions = kind switch
+    {
+        "pdf" => [".pdf"],
+        "video" => [".mp4"],
+        _ => new[] { ".jpg", ".jpeg", ".png" }
+    };
 
     if (!allowedExtensions.Contains(extension))
     {
@@ -217,22 +344,42 @@ static async Task<string?> SaveUploadedFile(IFormFile? file, string uploadsPath,
     await using var stream = File.Create(destination);
     await file.CopyToAsync(stream);
 
-    return $"/uploads/teachings/{fileName}";
+    return $"/uploads/{resourceFolder}/{fileName}";
 }
 
-string ToPublicUrl(string value, string uploadsPath, string fallbackFileName)
+static async Task<IReadOnlyList<string>> SaveUploadedFiles(IReadOnlyList<IFormFile> files, string uploadsPath, string resourceFolder, string kind)
+{
+    var savedFiles = new List<string>();
+
+    foreach (var file in files)
+    {
+        var savedFile = await SaveUploadedFile(file, uploadsPath, resourceFolder, kind);
+
+        if (!string.IsNullOrWhiteSpace(savedFile))
+        {
+            savedFiles.Add(savedFile);
+        }
+    }
+
+    return savedFiles;
+}
+
+string ToPublicUrl(string value, string uploadsPath, string fallbackFileName, string resourceFolder = "teachings")
 {
     if (string.IsNullOrWhiteSpace(value))
     {
-        return $"{publicBaseUrl}/uploads/teachings/{fallbackFileName}";
+        return $"{publicBaseUrl}/uploads/{resourceFolder}/{fallbackFileName}";
     }
 
-    if (value.StartsWith("http://localhost:5109/uploads/teachings/", StringComparison.OrdinalIgnoreCase))
+    var uploadsPrefix = $"/uploads/{resourceFolder}/";
+    var publicUploadsPrefix = $"{publicBaseUrl}{uploadsPrefix}";
+
+    if (value.StartsWith(publicUploadsPrefix, StringComparison.OrdinalIgnoreCase))
     {
         var fileName = Path.GetFileName(new Uri(value).LocalPath);
         return File.Exists(Path.Combine(uploadsPath, fileName))
             ? value
-            : $"{publicBaseUrl}/uploads/teachings/{fallbackFileName}";
+            : $"{publicBaseUrl}{uploadsPrefix}{fallbackFileName}";
     }
 
     if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
@@ -241,25 +388,31 @@ string ToPublicUrl(string value, string uploadsPath, string fallbackFileName)
         return value;
     }
 
-    var path = value.StartsWith('/') ? value : $"/uploads/teachings/{value}";
+    var path = value.StartsWith('/') ? value : $"{uploadsPrefix}{value}";
     var localFileName = Path.GetFileName(path);
 
-    if (path.StartsWith("/uploads/teachings/", StringComparison.OrdinalIgnoreCase) &&
+    if (path.StartsWith(uploadsPrefix, StringComparison.OrdinalIgnoreCase) &&
         !File.Exists(Path.Combine(uploadsPath, localFileName)))
     {
-        return $"{publicBaseUrl}/uploads/teachings/{fallbackFileName}";
+        return $"{publicBaseUrl}{uploadsPrefix}{fallbackFileName}";
     }
 
     return $"{publicBaseUrl}{path}";
 }
 
-static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
+static string[] SplitGallery(string value)
 {
-    var rows = new StringBuilder();
+    return value
+        .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+
+static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnlyCollection<FashionDesign> fashionDesigns)
+{
+    var teachingRows = new StringBuilder();
 
     foreach (var teaching in teachings)
     {
-        rows.Append($"""
+        teachingRows.Append($"""
             <tr>
                 <td>{Html(teaching.Title)}</td>
                 <td>{Html(teaching.Author)}</td>
@@ -275,8 +428,33 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
             """);
     }
 
-    var emptyState = teachings.Count == 0
+    var teachingEmptyState = teachings.Count == 0
         ? """<tr><td colspan="6" class="empty">No teachings in the database yet.</td></tr>"""
+        : string.Empty;
+    var fashionDesignRows = new StringBuilder();
+
+    foreach (var entry in fashionDesigns)
+    {
+        var galleryItems = string.Join("<br>", SplitGallery(entry.Gallery).Select(item => $"<code>{Html(item)}</code>"));
+
+        fashionDesignRows.Append($"""
+            <tr>
+                <td>{Html(entry.Title)}</td>
+                <td><code>{Html(entry.ExplainingVideo)}</code></td>
+                <td>{Html(entry.Description)}</td>
+                <td>{galleryItems}</td>
+                <td><code>{Html(entry.PdfUrl)}</code></td>
+                <td>
+                    <form method="post" action="/dashboard/fashion-designs/{entry.Id}/delete">
+                        <button class="danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            """);
+    }
+
+    var fashionDesignEmptyState = fashionDesigns.Count == 0
+        ? """<tr><td colspan="6" class="empty">No fashion design entries in the database yet.</td></tr>"""
         : string.Empty;
 
     return $$"""
@@ -350,6 +528,13 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
                     font-weight: 700;
                 }
 
+                .group-title {
+                    margin: 34px 0 12px;
+                    color: var(--text);
+                    font-size: 22px;
+                    font-weight: 700;
+                }
+
                 form.add {
                     display: grid;
                     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -363,6 +548,12 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
                     color: var(--muted);
                     font-size: 13px;
                     font-weight: 700;
+                }
+
+                .field-type {
+                    color: var(--muted);
+                    font-size: 12px;
+                    font-weight: 400;
                 }
 
                 input {
@@ -479,34 +670,41 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
             <main>
                 <header>
                     <h1>Database Dashboard</h1>
-                    <div class="count">{{teachings.Count}} teaching{{(teachings.Count == 1 ? string.Empty : "s")}}</div>
+                    <div class="count">{{teachings.Count}} teaching{{(teachings.Count == 1 ? string.Empty : "s")}} | {{fashionDesigns.Count}} fashion design entr{{(fashionDesigns.Count == 1 ? "y" : "ies")}}</div>
                 </header>
 
+                <h2 class="group-title">Teachings</h2>
+                <h2 class="group-title">Fashion Design</h2>
                 <section>
                     <div class="section-title">Add teaching</div>
                     <form class="add" method="post" action="/dashboard/teachings" enctype="multipart/form-data">
                         <label>
                             Title
+                            <span class="field-type">Text</span>
                             <input name="title" required maxlength="200" autocomplete="off">
                         </label>
                         <label>
                             Author
+                            <span class="field-type">Text</span>
                             <input name="author" required maxlength="200" autocomplete="off">
                         </label>
                         <label>
                             School
+                            <span class="field-type">Text</span>
                             <input name="school" required maxlength="200" autocomplete="off">
                         </label>
                         <label>
                             Preview image
+                            <span class="field-type">Image file: JPEG or PNG</span>
                             <span class="file-picker">
                                 <input id="previewImage" name="previewImage" maxlength="500" value="/uploads/teachings/" autocomplete="off">
                                 <button class="secondary" type="button" data-file-button="previewImageFile">Browse</button>
-                                <input id="previewImageFile" name="previewImageFile" type="file" accept="image/*" data-target="previewImage">
+                                <input id="previewImageFile" name="previewImageFile" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" data-target="previewImage">
                             </span>
                         </label>
                         <label class="wide">
                             PDF URL
+                            <span class="field-type">PDF file</span>
                             <span class="file-picker">
                                 <input id="pdfUrl" name="pdfUrl" maxlength="500" value="/uploads/teachings/" autocomplete="off">
                                 <button class="secondary" type="button" data-file-button="pdfUrlFile">Browse</button>
@@ -520,7 +718,7 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
                 </section>
 
                 <section>
-                    <div class="section-title">Teachings</div>
+                    <div class="section-title">Teaching resources</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -534,8 +732,76 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
                                 </tr>
                             </thead>
                             <tbody>
-                                {{rows}}
-                                {{emptyState}}
+                                {{teachingRows}}
+                                {{teachingEmptyState}}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="section-title">Add fashion design</div>
+                    <form class="add" method="post" action="/dashboard/fashion-designs" enctype="multipart/form-data">
+                        <label>
+                            Title
+                            <span class="field-type">Text</span>
+                            <input name="title" required maxlength="200" autocomplete="off">
+                        </label>
+                        <label>
+                            Explaining video
+                            <span class="field-type">MP4 video file</span>
+                            <span class="file-picker">
+                                <input id="explainingVideo" name="explainingVideo" maxlength="500" value="/uploads/fashion-designs/" autocomplete="off">
+                                <button class="secondary" type="button" data-file-button="explainingVideoFile">Browse</button>
+                                <input id="explainingVideoFile" name="explainingVideoFile" type="file" accept="video/mp4,.mp4" data-target="explainingVideo" data-upload-folder="/uploads/fashion-designs/">
+                            </span>
+                        </label>
+                        <label class="wide">
+                            Description
+                            <span class="field-type">Text</span>
+                            <input name="description" required maxlength="2000" autocomplete="off">
+                        </label>
+                        <label class="wide">
+                            Gallery
+                            <span class="field-type">Images: multiple JPEG or PNG files</span>
+                            <span class="file-picker">
+                                <input id="gallery" name="gallery" maxlength="4000" value="/uploads/fashion-designs/" autocomplete="off">
+                                <button class="secondary" type="button" data-file-button="galleryFiles">Browse</button>
+                                <input id="galleryFiles" name="galleryFiles" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple data-target="gallery" data-upload-folder="/uploads/fashion-designs/">
+                            </span>
+                        </label>
+                        <label class="wide">
+                            PDF URL
+                            <span class="field-type">PDF file</span>
+                            <span class="file-picker">
+                                <input id="fashionPdfUrl" name="pdfUrl" maxlength="500" value="/uploads/fashion-designs/" autocomplete="off">
+                                <button class="secondary" type="button" data-file-button="fashionPdfFile">Browse</button>
+                                <input id="fashionPdfFile" name="fashionPdfFile" type="file" accept="application/pdf,.pdf" data-target="fashionPdfUrl" data-upload-folder="/uploads/fashion-designs/">
+                            </span>
+                        </label>
+                        <div class="wide">
+                            <button type="submit">Add to database</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section>
+                    <div class="section-title">Fashion design resources</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Explaining video</th>
+                                    <th>Description</th>
+                                    <th>Gallery</th>
+                                    <th>PDF URL</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{fashionDesignRows}}
+                                {{fashionDesignEmptyState}}
                             </tbody>
                         </table>
                     </div>
@@ -556,7 +822,9 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings)
                             return;
                         }
 
-                        document.getElementById(fileInput.dataset.target).value = `/uploads/teachings/${file.name}`;
+                        const uploadFolder = fileInput.dataset.uploadFolder || "/uploads/teachings/";
+                        const fileNames = Array.from(fileInput.files).map((selectedFile) => `${uploadFolder}${selectedFile.name}`);
+                        document.getElementById(fileInput.dataset.target).value = fileNames.join("|");
                     });
                 });
             </script>
@@ -573,6 +841,7 @@ static string Html(string value)
 sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext> options) : DbContext(options)
 {
     public DbSet<Teaching> Teachings => Set<Teaching>();
+    public DbSet<FashionDesign> FashionDesigns => Set<FashionDesign>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -606,6 +875,37 @@ sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext>
                 .HasMaxLength(500)
                 .IsRequired();
         });
+
+        modelBuilder.Entity<FashionDesign>(entity =>
+        {
+            entity.ToTable("fashion_designs");
+            entity.HasKey(entry => entry.Id);
+
+            entity.Property(entry => entry.Title)
+                .HasColumnName("title")
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(entry => entry.ExplainingVideo)
+                .HasColumnName("explaining_video")
+                .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(entry => entry.Description)
+                .HasColumnName("description")
+                .HasMaxLength(2000)
+                .IsRequired();
+
+            entity.Property(entry => entry.Gallery)
+                .HasColumnName("gallery")
+                .HasMaxLength(4000)
+                .IsRequired();
+
+            entity.Property(entry => entry.PdfUrl)
+                .HasColumnName("pdf_url")
+                .HasMaxLength(500)
+                .IsRequired();
+        });
     }
 }
 
@@ -629,4 +929,26 @@ sealed record TeachingCardDto(
     string Author,
     string School,
     string PreviewImage,
+    string PdfUrl);
+
+sealed class FashionDesign
+{
+    public int Id { get; set; }
+
+    public required string Title { get; set; }
+
+    public required string ExplainingVideo { get; set; }
+
+    public required string Description { get; set; }
+
+    public required string Gallery { get; set; }
+
+    public required string PdfUrl { get; set; }
+}
+
+sealed record FashionDesignDto(
+    string Title,
+    string ExplainingVideo,
+    string Description,
+    string[] Gallery,
     string PdfUrl);

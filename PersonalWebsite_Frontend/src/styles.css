@@ -2654,6 +2654,34 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   width: 100%;
 }
 
+.fashion-entry {
+  display: grid;
+  width: 100%;
+  border-bottom: 1px solid #F207CB;
+}
+
+.fashion-entry:last-child {
+  border-bottom: 0;
+}
+
+.fashion-entry-title-band {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.fashion-entry-title-band h2 {
+  margin: 0;
+  color: #593854;
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 58px);
+  line-height: 1.12;
+  text-align: center;
+  text-transform: lowercase;
+}
+
 .fashion-band {
   display: grid;
   place-items: center;
@@ -2839,8 +2867,13 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   }
 
   .fashion-header,
+  .fashion-entry-title-band,
   .fashion-band {
     padding-inline: 20px;
+  }
+
+  .fashion-entry-title-band h2 {
+    font-size: clamp(24px, 7vw, 42px);
   }
 
   .fashion-fields span {

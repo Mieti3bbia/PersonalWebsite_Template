@@ -29,10 +29,10 @@ interface FashionProjectContent {
 }
 
 const FASHION_PROJECT: FashionProjectContent = {
-  title: 'dichotomy.',
+  title: 'Fashion Design',
   fields: [],
   videoUrl: '',
-  description: 'Sovvertire la "penecrazia":\ndal latino penis "pene" e dal greco krátos "potere"\nGoverno del pene. Sistema di governo in cui la sovranità è esercitata direttamente o indirettamente, da chi detiene il pene\nattraverso la sostituzione dell’autodeterminazione della donna con la sovradeterminazione della donna.',
+  description: '',
   pdfUrl: '',
   gallery: []
 };
@@ -118,7 +118,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
       } @else if (isFashionDesign) {
         <section class="fashion-page page-section">
           <header class="fashion-header">
-            <h1 class="slide-in">{{ fashionProject.title }}</h1>
+            <h1 class="slide-in">{{ project.title }}</h1>
             @if (fashionProject.fields.length > 0) {
               <div class="fashion-fields" aria-label="Fashion design fields">
                 @for (field of fashionProject.fields; track field) {
@@ -129,39 +129,55 @@ const PROJECTS: Record<string, PortfolioProject> = {
           </header>
 
           <article class="fashion-shell">
-            <section class="fashion-band">
-              @if (fashionProject.videoUrl) {
-                <video class="fashion-video" [src]="fashionProject.videoUrl" controls playsinline></video>
-              } @else {
-                <div class="fashion-empty">video</div>
-              }
-            </section>
+            @for (entry of fashionProjects; track $index) {
+              <section class="fashion-entry">
+                <section class="fashion-entry-title-band">
+                  <h2>{{ entry.title }}</h2>
+                </section>
 
-            <section class="fashion-band">
-              <p class="fashion-description">{{ fashionProject.description }}</p>
-            </section>
-
-            <section class="fashion-band">
-              <div class="fashion-gallery-shell">
-                <div class="fashion-gallery-row" aria-label="Fashion gallery">
-                  <button type="button" aria-label="Previous gallery item" (click)="showPreviousFashionImage()">→</button>
-                  @if (currentFashionImage) {
-                    <img class="fashion-gallery-panel" [src]="currentFashionImage" alt="Fashion design gallery image">
-                  } @else {
-                    <div class="fashion-gallery-panel fashion-empty">Gallery</div>
-                  }
-                  <button type="button" aria-label="Next gallery item" (click)="showNextFashionImage()">→</button>
-                </div>
-
-                @if (fashionProject.pdfUrl) {
-                  <a class="fashion-pdf-panel" [href]="fashionProject.pdfUrl" target="_blank" rel="noopener" aria-label="Open fashion project PDF">
-                    pdf
-                  </a>
-                } @else {
-                  <div class="fashion-pdf-panel fashion-pdf-placeholder">pdf</div>
+                @if (entry.videoUrl) {
+                  <section class="fashion-band">
+                    <video class="fashion-video" [src]="entry.videoUrl" controls playsinline></video>
+                  </section>
                 }
-              </div>
-            </section>
+
+                @if (entry.description) {
+                  <section class="fashion-band">
+                    <p class="fashion-description">{{ entry.description }}</p>
+                  </section>
+                }
+
+                @if (entry.gallery.length > 0 || entry.pdfUrl) {
+                  <section class="fashion-band">
+                    <div class="fashion-gallery-shell">
+                      @if (entry.gallery.length > 0) {
+                        <div class="fashion-gallery-row" aria-label="Fashion gallery">
+                          <button type="button" aria-label="Previous gallery item" (click)="showPreviousFashionImage()">→</button>
+                          <img class="fashion-gallery-panel" [src]="currentFashionImageFor(entry)" alt="Fashion design gallery image">
+                          <button type="button" aria-label="Next gallery item" (click)="showNextFashionImage()">→</button>
+                        </div>
+                      }
+
+                      @if (entry.pdfUrl) {
+                        <a class="fashion-pdf-panel" [href]="entry.pdfUrl" target="_blank" rel="noopener" aria-label="Open fashion project PDF">
+                          pdf
+                        </a>
+                      }
+                    </div>
+                  </section>
+                }
+              </section>
+            } @empty {
+              @if (fashionLoaded) {
+              <section class="fashion-band">
+                <p class="fashion-description">No fashion designs available.</p>
+              </section>
+              } @else {
+              <section class="fashion-band">
+                <p class="fashion-description">Loading fashion designs...</p>
+              </section>
+              }
+            }
           </article>
 
           <a class="back-link fashion-back-link" routerLink="/portfolio">/ Go back /</a>
@@ -196,6 +212,7 @@ export class ProjectDetailPage implements OnInit {
   protected readonly isTeachings = this.slug === 'teachings';
   protected readonly isFashionDesign = this.slug === 'fashion-design';
   protected fashionProject = FASHION_PROJECT;
+  protected fashionProjects: FashionProjectContent[] = [];
   protected fashionLoaded = false;
   protected fashionGalleryIndex = 0;
   protected teachingCards: TeachingCard[] = [];
@@ -230,6 +247,25 @@ export class ProjectDetailPage implements OnInit {
     return this.fashionProject.gallery[this.fashionGalleryIndex] ?? '';
   }
 
+  protected currentFashionImageFor(entry: FashionProjectContent): string {
+    const galleryLength = entry.gallery.length;
+
+    if (galleryLength === 0) {
+      return '';
+    }
+
+    return entry.gallery[this.fashionGalleryIndex % galleryLength] ?? '';
+  }
+
+  protected get hasFashionContent(): boolean {
+    return Boolean(
+      this.fashionProject.videoUrl ||
+      this.fashionProject.description ||
+      this.fashionProject.pdfUrl ||
+      this.fashionProject.gallery.length > 0
+    );
+  }
+
   protected showPreviousFashionImage(): void {
     const galleryLength = this.fashionProject.gallery.length;
 
@@ -252,22 +288,23 @@ export class ProjectDetailPage implements OnInit {
 
   private async loadFashionProject(): Promise<void> {
     try {
-      this.fashionProject = await this.fetchFashionProject('/api/fashion-design');
+      this.fashionProjects = await this.fetchFashionProjects('/api/fashion-designs');
     } catch (proxyError) {
       try {
-        this.fashionProject = await this.fetchFashionProject('http://localhost:5109/api/fashion-design');
+        this.fashionProjects = await this.fetchFashionProjects('http://localhost:5109/api/fashion-designs');
       } catch (backendError) {
-        this.fashionProject = FASHION_PROJECT;
+        this.fashionProjects = [];
         console.warn('Unable to load fashion design content from server.', { proxyError, backendError });
       }
     } finally {
+      this.fashionProject = this.fashionProjects[0] ?? FASHION_PROJECT;
       this.fashionLoaded = true;
       this.fashionGalleryIndex = 0;
       this.changeDetectorRef.detectChanges();
     }
   }
 
-  private async fetchFashionProject(url: string): Promise<FashionProjectContent> {
+  private async fetchFashionProjects(url: string): Promise<FashionProjectContent[]> {
     const abortController = new AbortController();
     const timeout = window.setTimeout(() => abortController.abort(), 5000);
 
@@ -278,7 +315,11 @@ export class ProjectDetailPage implements OnInit {
         throw new Error(`Fashion design request failed with ${response.status}`);
       }
 
-      return this.normalizeFashionProject(await response.json());
+      if (!response.headers.get('content-type')?.includes('application/json')) {
+        throw new Error(`Fashion design request returned ${response.headers.get('content-type') ?? 'unknown content type'}`);
+      }
+
+      return this.normalizeFashionProjects(await response.json());
     } finally {
       window.clearTimeout(timeout);
     }
@@ -331,13 +372,53 @@ export class ProjectDetailPage implements OnInit {
     const project = {
       title: this.readFashionField(record, ['title', 'Title', 'name', 'Name']) || FASHION_PROJECT.title,
       fields: this.readStringArray(record, ['fields', 'Fields', 'categories', 'Categories', 'tags', 'Tags']),
-      videoUrl: this.normalizeAssetUrl(this.readFashionField(record, ['video', 'Video', 'videoUrl', 'VideoUrl', 'videoURL', 'VideoURL'])),
+      videoUrl: this.normalizeAssetUrl(this.readFashionField(record, ['explainingVideo', 'ExplainingVideo', 'video', 'Video', 'videoUrl', 'VideoUrl', 'videoURL', 'VideoURL'])),
       description: this.readFashionField(record, ['description', 'Description', 'body', 'Body', 'text', 'Text']) || FASHION_PROJECT.description,
       pdfUrl: this.normalizeAssetUrl(this.readFashionField(record, ['pdf', 'Pdf', 'pdfUrl', 'PdfUrl', 'PDFUrl', 'pdfURL', 'PdfURL'])),
       gallery: this.readStringArray(record, ['gallery', 'Gallery', 'images', 'Images', 'imageUrls', 'ImageUrls']).map((url) => this.normalizeAssetUrl(url))
     };
 
     return project;
+  }
+
+  private normalizeFashionProjects(response: unknown): FashionProjectContent[] {
+    const records = this.readFashionRecordArray(this.parseTeachingResponse(response));
+
+    return records
+      .map((record) => this.normalizeFashionProject(record))
+      .filter((project) => (
+        project.videoUrl ||
+        project.description ||
+        project.pdfUrl ||
+        project.gallery.length > 0
+      ));
+  }
+
+  private readFashionRecordArray(response: unknown): Record<string, unknown>[] {
+    if (Array.isArray(response)) {
+      return response.filter(this.isTeachingCardRecord);
+    }
+
+    if (!this.isTeachingCardRecord(response)) {
+      return [];
+    }
+
+    const values =
+      response['value'] ??
+      response['Value'] ??
+      response['$values'] ??
+      response['data'] ??
+      response['Data'] ??
+      response['items'] ??
+      response['Items'] ??
+      response['results'] ??
+      response['Results'];
+
+    if (Array.isArray(values)) {
+      return values.filter(this.isTeachingCardRecord);
+    }
+
+    return [response];
   }
 
   private readFirstRecord(response: unknown): Record<string, unknown> | null {
