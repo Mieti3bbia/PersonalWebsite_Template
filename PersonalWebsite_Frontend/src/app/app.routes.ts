@@ -1,6 +1,7 @@
 ﻿import { Routes } from '@angular/router';
 import { AboutPage } from './pages/about.page';
 import { ContactPage } from './pages/contact.page';
+import { CurriculumVitaePage } from './pages/curriculum-vitae.page';
 import { HomePage } from './pages/home.page';
 import { ProjectDetailPage } from './pages/project-detail.page';
 import { ProjectsPage } from './pages/projects.page';
@@ -28,6 +29,7 @@ export const routes: Routes = [
   { path: 'projects/curriculum3', redirectTo: 'portfolio/teachings', pathMatch: 'full' },
   { path: 'portfolio/:slug', component: ProjectDetailPage },
   { path: 'aboutme', component: AboutPage },
+  { path: 'curriculumvitae', component: CurriculumVitaePage },
   { path: 'contact', component: ContactPage },
   { path: '**', redirectTo: 'home' }
 ];

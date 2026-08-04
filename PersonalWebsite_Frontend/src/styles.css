@@ -2609,6 +2609,294 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   color: #593854;
 }
 
+/* Curriculum vitae page */
+.curriculum-vitae-page {
+  background: #000;
+  color: #fff;
+}
+
+.cv-hero,
+.cv-profile,
+.cv-skills,
+.cv-featured,
+.cv-timeline-section {
+  background: #000;
+}
+
+.cv-hero {
+  display: grid;
+  gap: clamp(22px, 4vw, 42px);
+  min-height: calc(78svh - 72px);
+  padding: clamp(104px, 12vw, 142px) clamp(20px, 8vw, 120px) clamp(48px, 7vw, 76px);
+  border-bottom: 2px solid #fff;
+  text-align: center;
+}
+
+.cv-hero h1 {
+  max-width: min(1180px, 100%);
+  margin: 0 auto;
+  color: #fff;
+  font-weight: 400;
+  font-size: clamp(42px, 7vw, 112px);
+  line-height: 1.08;
+  text-transform: lowercase;
+}
+
+.cv-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 24px;
+  color: #fff;
+  font-size: clamp(12px, 1.1vw, 16px);
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.cv-contact a {
+  color: #F207CB;
+  text-decoration: none;
+}
+
+.cv-profile {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.28fr) minmax(0, 1fr);
+  gap: clamp(28px, 6vw, 92px);
+  padding: clamp(48px, 8vw, 96px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.cv-profile h2,
+.cv-skills h2,
+.cv-featured h2,
+.cv-timeline-section h2 {
+  margin: 0;
+  color: #fff;
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 58px);
+  line-height: 1.08;
+  text-transform: lowercase;
+}
+
+.cv-profile div {
+  display: grid;
+  gap: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.045);
+  padding: clamp(22px, 3vw, 36px);
+}
+
+.cv-profile p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: clamp(18px, 2.1vw, 32px);
+  line-height: 1.18;
+}
+
+.cv-skills {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.7fr;
+  gap: clamp(22px, 4vw, 48px);
+  padding: clamp(48px, 8vw, 96px) clamp(20px, 8vw, 120px);
+  border-bottom: 2px solid #fff;
+}
+
+.cv-skills article {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.045);
+  padding: clamp(22px, 3vw, 36px);
+}
+
+.cv-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cv-chip-grid span,
+.cv-language-list p {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: clamp(11px, 1vw, 14px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.cv-language-list {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.cv-language-list p {
+  margin: 0;
+}
+
+.cv-featured {
+  display: grid;
+  gap: clamp(28px, 5vw, 58px);
+  padding: clamp(48px, 8vw, 96px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.cv-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+}
+
+.cv-featured-grid article {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: 220px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.045);
+  padding: clamp(18px, 2.5vw, 28px);
+}
+
+.cv-featured-grid span,
+.cv-timeline-date {
+  color: #fff;
+  font-size: clamp(11px, 1vw, 14px);
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.cv-featured-grid h3,
+.cv-timeline-card h3 {
+  margin: 0;
+  color: #fff;
+  font-weight: 400;
+  font-size: clamp(18px, 1.9vw, 30px);
+  line-height: 1.08;
+}
+
+.cv-featured-grid p,
+.cv-timeline-card p,
+.cv-timeline-card li {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: clamp(12px, 1.1vw, 16px);
+  line-height: 1.35;
+}
+
+.cv-timeline-section {
+  display: grid;
+  gap: clamp(34px, 6vw, 72px);
+  padding: clamp(58px, 9vw, 116px) clamp(20px, 8vw, 120px);
+  border-bottom: 2px solid #fff;
+}
+
+.cv-timeline-section header {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.cv-timeline {
+  position: relative;
+  display: grid;
+  gap: clamp(28px, 5vw, 58px);
+  width: min(1240px, 100%);
+  margin-inline: auto;
+}
+
+.cv-timeline:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: clamp(118px, 18vw, 230px);
+  width: 2px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.72) 8%, rgba(255, 255, 255, 0.72) 92%, transparent);
+}
+
+.cv-timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.3fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+
+.cv-timeline-marker {
+  position: absolute;
+  top: 8px;
+  left: clamp(111px, 18vw, 223px);
+  z-index: 1;
+  width: 16px;
+  aspect-ratio: 1;
+  border: 2px solid #fff;
+  background: #000;
+  box-shadow: 0 0 0 10px #000;
+}
+
+.cv-timeline-date {
+  padding-top: 5px;
+  text-align: right;
+}
+
+.cv-timeline-card {
+  display: grid;
+  gap: 16px;
+  min-height: 190px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.045);
+  padding: clamp(22px, 3vw, 36px);
+}
+
+.cv-timeline-card ul {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.curriculum-vitae-back-link {
+  display: block;
+  width: max-content;
+  margin: clamp(32px, 5vw, 58px) auto clamp(42px, 6vw, 72px);
+  color: #F207CB;
+}
+
+@media (max-width: 1100px) and (min-width: 901px) {
+  .cv-skills {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cv-skills article:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .cv-timeline:before {
+    left: 11px;
+  }
+
+  .cv-timeline-item {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding-left: 46px;
+  }
+
+  .cv-timeline-marker {
+    top: 4px;
+    left: 4px;
+  }
+
+  .cv-timeline-date {
+    text-align: left;
+  }
+}
+
 /* Costume portfolio template */
 .costume-page {
   min-height: calc(100svh - 72px);
@@ -3001,6 +3289,112 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   .teachings-page {
     min-height: auto;
     padding-top: 38px;
+  }
+
+  .cv-hero {
+    min-height: auto;
+    padding: 38px 20px 46px;
+  }
+
+  .cv-hero h1 {
+    font-size: clamp(16px, 5.1vw, 24px);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+
+  .cv-contact {
+    display: grid;
+    gap: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: 0;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .cv-profile,
+  .cv-skills {
+    grid-template-columns: 1fr;
+    padding: 42px 20px;
+  }
+
+  .cv-featured,
+  .cv-timeline-section {
+    padding: 42px 20px;
+  }
+
+  .cv-profile h2,
+  .cv-skills h2,
+  .cv-featured h2,
+  .cv-timeline-section h2 {
+    font-size: clamp(24px, 7vw, 42px);
+    text-align: center;
+  }
+
+  .cv-profile p {
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: 0;
+    font-size: clamp(15px, 4.1vw, 18px);
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .cv-timeline-card p,
+  .cv-timeline-card li,
+  .cv-featured-grid p {
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: 0;
+    font-size: 14px;
+    line-height: 1.48;
+  }
+
+  .cv-profile div,
+  .cv-timeline-card,
+  .cv-featured-grid article,
+  .cv-skills article {
+    overflow: hidden;
+  }
+
+  .cv-skills article {
+    justify-items: center;
+  }
+
+  .cv-chip-grid {
+    justify-content: center;
+  }
+
+  .cv-language-list {
+    justify-items: center;
+  }
+
+  .cv-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-featured-grid article {
+    min-height: auto;
+  }
+
+  .cv-timeline:before {
+    left: 11px;
+  }
+
+  .cv-timeline-item {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding-left: 42px;
+  }
+
+  .cv-timeline-marker {
+    top: 4px;
+    left: 4px;
+  }
+
+  .cv-timeline-date {
+    text-align: left;
+  }
+
+  .cv-timeline-card {
+    min-height: auto;
   }
 
   .teachings-header {
