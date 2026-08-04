@@ -1,13 +1,18 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-about-page',
+  imports: [RouterLink],
   template: `
     <main class="detail-page about-page">
       <section class="about-layout page-section">
         <div>
           <p class="eyebrow">/ About me /</p>
-          <h1 class="slide-in">Maria Sole Montironi Lasca</h1>
+          <h1 class="slide-in">
+            <span>Maria Sole</span>
+            <span>Montironi Lasca</span>
+          </h1>
           <p class="about-subtitle">Fashion &amp; Costume Designer e Tutor</p>
         </div>
         <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85" alt="Portrait in a creative studio">
@@ -52,6 +57,8 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angula
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.25 2C6.7 2 3 5.67 3 10.63c0 3.64 2.04 5.7 3.24 5.7.5 0 .78-1.38.78-1.77 0-.47-1.19-1.46-1.19-3.4 0-4.03 3.06-6.89 7.03-6.89 3.41 0 5.94 1.94 5.94 5.5 0 2.66-1.07 7.65-4.52 7.65-1.24 0-2.31-.9-1.99-2.2.38-1.55 1.12-3.22 1.12-4.35 0-2.52-3.58-2.06-3.58 1 0 .64.08 1.34.37 1.92-.53 2.24-1.6 5.57-1.6 7.88 0 .72.1 1.43.17 2.13l.1.04c.14-.2.29-.39.43-.6 1.22-1.68 1.16-2.01 1.73-4.21.31.59 1.13 1.12 2.03 1.12 5.33 0 7.74-5.2 7.74-9.87C20.8 5.9 17.08 2 12.25 2Z"/></svg>
         </a>
       </section>
+
+      <a class="back-link about-back-link" routerLink="/home">/ Go back /</a>
     </main>
   `
 })

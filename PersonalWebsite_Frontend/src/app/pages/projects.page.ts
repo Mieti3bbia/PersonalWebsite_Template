@@ -116,8 +116,8 @@ import * as THREE from 'three';
       .project-sun-tracker .vehicle-copy h2 {
         width: 100%;
         max-width: 100%;
-        font-size: clamp(28px, 10.1vw, 49px);
-        line-height: 0.96;
+        font-size: clamp(20px, 7vw, 30px);
+        line-height: 1.12;
         overflow-wrap: anywhere;
       }
 
@@ -144,9 +144,11 @@ import * as THREE from 'three';
       }
 
       .project-sun-tracker .vehicle-controls button {
-        width: min(320px, 100%);
+        width: min(280px, calc(100vw - 40px));
         min-height: 58px;
-        padding: 16px 22px;
+        padding: 14px 16px;
+        font-size: clamp(15px, 4.8vw, 18px);
+        overflow-wrap: anywhere;
       }
     }
   `]

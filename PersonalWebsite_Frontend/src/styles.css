@@ -2311,6 +2311,10 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 }
 
 .about-page .about-layout h1 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.28em;
   max-width: min(1120px, 100%);
 }
 
@@ -2405,6 +2409,13 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   height: 20px;
   flex: 0 0 20px;
   fill: currentColor;
+}
+
+.about-back-link {
+  display: block;
+  width: max-content;
+  margin: clamp(28px, 4vw, 48px) auto clamp(42px, 6vw, 72px);
+  color: #593854;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3198,5 +3209,171 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     width: 100%;
     max-width: 100%;
     aspect-ratio: 4 / 3;
+  }
+}
+
+/* Final mobile responsiveness pass */
+@media (max-width: 900px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .splash,
+  .detail-page,
+  .projects-page,
+  .contact-page,
+  .about-page,
+  .project-detail-page {
+    overflow-x: hidden;
+  }
+
+  .splash-overlay h1,
+  .about-page .about-layout h1,
+  .contact-page .contact-form-section h1,
+  .project-sun-tracker .vehicle-copy h2,
+  .teachings-header h1,
+  .fashion-entry-title-band h2,
+  .costume-title-band h1 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .splash-overlay {
+    left: 20px;
+    right: 20px;
+    bottom: 28px;
+  }
+
+  .splash-overlay h1 {
+    font-size: clamp(30px, 11vw, 52px);
+    line-height: 1.08;
+  }
+
+  .home-cta {
+    width: min(100%, 320px);
+    min-height: 58px;
+    padding: 16px 20px;
+    font-size: clamp(16px, 5vw, 20px);
+  }
+
+  .about-page .about-layout {
+    padding-top: 38px;
+    gap: 26px;
+  }
+
+  .about-page .about-layout h1 {
+    font-size: clamp(28px, 10.5vw, 48px);
+    line-height: 1.12;
+  }
+
+  .about-subtitle {
+    font-size: clamp(15px, 5.6vw, 24px);
+    line-height: 1.18;
+  }
+
+  .about-page .about-body p {
+    font-size: clamp(15px, 5vw, 22px);
+    line-height: 1.22;
+  }
+
+  .contact-page .contact-form-section {
+    padding-top: 38px;
+    padding-inline: 20px;
+  }
+
+  .contact-page .contact-form-section h1 {
+    font-size: clamp(32px, 14vw, 62px);
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  .contact-form input,
+  .contact-form textarea,
+  .contact-form select {
+    font-size: clamp(18px, 6vw, 24px);
+  }
+
+  .project-sun-tracker .vehicle-copy h2 {
+    font-size: clamp(28px, 10vw, 44px);
+    line-height: 1.08;
+  }
+
+  .project-sun-tracker .vehicle-controls button,
+  .fashion-pdf-panel,
+  .home-cta {
+    max-width: calc(100vw - 40px);
+  }
+
+  .fashion-gallery-row {
+    width: 100%;
+    max-width: calc(100vw - 40px);
+  }
+
+  .fashion-gallery-panel {
+    min-width: 0;
+  }
+
+  .teaching-card-body,
+  .costume-meta,
+  .costume-description,
+  .costume-credits {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .splash-overlay h1 {
+    font-size: clamp(19px, 5.8vw, 26px);
+  }
+
+  .about-page .about-layout h1 {
+    font-size: clamp(16px, 5vw, 22px);
+  }
+
+  .contact-page .contact-form-section h1 {
+    font-size: clamp(22px, 7vw, 32px);
+  }
+
+  .project-sun-tracker .vehicle-copy h2 {
+    font-size: clamp(26px, 9.5vw, 40px);
+  }
+}
+
+@media (max-width: 520px) {
+  .splash-overlay h1 span {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .about-page .about-layout h1 span {
+    display: block;
+    max-width: 100%;
+  }
+
+  .about-page .about-layout h1 {
+    display: block;
+  }
+
+  .splash-overlay h1,
+  .about-page .about-layout h1,
+  .about-subtitle,
+  .contact-page .contact-form-section h1 {
+    width: 100%;
+    max-width: calc(100vw - 40px);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .splash-overlay h1,
+  .about-page .about-layout h1,
+  .contact-page .contact-form-section h1 {
+    transform-origin: center;
+  }
+
+  .about-subtitle {
+    font-size: clamp(11px, 3.6vw, 15px);
   }
 }
