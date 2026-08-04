@@ -1,4 +1,6 @@
 bin/
 obj/
+artifacts/
+.vs/
 *.db-shm
 *.db-wal
