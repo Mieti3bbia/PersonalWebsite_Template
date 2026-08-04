@@ -2600,6 +2600,166 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   color: #593854;
 }
 
+/* Costume portfolio template */
+.costume-page {
+  min-height: calc(100svh - 72px);
+  padding: clamp(104px, 12vw, 142px) 0 clamp(58px, 8vw, 92px);
+  background: #000;
+  color: #593854;
+}
+
+.costume-sheet {
+  display: grid;
+  width: 100%;
+  margin-inline: auto;
+  background: transparent;
+  color: #593854;
+}
+
+.costume-title-band,
+.costume-meta,
+.costume-video-placeholder,
+.costume-video-band,
+.costume-gallery-band,
+.costume-description,
+.costume-credits {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+}
+
+.costume-title-band.is-visible,
+.costume-meta.is-visible,
+.costume-video-placeholder.is-visible,
+.costume-video-band.is-visible,
+.costume-gallery-band.is-visible,
+.costume-description.is-visible,
+.costume-credits.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.costume-title-band {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.costume-title-band h1 {
+  margin: 0;
+  color: #593854;
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 58px);
+  line-height: 1.12;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+.costume-meta {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  color: #593854;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1.1vw, 16px);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.costume-meta p,
+.costume-description p,
+.costume-credits p {
+  margin: 0;
+}
+
+.costume-video-placeholder {
+  display: grid;
+  place-items: center;
+  width: min(980px, calc(100% - 40px));
+  min-height: clamp(220px, 40vw, 520px);
+  margin: clamp(28px, 5vw, 58px) auto;
+  border: 1px solid rgba(247, 245, 240, 0.62);
+  color: #593854;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(14px, 1.5vw, 22px);
+}
+
+.costume-video-band {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.costume-gallery-band {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.costume-gallery-placeholder {
+  display: grid;
+  place-items: center;
+  color: #593854;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(14px, 1.5vw, 22px);
+  text-align: center;
+}
+
+.costume-description {
+  width: 100%;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(89, 56, 84, 0.68);
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(16px, 1.8vw, 29px);
+  line-height: 1.22;
+  text-align: left;
+}
+
+.costume-description p {
+  width: min(1760px, 100%);
+  margin-inline: auto;
+}
+
+.costume-credits {
+  display: grid;
+  gap: 18px;
+  width: min(980px, 100%);
+  margin-inline: auto;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  color: #593854;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(12px, 1.1vw, 16px);
+  line-height: 1.36;
+  white-space: pre-line;
+}
+
+.costume-credits h2 {
+  margin: 0 0 8px;
+  color: #593854;
+  font-weight: 400;
+  font-size: clamp(15px, 1.5vw, 22px);
+  line-height: 1.1;
+}
+
+.costume-back-link {
+  display: block;
+  width: max-content;
+  margin: clamp(32px, 5vw, 58px) auto 0;
+  color: #593854;
+}
+
 /* Fashion portfolio template */
 .fashion-page {
   min-height: calc(100svh - 72px);
@@ -2862,6 +3022,39 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 }
 
 @media (max-width: 900px) {
+  .costume-page {
+    min-height: auto;
+    padding: 38px 0 54px;
+  }
+
+  .costume-title-band {
+    padding-inline: 20px;
+  }
+
+  .costume-meta,
+  .costume-description,
+  .costume-credits {
+    padding-inline: 20px;
+  }
+
+  .costume-video-placeholder {
+    width: calc(100% - 24px);
+    min-height: 170px;
+    margin-bottom: 30px;
+  }
+
+  .costume-gallery-band {
+    padding-inline: 20px;
+  }
+
+  .costume-title-band h1 {
+    font-size: clamp(24px, 7vw, 42px);
+  }
+
+  .costume-description {
+    font-size: clamp(15px, 4.8vw, 23px);
+  }
+
   .fashion-page {
     min-height: auto;
     padding-top: 38px;
@@ -2923,7 +3116,21 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   .fashion-entry-title-band,
   .fashion-band,
   .fashion-entry-title-band.is-visible,
-  .fashion-band.is-visible {
+  .fashion-band.is-visible,
+  .costume-title-band,
+  .costume-meta,
+  .costume-video-placeholder,
+  .costume-video-band,
+  .costume-gallery-band,
+  .costume-description,
+  .costume-credits,
+  .costume-title-band.is-visible,
+  .costume-meta.is-visible,
+  .costume-video-placeholder.is-visible,
+  .costume-video-band.is-visible,
+  .costume-gallery-band.is-visible,
+  .costume-description.is-visible,
+  .costume-credits.is-visible {
     opacity: 1;
     transform: none;
     transition: none;

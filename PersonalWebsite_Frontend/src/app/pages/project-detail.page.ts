@@ -28,6 +28,16 @@ interface FashionProjectContent {
   gallery: string[];
 }
 
+interface CostumeProjectContent {
+  title: string;
+  season: string;
+  role: string;
+  videoUrl: string;
+  description: string;
+  gallery: string[];
+  credits: string;
+}
+
 const FASHION_PROJECT: FashionProjectContent = {
   title: 'Fashion Design',
   fields: [],
@@ -35,6 +45,16 @@ const FASHION_PROJECT: FashionProjectContent = {
   description: '',
   pdfUrl: '',
   gallery: []
+};
+
+const COSTUME_PROJECT: CostumeProjectContent = {
+  title: 'Costume project title',
+  season: 'Season',
+  role: 'Assistente Costume Designer & Costume Maker',
+  videoUrl: '',
+  description: 'Aliquam at tristique mi. Nunc vel una ligula scelerisque dignissim. Aenean pulvinar, neque eget facilisis convallis, orci eros tincidunt arcu, vel pulvinar quam erat sed lectus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Curabitur non dolor vitae quam dictum fermentum. Integer vitae augue non justo viverra blandit. Donec consequat, erat non consequat mattis, dui massa luctus magna, sed tempor elit mauris vitae neque.',
+  gallery: ['Gallery 1', 'Gallery 2', 'Gallery 3'],
+  credits: 'Credit\nDirezione Artistica: Giulia Staccioli\nAssistente alla scenografia: Sara Salustri\n\nCostumi\nFabio Passerini\n\nMake-up\nGianni Bertini\n\nPerformers\nMarco Battista\nCarolina Cruciani\nElisa Iacone\nFederica Roveda\nAnita Gallo\nCristian Longhi'
 };
 
 const PROJECTS: Record<string, PortfolioProject> = {
@@ -171,6 +191,71 @@ const PROJECTS: Record<string, PortfolioProject> = {
 
           <a class="back-link fashion-back-link" routerLink="/portfolio">/ Go back /</a>
         </section>
+      } @else if (isCostumeDesign) {
+        <section class="costume-page page-section">
+          <div class="costume-shell">
+            @for (entry of costumeProjects; track $index) {
+              <article class="costume-entry">
+                <header class="costume-title-band">
+                  <h1>{{ entry.title }}</h1>
+                </header>
+
+                <section class="costume-meta">
+                  @if (entry.season) {
+                    <p>{{ entry.season }}</p>
+                  }
+                  @if (entry.role) {
+                    <p>{{ entry.role }}</p>
+                  }
+                </section>
+
+                @if (entry.videoUrl) {
+                  <section class="costume-video-band">
+                    <video class="fashion-video" [src]="entry.videoUrl" controls playsinline></video>
+                  </section>
+                }
+
+                @if (entry.gallery.length > 0) {
+                  <section class="costume-gallery-band">
+                    <div class="fashion-gallery-row" aria-label="Costume gallery">
+                      <button type="button" aria-label="Previous gallery item" (click)="showPreviousCostumeImage()">→</button>
+                      @if (currentCostumeGalleryItemFor(entry).isImage) {
+                        <img class="fashion-gallery-panel" [src]="currentCostumeGalleryItemFor(entry).value" alt="Costume gallery image">
+                      } @else {
+                        <div class="fashion-gallery-panel costume-gallery-placeholder">{{ currentCostumeGalleryItemFor(entry).value }}</div>
+                      }
+                      <button type="button" aria-label="Next gallery item" (click)="showNextCostumeImage()">→</button>
+                    </div>
+                  </section>
+                }
+
+                @if (entry.description) {
+                  <section class="costume-description">
+                    <p>{{ entry.description }}</p>
+                  </section>
+                }
+
+                @if (entry.credits) {
+                  <section class="costume-credits">
+                    <p>{{ entry.credits }}</p>
+                  </section>
+                }
+              </article>
+            } @empty {
+              @if (costumeLoaded) {
+                <section class="costume-description">
+                  <p>No costume design entries available.</p>
+                </section>
+              } @else {
+                <section class="costume-description">
+                  <p>Loading costume design entries...</p>
+                </section>
+              }
+            }
+          </div>
+
+          <a class="back-link costume-back-link" routerLink="/portfolio">/ Go back /</a>
+        </section>
       } @else {
         <section class="project-detail-layout page-section">
           <div class="project-detail-copy">
@@ -201,6 +286,10 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   protected readonly project = PROJECTS[this.slug] ?? PROJECTS['costume-design'];
   protected readonly isTeachings = this.slug === 'teachings';
   protected readonly isFashionDesign = this.slug === 'fashion-design';
+  protected readonly isCostumeDesign = this.slug === 'costume-design';
+  protected costumeProjects: CostumeProjectContent[] = [COSTUME_PROJECT];
+  protected costumeLoaded = false;
+  protected costumeGalleryIndex = 0;
   protected fashionProject = FASHION_PROJECT;
   protected fashionProjects: FashionProjectContent[] = [];
   protected fashionLoaded = false;
@@ -227,6 +316,11 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   async ngOnInit(): Promise<void> {
     if (this.isFashionDesign) {
       await this.loadFashionProject();
+      return;
+    }
+
+    if (this.isCostumeDesign) {
+      await this.loadCostumeProjects();
       return;
     }
 
@@ -307,6 +401,56 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     this.fashionGalleryIndex = (this.fashionGalleryIndex + 1) % galleryLength;
   }
 
+  protected currentCostumeGalleryItemFor(entry: CostumeProjectContent): { value: string; isImage: boolean } {
+    const galleryLength = entry.gallery.length;
+    const value = galleryLength > 0
+      ? entry.gallery[this.costumeGalleryIndex % galleryLength] ?? ''
+      : 'Gallery';
+
+    return {
+      value: value || 'Gallery',
+      isImage: this.isImageUrl(value)
+    };
+  }
+
+  protected showPreviousCostumeImage(): void {
+    const galleryLength = Math.max(...this.costumeProjects.map((project) => project.gallery.length), 0);
+
+    if (galleryLength === 0) {
+      return;
+    }
+
+    this.costumeGalleryIndex = (this.costumeGalleryIndex + galleryLength - 1) % galleryLength;
+  }
+
+  protected showNextCostumeImage(): void {
+    const galleryLength = Math.max(...this.costumeProjects.map((project) => project.gallery.length), 0);
+
+    if (galleryLength === 0) {
+      return;
+    }
+
+    this.costumeGalleryIndex = (this.costumeGalleryIndex + 1) % galleryLength;
+  }
+
+  private async loadCostumeProjects(): Promise<void> {
+    try {
+      this.costumeProjects = await this.fetchCostumeProjects('/api/costume-designs');
+    } catch (proxyError) {
+      try {
+        this.costumeProjects = await this.fetchCostumeProjects('http://localhost:5109/api/costume-designs');
+      } catch (backendError) {
+        this.costumeProjects = [COSTUME_PROJECT];
+        console.warn('Unable to load costume design content from server.', { proxyError, backendError });
+      }
+    } finally {
+      this.costumeLoaded = true;
+      this.costumeGalleryIndex = 0;
+      this.changeDetectorRef.detectChanges();
+      this.refreshFadeElements();
+    }
+  }
+
   private async loadFashionProject(): Promise<void> {
     try {
       this.fashionProjects = await this.fetchFashionProjects('/api/fashion-designs');
@@ -328,7 +472,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
   private refreshFadeElements(): void {
     this.fadeElements = Array.from(
-      this.elementRef.nativeElement.querySelectorAll('.fashion-entry-title-band, .fashion-band')
+      this.elementRef.nativeElement.querySelectorAll('.fashion-entry-title-band, .fashion-band, .costume-title-band, .costume-meta, .costume-video-placeholder, .costume-video-band, .costume-gallery-band, .costume-description, .costume-credits')
     ) as HTMLElement[];
 
     this.updateVisibility();
@@ -350,6 +494,27 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
       }
 
       return this.normalizeFashionProjects(await response.json());
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  private async fetchCostumeProjects(url: string): Promise<CostumeProjectContent[]> {
+    const abortController = new AbortController();
+    const timeout = window.setTimeout(() => abortController.abort(), 5000);
+
+    try {
+      const response = await fetch(url, { signal: abortController.signal });
+
+      if (!response.ok) {
+        throw new Error(`Costume design request failed with ${response.status}`);
+      }
+
+      if (!response.headers.get('content-type')?.includes('application/json')) {
+        throw new Error(`Costume design request returned ${response.headers.get('content-type') ?? 'unknown content type'}`);
+      }
+
+      return this.normalizeCostumeProjects(await response.json());
     } finally {
       window.clearTimeout(timeout);
     }
@@ -422,6 +587,30 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
         project.pdfUrl ||
         project.gallery.length > 0
       ));
+  }
+
+  private normalizeCostumeProjects(response: unknown): CostumeProjectContent[] {
+    const projects = this.readFashionRecordArray(this.parseTeachingResponse(response))
+      .map((record) => ({
+        title: this.readFashionField(record, ['title', 'Title', 'name', 'Name']) || COSTUME_PROJECT.title,
+        season: this.readFashionField(record, ['season', 'Season']),
+        role: this.readFashionField(record, ['role', 'Role']),
+        videoUrl: this.normalizeAssetUrl(this.readFashionField(record, ['video', 'Video', 'videoUrl', 'VideoUrl', 'videoURL', 'VideoURL'])),
+        gallery: this.readStringArray(record, ['gallery', 'Gallery', 'images', 'Images', 'imageUrls', 'ImageUrls']).map((url) => this.normalizeAssetUrl(url)),
+        description: this.readFashionField(record, ['description', 'Description', 'body', 'Body', 'text', 'Text']),
+        credits: this.readFashionField(record, ['credits', 'Credits'])
+      }))
+      .filter((project) => (
+        project.title ||
+        project.season ||
+        project.role ||
+        project.videoUrl ||
+        project.gallery.length > 0 ||
+        project.description ||
+        project.credits
+      ));
+
+    return projects.length > 0 ? projects : [COSTUME_PROJECT];
   }
 
   private readFashionRecordArray(response: unknown): Record<string, unknown>[] {
@@ -579,6 +768,10 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     }
 
     return `/${url.replace(/^\/+/, '')}`;
+  }
+
+  private isImageUrl(url: string): boolean {
+    return /\.(jpe?g|png|webp|gif|avif)(\?.*)?$/i.test(url);
   }
 
   private readonly isTeachingCardRecord = (value: unknown): value is Record<string, unknown> => (
