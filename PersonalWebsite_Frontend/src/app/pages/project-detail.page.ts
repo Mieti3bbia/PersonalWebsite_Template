@@ -287,7 +287,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   protected readonly isTeachings = this.slug === 'teachings';
   protected readonly isFashionDesign = this.slug === 'fashion-design';
   protected readonly isCostumeDesign = this.slug === 'costume-design';
-  protected costumeProjects: CostumeProjectContent[] = [COSTUME_PROJECT];
+  protected costumeProjects: CostumeProjectContent[] = [];
   protected costumeLoaded = false;
   protected costumeGalleryIndex = 0;
   protected fashionProject = FASHION_PROJECT;
@@ -440,7 +440,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
       try {
         this.costumeProjects = await this.fetchCostumeProjects('http://localhost:5109/api/costume-designs');
       } catch (backendError) {
-        this.costumeProjects = [COSTUME_PROJECT];
+        this.costumeProjects = [];
         console.warn('Unable to load costume design content from server.', { proxyError, backendError });
       }
     } finally {
@@ -610,7 +610,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
         project.credits
       ));
 
-    return projects.length > 0 ? projects : [COSTUME_PROJECT];
+    return projects;
   }
 
   private readFashionRecordArray(response: unknown): Record<string, unknown>[] {

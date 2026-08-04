@@ -1,10 +1,15 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 
 const long MaxUploadSize = 1024L * 1024L * 1024L;
+const string DashboardUsername = "admin";
+const string DashboardPassword = "terapiatapioca";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +24,16 @@ builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = MaxUploadSize;
 });
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.LogoutPath = "/logout";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+    });
+builder.Services.AddAuthorization();
 builder.Services.AddDbContext<PersonalWebsiteDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("PersonalWebsite")));
 
@@ -33,10 +48,12 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 var teachingUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "teachings");
 var fashionDesignUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "fashion-designs");
+var costumeDesignUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "costume-designs");
 const string publicBaseUrl = "http://localhost:5109";
 
 Directory.CreateDirectory(teachingUploadsPath);
 Directory.CreateDirectory(fashionDesignUploadsPath);
+Directory.CreateDirectory(costumeDesignUploadsPath);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -50,6 +67,19 @@ using (var scope = app.Services.CreateScope())
             description TEXT NOT NULL,
             gallery TEXT NOT NULL,
             pdf_url TEXT NOT NULL
+        );
+        """);
+    db.Database.ExecuteSqlRaw("""
+        CREATE TABLE IF NOT EXISTS costume_designs (
+            id INTEGER NOT NULL CONSTRAINT PK_costume_designs PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            season TEXT NOT NULL,
+            role TEXT NOT NULL,
+            video TEXT NOT NULL DEFAULT '',
+            gallery TEXT NOT NULL,
+            description TEXT NOT NULL,
+            credits TEXT NOT NULL,
+            visible INTEGER NOT NULL DEFAULT 1
         );
         """);
 
@@ -95,6 +125,48 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("Frontend");
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGet("/", () => Results.Redirect("/dashboard"))
+    .RequireAuthorization();
+
+app.MapGet("/login", (HttpContext context) =>
+{
+    return context.User.Identity?.IsAuthenticated == true
+        ? Results.Redirect("/dashboard")
+        : Results.Content(RenderLogin(), "text/html; charset=utf-8");
+});
+
+app.MapPost("/login", async (HttpContext context) =>
+{
+    var form = await context.Request.ReadFormAsync();
+    var username = ReadRequiredFormValue(form, "username");
+    var password = ReadRequiredFormValue(form, "password");
+
+    if (username != DashboardUsername || password != DashboardPassword)
+    {
+        return Results.Content(
+            RenderLogin("Invalid username or password."),
+            "text/html; charset=utf-8",
+            statusCode: StatusCodes.Status401Unauthorized);
+    }
+
+    var claims = new[] { new Claim(ClaimTypes.Name, DashboardUsername) };
+    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+    await context.SignInAsync(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        new ClaimsPrincipal(identity));
+
+    var returnUrl = context.Request.Query["ReturnUrl"].ToString();
+    return Results.Redirect(string.IsNullOrWhiteSpace(returnUrl) ? "/dashboard" : returnUrl);
+});
+
+app.MapPost("/logout", async (HttpContext context) =>
+{
+    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return Results.Redirect("/login");
+});
 
 app.MapGet("/api/teachings", async (HttpRequest request, PersonalWebsiteDbContext db) =>
 {
@@ -136,6 +208,31 @@ app.MapGet("/api/fashion-designs", async (PersonalWebsiteDbContext db) =>
 })
 .WithName("GetFashionDesigns");
 
+app.MapGet("/api/costume-designs", async (PersonalWebsiteDbContext db) =>
+{
+    var entries = await db.CostumeDesigns
+        .AsNoTracking()
+        .Where(entry => entry.Visible)
+        .OrderBy(entry => entry.Title)
+        .ToListAsync();
+
+    return entries
+        .Select(entry => new CostumeDesignDto(
+            entry.Title,
+            entry.Season,
+            entry.Role,
+            string.IsNullOrWhiteSpace(entry.Video)
+                ? string.Empty
+                : ToPublicUrl(entry.Video, costumeDesignUploadsPath, "costume-video.mp4", "costume-designs"),
+            SplitGallery(entry.Gallery)
+                .Select(path => ToPublicUrl(path, costumeDesignUploadsPath, "costume-gallery.png", "costume-designs"))
+                .ToArray(),
+            entry.Description,
+            entry.Credits))
+        .ToList();
+})
+.WithName("GetCostumeDesigns");
+
 app.MapGet("/dashboard", async (PersonalWebsiteDbContext db) =>
 {
     var teachings = await db.Teachings
@@ -146,9 +243,14 @@ app.MapGet("/dashboard", async (PersonalWebsiteDbContext db) =>
         .AsNoTracking()
         .OrderBy(entry => entry.Title)
         .ToListAsync();
+    var costumeDesigns = await db.CostumeDesigns
+        .AsNoTracking()
+        .OrderBy(entry => entry.Title)
+        .ToListAsync();
 
-    return Results.Content(RenderDashboard(teachings, fashionDesigns), "text/html; charset=utf-8");
-});
+    return Results.Content(RenderDashboard(teachings, fashionDesigns, costumeDesigns), "text/html; charset=utf-8");
+})
+.RequireAuthorization();
 
 app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteDbContext db) =>
 {
@@ -169,7 +271,8 @@ app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteD
     await db.SaveChangesAsync();
 
     return Results.Redirect("/dashboard");
-});
+})
+.RequireAuthorization();
 
 app.MapPost("/dashboard/fashion-designs", async (HttpRequest request, PersonalWebsiteDbContext db) =>
 {
@@ -191,7 +294,33 @@ app.MapPost("/dashboard/fashion-designs", async (HttpRequest request, PersonalWe
     await db.SaveChangesAsync();
 
     return Results.Redirect("/dashboard");
-});
+})
+.RequireAuthorization();
+
+app.MapPost("/dashboard/costume-designs", async (HttpRequest request, PersonalWebsiteDbContext db) =>
+{
+    var form = await request.ReadFormAsync();
+    var video = await SaveUploadedFile(form.Files["costumeVideoFile"], costumeDesignUploadsPath, "costume-designs", "video");
+    var gallery = await SaveUploadedFiles(form.Files.GetFiles("costumeGalleryFiles"), costumeDesignUploadsPath, "costume-designs", "image");
+
+    var entry = new CostumeDesign
+    {
+        Title = ReadRequiredFormValue(form, "title"),
+        Season = ReadRequiredFormValue(form, "season"),
+        Role = ReadRequiredFormValue(form, "role"),
+        Video = video ?? ReadRequiredFormValue(form, "video"),
+        Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery"),
+        Description = ReadRequiredFormValue(form, "description"),
+        Credits = ReadRequiredFormValue(form, "credits"),
+        Visible = form.ContainsKey("visible")
+    };
+
+    db.CostumeDesigns.Add(entry);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireAuthorization();
 
 app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsiteDbContext db) =>
 {
@@ -288,7 +417,8 @@ app.MapPost("/dashboard/teachings/{id:int}/delete", async (int id, PersonalWebsi
     }
 
     return Results.Redirect("/dashboard");
-});
+})
+.RequireAuthorization();
 
 app.MapPost("/dashboard/fashion-designs/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
 {
@@ -301,7 +431,22 @@ app.MapPost("/dashboard/fashion-designs/{id:int}/delete", async (int id, Persona
     }
 
     return Results.Redirect("/dashboard");
-});
+})
+.RequireAuthorization();
+
+app.MapPost("/dashboard/costume-designs/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
+{
+    var entry = await db.CostumeDesigns.FindAsync(id);
+
+    if (entry is not null)
+    {
+        db.CostumeDesigns.Remove(entry);
+        await db.SaveChangesAsync();
+    }
+
+    return Results.Redirect("/dashboard");
+})
+.RequireAuthorization();
 
 app.Run();
 
@@ -406,7 +551,134 @@ static string[] SplitGallery(string value)
         .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }
 
-static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnlyCollection<FashionDesign> fashionDesigns)
+static string RenderLogin(string? error = null)
+{
+    var errorMarkup = string.IsNullOrWhiteSpace(error)
+        ? string.Empty
+        : $"""<div class="error">{Html(error)}</div>""";
+
+    return $$"""
+        <!doctype html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Dashboard Login</title>
+            <style>
+                :root {
+                    color-scheme: light;
+                    --bg: #f6f7f9;
+                    --panel: #ffffff;
+                    --text: #17202a;
+                    --muted: #607080;
+                    --line: #d9dee5;
+                    --accent: #176b87;
+                    --accent-hover: #12546b;
+                    --danger: #b42318;
+                }
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    min-height: 100vh;
+                    margin: 0;
+                    display: grid;
+                    place-items: center;
+                    padding: 24px;
+                    font-family: Arial, Helvetica, sans-serif;
+                    background: var(--bg);
+                    color: var(--text);
+                }
+
+                main {
+                    width: min(420px, 100%);
+                    background: var(--panel);
+                    border: 1px solid var(--line);
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+
+                h1 {
+                    margin: 0;
+                    padding: 20px;
+                    border-bottom: 1px solid var(--line);
+                    font-size: 22px;
+                }
+
+                form {
+                    display: grid;
+                    gap: 16px;
+                    padding: 20px;
+                }
+
+                label {
+                    display: grid;
+                    gap: 6px;
+                    color: var(--muted);
+                    font-size: 13px;
+                    font-weight: 700;
+                }
+
+                input {
+                    width: 100%;
+                    border: 1px solid var(--line);
+                    border-radius: 6px;
+                    padding: 10px 12px;
+                    font: inherit;
+                    color: var(--text);
+                    background: #fff;
+                }
+
+                button {
+                    border: 0;
+                    border-radius: 6px;
+                    padding: 10px 14px;
+                    font: inherit;
+                    font-weight: 700;
+                    cursor: pointer;
+                    color: white;
+                    background: var(--accent);
+                }
+
+                button:hover {
+                    background: var(--accent-hover);
+                }
+
+                .error {
+                    margin: 20px 20px 0;
+                    color: var(--danger);
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+            </style>
+        </head>
+        <body>
+            <main>
+                <h1>Dashboard Login</h1>
+                {{errorMarkup}}
+                <form method="post" action="/login">
+                    <label>
+                        Username
+                        <input name="username" required autocomplete="username">
+                    </label>
+                    <label>
+                        Password
+                        <input name="password" type="password" required autocomplete="current-password">
+                    </label>
+                    <button type="submit">Login</button>
+                </form>
+            </main>
+        </body>
+        </html>
+        """;
+}
+
+static string RenderDashboard(
+    IReadOnlyCollection<Teaching> teachings,
+    IReadOnlyCollection<FashionDesign> fashionDesigns,
+    IReadOnlyCollection<CostumeDesign> costumeDesigns)
 {
     var teachingRows = new StringBuilder();
 
@@ -455,6 +727,35 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnly
 
     var fashionDesignEmptyState = fashionDesigns.Count == 0
         ? """<tr><td colspan="6" class="empty">No fashion design entries in the database yet.</td></tr>"""
+        : string.Empty;
+    var costumeDesignRows = new StringBuilder();
+
+    foreach (var entry in costumeDesigns)
+    {
+        var galleryItems = string.Join("<br>", SplitGallery(entry.Gallery).Select(item => $"<code>{Html(item)}</code>"));
+        var visibility = entry.Visible ? "Visible" : "Hidden";
+
+        costumeDesignRows.Append($"""
+            <tr>
+                <td>{Html(entry.Title)}</td>
+                <td>{Html(entry.Season)}</td>
+                <td>{Html(entry.Role)}</td>
+                <td><code>{Html(entry.Video)}</code></td>
+                <td>{galleryItems}</td>
+                <td>{Html(entry.Description)}</td>
+                <td>{Html(entry.Credits).Replace("\n", "<br>")}</td>
+                <td>{visibility}</td>
+                <td>
+                    <form method="post" action="/dashboard/costume-designs/{entry.Id}/delete">
+                        <button class="danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            """);
+    }
+
+    var costumeDesignEmptyState = costumeDesigns.Count == 0
+        ? """<tr><td colspan="9" class="empty">No costume design entries in the database yet.</td></tr>"""
         : string.Empty;
 
     return $$"""
@@ -513,6 +814,12 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnly
                     font-size: 14px;
                 }
 
+                .session {
+                    display: flex;
+                    gap: 14px;
+                    align-items: center;
+                }
+
                 section {
                     background: var(--panel);
                     border: 1px solid var(--line);
@@ -556,7 +863,8 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnly
                     font-weight: 400;
                 }
 
-                input {
+                input,
+                textarea {
                     width: 100%;
                     border: 1px solid var(--line);
                     border-radius: 6px;
@@ -564,6 +872,16 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnly
                     font: inherit;
                     color: var(--text);
                     background: #fff;
+                }
+
+                textarea {
+                    min-height: 96px;
+                    resize: vertical;
+                }
+
+                input[type="checkbox"] {
+                    width: auto;
+                    justify-self: start;
                 }
 
                 .file-picker {
@@ -619,6 +937,16 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnly
                     background: #2c3a45;
                 }
 
+                button.logout {
+                    background: #394b59;
+                    padding: 7px 10px;
+                    font-size: 13px;
+                }
+
+                button.logout:hover {
+                    background: #2c3a45;
+                }
+
                 .table-wrap {
                     overflow-x: auto;
                 }
@@ -670,11 +998,15 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnly
             <main>
                 <header>
                     <h1>Database Dashboard</h1>
-                    <div class="count">{{teachings.Count}} teaching{{(teachings.Count == 1 ? string.Empty : "s")}} | {{fashionDesigns.Count}} fashion design entr{{(fashionDesigns.Count == 1 ? "y" : "ies")}}</div>
+                    <div class="session">
+                        <div class="count">{{teachings.Count}} teaching{{(teachings.Count == 1 ? string.Empty : "s")}} | {{fashionDesigns.Count}} fashion design entr{{(fashionDesigns.Count == 1 ? "y" : "ies")}} | {{costumeDesigns.Count}} costume design entr{{(costumeDesigns.Count == 1 ? "y" : "ies")}}</div>
+                        <form method="post" action="/logout">
+                            <button class="logout" type="submit">Logout</button>
+                        </form>
+                    </div>
                 </header>
 
                 <h2 class="group-title">Teachings</h2>
-                <h2 class="group-title">Fashion Design</h2>
                 <section>
                     <div class="section-title">Add teaching</div>
                     <form class="add" method="post" action="/dashboard/teachings" enctype="multipart/form-data">
@@ -806,6 +1138,89 @@ static string RenderDashboard(IReadOnlyCollection<Teaching> teachings, IReadOnly
                         </table>
                     </div>
                 </section>
+
+                <h2 class="group-title">Costume Design</h2>
+                <section>
+                    <div class="section-title">Add costume design</div>
+                    <form class="add" method="post" action="/dashboard/costume-designs" enctype="multipart/form-data">
+                        <label>
+                            Title
+                            <span class="field-type">Text</span>
+                            <input name="title" required maxlength="200" autocomplete="off">
+                        </label>
+                        <label>
+                            Season
+                            <span class="field-type">Text</span>
+                            <input name="season" required maxlength="200" autocomplete="off">
+                        </label>
+                        <label>
+                            Role
+                            <span class="field-type">Text</span>
+                            <input name="role" required maxlength="200" autocomplete="off">
+                        </label>
+                        <label>
+                            Video
+                            <span class="field-type">Optional MP4 video file</span>
+                            <span class="file-picker">
+                                <input id="costumeVideo" name="video" maxlength="500" value="/uploads/costume-designs/" autocomplete="off">
+                                <button class="secondary" type="button" data-file-button="costumeVideoFile">Browse</button>
+                                <input id="costumeVideoFile" name="costumeVideoFile" type="file" accept="video/mp4,.mp4" data-target="costumeVideo" data-upload-folder="/uploads/costume-designs/">
+                            </span>
+                        </label>
+                        <label class="wide">
+                            Gallery
+                            <span class="field-type">Images: multiple JPEG or PNG files</span>
+                            <span class="file-picker">
+                                <input id="costumeGallery" name="gallery" maxlength="4000" value="/uploads/costume-designs/" autocomplete="off">
+                                <button class="secondary" type="button" data-file-button="costumeGalleryFiles">Browse</button>
+                                <input id="costumeGalleryFiles" name="costumeGalleryFiles" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple data-target="costumeGallery" data-upload-folder="/uploads/costume-designs/">
+                            </span>
+                        </label>
+                        <label class="wide">
+                            Description
+                            <span class="field-type">Text</span>
+                            <input name="description" required maxlength="2000" autocomplete="off">
+                        </label>
+                        <label class="wide">
+                            Credits
+                            <span class="field-type">Text, supports multiple lines</span>
+                            <textarea name="credits" required maxlength="4000"></textarea>
+                        </label>
+                        <label>
+                            Visible on portfolio
+                            <span class="field-type">Checkbox</span>
+                            <input name="visible" type="checkbox" checked>
+                        </label>
+                        <div class="wide">
+                            <button type="submit">Add to database</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section>
+                    <div class="section-title">Costume design resources</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Season</th>
+                                    <th>Role</th>
+                                    <th>Video</th>
+                                    <th>Gallery</th>
+                                    <th>Description</th>
+                                    <th>Credits</th>
+                                    <th>Portfolio</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{costumeDesignRows}}
+                                {{costumeDesignEmptyState}}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </main>
             <script>
                 document.querySelectorAll("[data-file-button]").forEach((button) => {
@@ -842,6 +1257,7 @@ sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext>
 {
     public DbSet<Teaching> Teachings => Set<Teaching>();
     public DbSet<FashionDesign> FashionDesigns => Set<FashionDesign>();
+    public DbSet<CostumeDesign> CostumeDesigns => Set<CostumeDesign>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -906,6 +1322,53 @@ sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext>
                 .HasMaxLength(500)
                 .IsRequired();
         });
+
+        modelBuilder.Entity<CostumeDesign>(entity =>
+        {
+            entity.ToTable("costume_designs");
+            entity.HasKey(entry => entry.Id);
+
+            entity.Property(entry => entry.Title)
+                .HasColumnName("title")
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(entry => entry.Season)
+                .HasColumnName("season")
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(entry => entry.Role)
+                .HasColumnName("role")
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(entry => entry.Video)
+                .HasColumnName("video")
+                .HasMaxLength(500)
+                .HasDefaultValue(string.Empty)
+                .IsRequired();
+
+            entity.Property(entry => entry.Gallery)
+                .HasColumnName("gallery")
+                .HasMaxLength(4000)
+                .IsRequired();
+
+            entity.Property(entry => entry.Description)
+                .HasColumnName("description")
+                .HasMaxLength(2000)
+                .IsRequired();
+
+            entity.Property(entry => entry.Credits)
+                .HasColumnName("credits")
+                .HasMaxLength(4000)
+                .IsRequired();
+
+            entity.Property(entry => entry.Visible)
+                .HasColumnName("visible")
+                .HasDefaultValue(true)
+                .IsRequired();
+        });
     }
 }
 
@@ -952,3 +1415,33 @@ sealed record FashionDesignDto(
     string Description,
     string[] Gallery,
     string PdfUrl);
+
+sealed class CostumeDesign
+{
+    public int Id { get; set; }
+
+    public required string Title { get; set; }
+
+    public required string Season { get; set; }
+
+    public required string Role { get; set; }
+
+    public string Video { get; set; } = string.Empty;
+
+    public required string Gallery { get; set; }
+
+    public required string Description { get; set; }
+
+    public required string Credits { get; set; }
+
+    public bool Visible { get; set; } = true;
+}
+
+sealed record CostumeDesignDto(
+    string Title,
+    string Season,
+    string Role,
+    string Video,
+    string[] Gallery,
+    string Description,
+    string Credits);

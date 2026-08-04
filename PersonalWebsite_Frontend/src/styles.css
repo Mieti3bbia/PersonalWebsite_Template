@@ -2616,6 +2616,16 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   color: #593854;
 }
 
+.costume-entry {
+  display: grid;
+  width: 100%;
+  border-bottom: 2px solid #fff;
+}
+
+.costume-entry:last-child {
+  border-bottom: 0;
+}
+
 .costume-title-band,
 .costume-meta,
 .costume-video-placeholder,
