@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
           alt="Abstract red fashion concept image"
         >
         <div class="splash-overlay">
-          <p>/ Design portfolio /</p>
+          <p>/ home /</p>
           <h1 class="slide-in">
             <span>Maria Sole</span>
             <span>Montironi Lasca</span>

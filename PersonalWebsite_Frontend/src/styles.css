@@ -401,7 +401,8 @@ app-home-page .collaboration-grid span {
 
 .about-subtitle {
   margin: 18px 0 0;
-  color: var(--subtext-color);
+  color: rgba(89, 56, 84, 0.68);
+  font-weight: 300;
   font-size: clamp(20px, 2.2vw, 34px);
   line-height: 1.08;
 }
@@ -2335,7 +2336,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   margin: 0;
   padding: clamp(18px, 2.6vw, 32px) clamp(20px, 8vw, 120px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  color: var(--subtext-color);
+  color: rgba(89, 56, 84, 0.68);
   font-size: clamp(18px, 2.2vw, 34px);
   line-height: 1.16;
   opacity: 0;
@@ -2348,6 +2349,11 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     clip-path 520ms cubic-bezier(0.19, 1, 0.22, 1);
 }
 
+.about-page .about-body strong {
+  color: var(--subtext-color);
+  font-weight: 700;
+}
+
 .about-page .about-body p.is-visible {
   opacity: 1;
   transform: translateY(0);
@@ -2356,6 +2362,51 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 
 .about-page .about-body p:last-child {
   border-bottom: 0;
+}
+
+.about-socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  padding: clamp(32px, 5vw, 58px) clamp(20px, 4vw, 34px) clamp(42px, 6vw, 72px);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.about-social-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 178px;
+  min-height: 54px;
+  border: 1px solid #F207CB;
+  background: transparent;
+  color: #F207CB;
+  padding: 14px 22px;
+  font-size: 16px;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background 180ms ease;
+}
+
+.about-social-button:hover,
+.about-social-button:focus-visible {
+  border-color: #F207CB;
+  background: transparent;
+  color: #F207CB;
+}
+
+.about-social-button svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  fill: currentColor;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2383,6 +2434,14 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   .about-page .about-body p {
     padding-inline: 20px;
     font-size: clamp(16px, 5.4vw, 26px);
+  }
+
+  .about-socials {
+    padding-inline: 20px;
+  }
+
+  .about-social-button {
+    width: min(100%, 320px);
   }
 }
 
@@ -2541,6 +2600,181 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   color: #593854;
 }
 
+/* Fashion portfolio template */
+.fashion-page {
+  min-height: calc(100svh - 72px);
+  padding: clamp(104px, 12vw, 142px) 0 clamp(42px, 6vw, 72px);
+  background: #000;
+  color: #593854;
+}
+
+.fashion-header {
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+  width: 100%;
+  margin-inline: auto;
+  padding: 0 clamp(20px, 8vw, 120px) clamp(32px, 5vw, 58px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+}
+
+.fashion-header h1 {
+  margin: 0;
+  color: #593854;
+  font-weight: 400;
+  font-size: clamp(44px, 7vw, 96px);
+  line-height: 1.08;
+  text-transform: lowercase;
+}
+
+.fashion-fields {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.fashion-fields span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px solid #F207CB;
+  border-radius: 12px;
+  color: #F207CB;
+  padding: 12px 18px;
+  font-size: 15px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.fashion-shell {
+  display: grid;
+  gap: 0;
+  width: 100%;
+}
+
+.fashion-band {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: clamp(28px, 5vw, 58px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.fashion-video,
+.fashion-empty {
+  display: grid;
+  place-items: center;
+  width: min(980px, 100%);
+  min-height: clamp(220px, 40vw, 520px);
+  border: 1px solid rgba(247, 245, 240, 0.62);
+  color: #593854;
+  font-size: clamp(14px, 1.5vw, 22px);
+  text-transform: uppercase;
+}
+
+.fashion-video {
+  display: block;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.fashion-pdf-panel {
+  display: grid;
+  place-items: center;
+  width: min(320px, 100%);
+  min-height: 66px;
+  margin-inline: auto;
+  border: 1px solid #F207CB;
+  border-radius: 12px;
+  color: #F207CB;
+  padding: 22px 32px;
+  font-size: 20px;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.fashion-pdf-panel:hover,
+.fashion-pdf-panel:focus-visible {
+  background: transparent;
+  color: #F207CB;
+}
+
+.fashion-pdf-placeholder {
+  opacity: 0.62;
+}
+
+.fashion-description {
+  width: min(1760px, 100%);
+  margin: 0;
+  color: rgba(89, 56, 84, 0.68);
+  font-weight: 300;
+  font-size: clamp(16px, 1.8vw, 29px);
+  line-height: 1.22;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.fashion-band:has(.fashion-description) {
+  padding-inline: clamp(12px, 2vw, 32px);
+}
+
+.fashion-gallery-row {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 620px) 54px;
+  gap: clamp(14px, 4vw, 42px);
+  align-items: center;
+  justify-content: center;
+  width: min(980px, 100%);
+  margin-inline: auto;
+}
+
+.fashion-gallery-shell {
+  display: grid;
+  gap: clamp(22px, 4vw, 38px);
+  width: min(980px, 100%);
+  justify-items: center;
+}
+
+.fashion-gallery-row button {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  aspect-ratio: 1;
+  border: 1px solid #F207CB;
+  border-radius: 50%;
+  background: transparent;
+  color: #F207CB;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fashion-gallery-row button:first-child {
+  transform: rotate(180deg);
+}
+
+.fashion-gallery-panel {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(230px, 32vw, 390px);
+  border: 1px solid rgba(247, 245, 240, 0.62);
+  color: #593854;
+  font-size: clamp(14px, 1.5vw, 22px);
+  object-fit: cover;
+}
+
+.fashion-back-link {
+  display: block;
+  width: max-content;
+  margin: clamp(32px, 5vw, 58px) auto 0;
+  color: #593854;
+}
+
 @media (max-width: 900px) {
   .teachings-page {
     min-height: auto;
@@ -2582,6 +2816,55 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     font-size: clamp(11px, 3.4vw, 15px);
   }
 
+}
+
+@media (max-width: 900px) {
+  .fashion-page {
+    min-height: auto;
+    padding-top: 38px;
+  }
+
+  .fashion-header {
+    text-align: center;
+  }
+
+  .fashion-header h1 {
+    width: 100%;
+    font-size: clamp(30px, 9vw, 58px);
+    line-height: 1.12;
+  }
+
+  .fashion-shell {
+    width: 100%;
+  }
+
+  .fashion-header,
+  .fashion-band {
+    padding-inline: 20px;
+  }
+
+  .fashion-fields span {
+    min-height: 40px;
+    padding: 11px 14px;
+    font-size: 13px;
+  }
+
+  .fashion-gallery-row {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 12px;
+  }
+
+  .fashion-gallery-row button {
+    width: 32px;
+  }
+
+  .fashion-pdf-panel {
+    width: min(100%, 320px);
+  }
+
+  .fashion-description {
+    font-size: clamp(15px, 4.8vw, 23px);
+  }
 }
 
 /* Contact form mobile responsiveness */

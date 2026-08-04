@@ -19,6 +19,24 @@ interface TeachingCard {
   pdfUrl: string;
 }
 
+interface FashionProjectContent {
+  title: string;
+  fields: string[];
+  videoUrl: string;
+  description: string;
+  pdfUrl: string;
+  gallery: string[];
+}
+
+const FASHION_PROJECT: FashionProjectContent = {
+  title: 'dichotomy.',
+  fields: [],
+  videoUrl: '',
+  description: 'Sovvertire la "penecrazia":\ndal latino penis "pene" e dal greco krátos "potere"\nGoverno del pene. Sistema di governo in cui la sovranità è esercitata direttamente o indirettamente, da chi detiene il pene\nattraverso la sostituzione dell’autodeterminazione della donna con la sovradeterminazione della donna.',
+  pdfUrl: '',
+  gallery: []
+};
+
 const PROJECTS: Record<string, PortfolioProject> = {
   'costume-design': {
     title: 'Costume Design',
@@ -97,6 +115,57 @@ const PROJECTS: Record<string, PortfolioProject> = {
 
           <a class="back-link teachings-back-link" routerLink="/portfolio">/ Go back /</a>
         </section>
+      } @else if (isFashionDesign) {
+        <section class="fashion-page page-section">
+          <header class="fashion-header">
+            <h1 class="slide-in">{{ fashionProject.title }}</h1>
+            @if (fashionProject.fields.length > 0) {
+              <div class="fashion-fields" aria-label="Fashion design fields">
+                @for (field of fashionProject.fields; track field) {
+                  <span>{{ field }}</span>
+                }
+              </div>
+            }
+          </header>
+
+          <article class="fashion-shell">
+            <section class="fashion-band">
+              @if (fashionProject.videoUrl) {
+                <video class="fashion-video" [src]="fashionProject.videoUrl" controls playsinline></video>
+              } @else {
+                <div class="fashion-empty">video</div>
+              }
+            </section>
+
+            <section class="fashion-band">
+              <p class="fashion-description">{{ fashionProject.description }}</p>
+            </section>
+
+            <section class="fashion-band">
+              <div class="fashion-gallery-shell">
+                <div class="fashion-gallery-row" aria-label="Fashion gallery">
+                  <button type="button" aria-label="Previous gallery item" (click)="showPreviousFashionImage()">→</button>
+                  @if (currentFashionImage) {
+                    <img class="fashion-gallery-panel" [src]="currentFashionImage" alt="Fashion design gallery image">
+                  } @else {
+                    <div class="fashion-gallery-panel fashion-empty">Gallery</div>
+                  }
+                  <button type="button" aria-label="Next gallery item" (click)="showNextFashionImage()">→</button>
+                </div>
+
+                @if (fashionProject.pdfUrl) {
+                  <a class="fashion-pdf-panel" [href]="fashionProject.pdfUrl" target="_blank" rel="noopener" aria-label="Open fashion project PDF">
+                    pdf
+                  </a>
+                } @else {
+                  <div class="fashion-pdf-panel fashion-pdf-placeholder">pdf</div>
+                }
+              </div>
+            </section>
+          </article>
+
+          <a class="back-link fashion-back-link" routerLink="/portfolio">/ Go back /</a>
+        </section>
       } @else {
         <section class="project-detail-layout page-section">
           <div class="project-detail-copy">
@@ -125,10 +194,19 @@ export class ProjectDetailPage implements OnInit {
   private readonly slug = this.route.snapshot.paramMap.get('slug') ?? 'costume-design';
   protected readonly project = PROJECTS[this.slug] ?? PROJECTS['costume-design'];
   protected readonly isTeachings = this.slug === 'teachings';
+  protected readonly isFashionDesign = this.slug === 'fashion-design';
+  protected fashionProject = FASHION_PROJECT;
+  protected fashionLoaded = false;
+  protected fashionGalleryIndex = 0;
   protected teachingCards: TeachingCard[] = [];
   protected teachingsLoaded = false;
 
   async ngOnInit(): Promise<void> {
+    if (this.isFashionDesign) {
+      await this.loadFashionProject();
+      return;
+    }
+
     if (!this.isTeachings) {
       return;
     }
@@ -145,6 +223,64 @@ export class ProjectDetailPage implements OnInit {
     } finally {
       this.teachingsLoaded = true;
       this.changeDetectorRef.detectChanges();
+    }
+  }
+
+  protected get currentFashionImage(): string {
+    return this.fashionProject.gallery[this.fashionGalleryIndex] ?? '';
+  }
+
+  protected showPreviousFashionImage(): void {
+    const galleryLength = this.fashionProject.gallery.length;
+
+    if (galleryLength === 0) {
+      return;
+    }
+
+    this.fashionGalleryIndex = (this.fashionGalleryIndex + galleryLength - 1) % galleryLength;
+  }
+
+  protected showNextFashionImage(): void {
+    const galleryLength = this.fashionProject.gallery.length;
+
+    if (galleryLength === 0) {
+      return;
+    }
+
+    this.fashionGalleryIndex = (this.fashionGalleryIndex + 1) % galleryLength;
+  }
+
+  private async loadFashionProject(): Promise<void> {
+    try {
+      this.fashionProject = await this.fetchFashionProject('/api/fashion-design');
+    } catch (proxyError) {
+      try {
+        this.fashionProject = await this.fetchFashionProject('http://localhost:5109/api/fashion-design');
+      } catch (backendError) {
+        this.fashionProject = FASHION_PROJECT;
+        console.warn('Unable to load fashion design content from server.', { proxyError, backendError });
+      }
+    } finally {
+      this.fashionLoaded = true;
+      this.fashionGalleryIndex = 0;
+      this.changeDetectorRef.detectChanges();
+    }
+  }
+
+  private async fetchFashionProject(url: string): Promise<FashionProjectContent> {
+    const abortController = new AbortController();
+    const timeout = window.setTimeout(() => abortController.abort(), 5000);
+
+    try {
+      const response = await fetch(url, { signal: abortController.signal });
+
+      if (!response.ok) {
+        throw new Error(`Fashion design request failed with ${response.status}`);
+      }
+
+      return this.normalizeFashionProject(await response.json());
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
@@ -183,6 +319,86 @@ export class ProjectDetailPage implements OnInit {
         card.previewImage ||
         card.pdfUrl
       ));
+  }
+
+  private normalizeFashionProject(response: unknown): FashionProjectContent {
+    const record = this.readFirstRecord(this.parseTeachingResponse(response));
+
+    if (!record) {
+      return FASHION_PROJECT;
+    }
+
+    const project = {
+      title: this.readFashionField(record, ['title', 'Title', 'name', 'Name']) || FASHION_PROJECT.title,
+      fields: this.readStringArray(record, ['fields', 'Fields', 'categories', 'Categories', 'tags', 'Tags']),
+      videoUrl: this.normalizeAssetUrl(this.readFashionField(record, ['video', 'Video', 'videoUrl', 'VideoUrl', 'videoURL', 'VideoURL'])),
+      description: this.readFashionField(record, ['description', 'Description', 'body', 'Body', 'text', 'Text']) || FASHION_PROJECT.description,
+      pdfUrl: this.normalizeAssetUrl(this.readFashionField(record, ['pdf', 'Pdf', 'pdfUrl', 'PdfUrl', 'PDFUrl', 'pdfURL', 'PdfURL'])),
+      gallery: this.readStringArray(record, ['gallery', 'Gallery', 'images', 'Images', 'imageUrls', 'ImageUrls']).map((url) => this.normalizeAssetUrl(url))
+    };
+
+    return project;
+  }
+
+  private readFirstRecord(response: unknown): Record<string, unknown> | null {
+    const parsedResponse = this.parseTeachingResponse(response);
+
+    if (this.isTeachingCardRecord(parsedResponse)) {
+      const values =
+        parsedResponse['value'] ??
+        parsedResponse['Value'] ??
+        parsedResponse['$values'] ??
+        parsedResponse['data'] ??
+        parsedResponse['Data'] ??
+        parsedResponse['item'] ??
+        parsedResponse['Item'] ??
+        parsedResponse['project'] ??
+        parsedResponse['Project'];
+
+      if (Array.isArray(values)) {
+        return values.find(this.isTeachingCardRecord) ?? null;
+      }
+
+      if (this.isTeachingCardRecord(values)) {
+        return values;
+      }
+
+      return parsedResponse;
+    }
+
+    if (Array.isArray(parsedResponse)) {
+      return parsedResponse.find(this.isTeachingCardRecord) ?? null;
+    }
+
+    return null;
+  }
+
+  private readFashionField(record: Record<string, unknown>, aliases: string[]): string {
+    const value = aliases.map((key) => record[key]).find((item) => item !== undefined);
+
+    return String(value ?? '').trim();
+  }
+
+  private readStringArray(record: Record<string, unknown>, aliases: string[]): string[] {
+    const value = aliases.map((key) => record[key]).find((item) => item !== undefined);
+
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item ?? '').trim()).filter(Boolean);
+    }
+
+    if (this.isTeachingCardRecord(value)) {
+      const values = value['$values'] ?? value['items'] ?? value['Items'];
+
+      if (Array.isArray(values)) {
+        return values.map((item) => String(item ?? '').trim()).filter(Boolean);
+      }
+    }
+
+    if (typeof value === 'string') {
+      return value.split(',').map((item) => item.trim()).filter(Boolean);
+    }
+
+    return [];
   }
 
   private parseTeachingResponse(response: unknown): unknown {
@@ -244,6 +460,14 @@ export class ProjectDetailPage implements OnInit {
     }
 
     return url;
+  }
+
+  private normalizeAssetUrl(url: string): string {
+    if (!url || url.startsWith('http') || url.startsWith('/')) {
+      return url;
+    }
+
+    return `/${url.replace(/^\/+/, '')}`;
   }
 
   private readonly isTeachingCardRecord = (value: unknown): value is Record<string, unknown> => (
