@@ -2377,17 +2377,15 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-width: 178px;
-  min-height: 54px;
+  width: 54px;
+  height: 54px;
   border: 1px solid #F207CB;
   background: transparent;
   color: #F207CB;
-  padding: 14px 22px;
+  padding: 0;
   font-size: 16px;
   line-height: 1;
   text-decoration: none;
-  text-transform: uppercase;
   transition:
     border-color 180ms ease,
     color 180ms ease,
@@ -2441,7 +2439,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   }
 
   .about-social-button {
-    width: min(100%, 320px);
+    width: 54px;
   }
 }
 
