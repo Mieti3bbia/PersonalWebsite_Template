@@ -1,4 +1,8 @@
-﻿:host { display: block; }
+:host {
+  display: block;
+  min-height: 100%;
+  background: #000;
+}
 
 .site-header {
   position: fixed;
@@ -103,6 +107,7 @@
 }
 
 .site-footer {
+  margin-top: 0;
   padding: 24px 34px;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
   background: #000;
@@ -149,6 +154,7 @@
 }
 
 .site-footer {
+  margin-top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,7 +203,9 @@
   }
 
   .site-footer {
+  margin-top: 0;
     padding: 22px 20px;
   }
 }
+
 
