@@ -1,6 +1,7 @@
 ﻿import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AfterViewInit, ChangeDetectorRef, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { GoBackLinkComponent } from '../components/go-back-link.component';
 
 interface PortfolioProject {
   title: string;
@@ -86,7 +87,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
 
 @Component({
   selector: 'app-project-detail-page',
-  imports: [RouterLink],
+  imports: [RouterLink, GoBackLinkComponent],
   template: `
     <main class="detail-page project-detail-page">
       @if (isTeachings) {
@@ -133,7 +134,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
             <p class="teachings-empty">Loading teachings...</p>
           }
 
-          <a class="back-link page-back-link teachings-back-link" routerLink="/portfolio">/ Go back /</a>
+          <app-go-back-link routerLink="/portfolio" variantClass="teachings-back-link" />
         </section>
       } @else if (isFashionDesign) {
         <section class="fashion-page page-section">
@@ -189,7 +190,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
             }
           </article>
 
-          <a class="back-link page-back-link fashion-back-link" routerLink="/portfolio">/ Go back /</a>
+          <app-go-back-link routerLink="/portfolio" variantClass="fashion-back-link" />
         </section>
       } @else if (isCostumeDesign) {
         <section class="costume-page page-section">
@@ -254,12 +255,12 @@ const PROJECTS: Record<string, PortfolioProject> = {
             }
           </div>
 
-          <a class="back-link page-back-link costume-back-link" routerLink="/portfolio">/ Go back /</a>
+          <app-go-back-link routerLink="/portfolio" variantClass="costume-back-link" />
         </section>
       } @else {
         <section class="project-detail-layout page-section">
           <div class="project-detail-copy">
-            <a class="back-link" routerLink="/portfolio">/ Back to portfolio /</a>
+            <app-go-back-link routerLink="/portfolio" />
             <p class="eyebrow">{{ project.kicker }}</p>
             <h1 class="slide-in">{{ project.title }}</h1>
             <p class="project-description">{{ project.description }}</p>

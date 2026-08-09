@@ -2340,9 +2340,9 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   margin: 0;
   padding: clamp(18px, 2.6vw, 32px) clamp(20px, 8vw, 120px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(89, 56, 84, 0.68);
-  font-size: clamp(18px, 2.2vw, 34px);
-  line-height: 1.16;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: clamp(11px, 1.32vw, 20px);
+  line-height: 1.3;
   opacity: 0;
   transform: translateY(42px);
   clip-path: inset(100% 0 0 0);
@@ -2354,7 +2354,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 }
 
 .about-page .about-body strong {
-  color: var(--subtext-color);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 700;
 }
 
@@ -2372,9 +2372,11 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 14px;
   padding: clamp(32px, 5vw, 58px) clamp(20px, 4vw, 34px) clamp(42px, 6vw, 72px);
   border-top: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
 }
 
 .about-social-button {
@@ -2811,7 +2813,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   display: grid;
   gap: clamp(34px, 6vw, 72px);
   padding: clamp(58px, 9vw, 116px) clamp(20px, 8vw, 120px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 0;
 }
 
 .cv-timeline-section header {
@@ -3806,11 +3808,6 @@ app-curriculum-vitae-page,
   background: #000;
 }
 
-.about-back-link,
-.curriculum-vitae-back-link {
-  margin-bottom: 16px;
-}
-
 .about-page .about-layout {
   min-height: 100svh;
   grid-template-columns: 1fr;
@@ -3830,10 +3827,21 @@ app-curriculum-vitae-page,
   }
 }
 
+.go-back-link-host {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(88px, 12vw, 140px);
+  background: #000;
+  margin-top: clamp(32px, 5vw, 58px);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 0 clamp(20px, 4vw, 34px);
+}
+
 .page-back-link {
   display: block;
   width: max-content;
-  margin: clamp(32px, 5vw, 58px) auto 0;
+  margin: 0 auto;
   color: #593854;
   background: #000;
   border: 0;
@@ -3860,18 +3868,844 @@ app-curriculum-vitae-page,
   grid-column: 1 / -1;
 }
 
-.about-page,
-.curriculum-vitae-page {
-  padding-bottom: clamp(42px, 6vw, 72px);
-}
-
-.contact-page .contact-form-section {
-  padding-bottom: clamp(58px, 8vw, 92px);
+.teachings-page .page-back-link {
+  padding-top: 0;
+  border-top: 0;
 }
 
 @media (max-width: 900px) {
-  .page-back-link {
+  .go-back-link-host {
     margin-top: clamp(32px, 5vw, 58px);
-    margin-bottom: 0;
+  }
+}
+
+.about-page .about-layout {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  gap: 0;
+  padding: 0 clamp(20px, 4vw, 44px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+}
+
+.about-page .about-layout > div {
+  display: grid;
+  justify-items: center;
+  width: min(1180px, 100%);
+  margin-inline: auto;
+  padding: 0 0 clamp(24px, 4vw, 42px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.about-page .about-layout img {
+  display: none;
+}
+
+.about-page .about-layout .eyebrow {
+  margin: 0;
+  text-align: center;
+}
+
+.about-page .about-layout h1 {
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: min(760px, 100%);
+  margin: clamp(22px, 4vw, 34px) auto 0;
+  font-size: clamp(38px, 5.8vw, 82px);
+  line-height: 1.38;
+  text-align: center;
+}
+
+.about-page .about-layout h1 span {
+  display: block;
+  max-width: 100%;
+}
+
+.about-subtitle {
+  width: 100%;
+  margin: clamp(16px, 3vw, 28px) auto 0;
+  color: rgba(89, 56, 84, 0.68);
+  font-size: clamp(13px, 1.45vw, 22px);
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .about-page .about-layout {
+    min-height: 100svh;
+    padding: 0 20px;
+  }
+
+  .about-page .about-layout h1 {
+    max-width: calc(100vw - 40px);
+    font-size: clamp(28px, 10vw, 48px);
+    line-height: 1.26;
+  }
+
+  .about-subtitle {
+    max-width: calc(100vw - 40px);
+    font-size: clamp(11px, 3.8vw, 16px);
+  }
+}
+
+.about-page.detail-page {
+  padding-top: 0;
+}
+
+.about-page .about-layout {
+  min-height: 100svh;
+  height: 100svh;
+  padding: 72px clamp(20px, 4vw, 44px) 0;
+}
+
+.about-page .about-layout > div {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .about-page.detail-page {
+    padding-top: 0;
+  }
+
+  .about-page .about-layout {
+    min-height: 100svh;
+    height: 100svh;
+    padding: 106px 20px 0;
+  }
+}
+
+.about-page .about-body p {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: clamp(11px, 1.32vw, 20px);
+  line-height: 1.3;
+}
+
+.about-page .about-body strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 900px) {
+  .about-page .about-body p {
+    font-size: clamp(9px, 3vw, 13px);
+    line-height: 1.36;
+  }
+}
+
+.curriculum-vitae-page.detail-page {
+  padding-top: 0;
+}
+
+.curriculum-vitae-page .cv-hero {
+  min-height: 100svh;
+  height: 100svh;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(18px, 3vw, 34px);
+  padding: 72px clamp(20px, 4vw, 44px) 0;
+}
+
+.curriculum-vitae-page .cv-hero h1 {
+  width: min(1180px, 100%);
+  max-width: min(1180px, 100%);
+  font-size: clamp(38px, 5.8vw, 82px);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.curriculum-vitae-page .cv-contact {
+  width: min(1180px, 100%);
+  justify-content: center;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .curriculum-vitae-page.detail-page {
+    padding-top: 0;
+  }
+
+  .curriculum-vitae-page .cv-hero {
+    min-height: 100svh;
+    height: 100svh;
+    padding: 106px 20px 0;
+  }
+
+  .curriculum-vitae-page .cv-hero h1 {
+    max-width: calc(100vw - 40px);
+    font-size: clamp(28px, 10vw, 48px);
+    line-height: 1.26;
+  }
+
+  .curriculum-vitae-page .cv-contact {
+    max-width: calc(100vw - 40px);
+  }
+}
+
+/* CV content redesign: hero, go-back and footer remain managed elsewhere. */
+.curriculum-vitae-page .cv-profile,
+.curriculum-vitae-page .cv-skills,
+.curriculum-vitae-page .cv-featured,
+.curriculum-vitae-page .cv-timeline-section {
+  width: 100%;
+  padding: clamp(54px, 8vw, 104px) clamp(20px, 7vw, 112px);
+}
+
+.curriculum-vitae-page .cv-profile {
+  grid-template-columns: minmax(150px, 240px) minmax(0, 900px);
+  align-items: start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.curriculum-vitae-page .cv-profile div,
+.curriculum-vitae-page .cv-skills article,
+.curriculum-vitae-page .cv-featured-grid article,
+.curriculum-vitae-page .cv-timeline-card {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.curriculum-vitae-page .cv-profile div {
+  gap: 16px;
+  padding: clamp(24px, 3vw, 40px);
+}
+
+.curriculum-vitae-page .cv-profile p,
+.curriculum-vitae-page .cv-featured-grid p,
+.curriculum-vitae-page .cv-timeline-card p,
+.curriculum-vitae-page .cv-timeline-card li {
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.48;
+}
+
+.curriculum-vitae-page .cv-skills {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.curriculum-vitae-page .cv-skills article {
+  min-height: 100%;
+}
+
+.curriculum-vitae-page .cv-chip-grid {
+  gap: 8px;
+}
+
+.curriculum-vitae-page .cv-chip-grid span,
+.curriculum-vitae-page .cv-language-list p {
+  min-height: 34px;
+  color: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: clamp(10px, 0.86vw, 13px);
+}
+
+.curriculum-vitae-page .cv-featured {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.curriculum-vitae-page .cv-featured-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.curriculum-vitae-page .cv-featured-grid article {
+  min-height: 180px;
+}
+
+.curriculum-vitae-page .cv-timeline-section {
+  gap: clamp(34px, 5vw, 66px);
+}
+
+.curriculum-vitae-page .cv-training-section {
+  padding-top: clamp(20px, 4vw, 54px);
+}
+
+.curriculum-vitae-page .cv-timeline {
+  --cv-axis: clamp(180px, 22vw, 320px);
+  width: min(1180px, 100%);
+  gap: clamp(22px, 4vw, 44px);
+}
+
+.curriculum-vitae-page .cv-timeline:before {
+  left: var(--cv-axis);
+  background: linear-gradient(180deg, transparent, rgba(89, 56, 84, 0.95) 8%, rgba(89, 56, 84, 0.95) 92%, transparent);
+}
+
+.curriculum-vitae-page .cv-timeline-item {
+  grid-template-columns: minmax(130px, var(--cv-axis)) minmax(0, 1fr);
+  gap: clamp(34px, 5vw, 72px);
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 620ms ease, transform 620ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.curriculum-vitae-page .cv-profile,
+.curriculum-vitae-page .cv-skills article,
+.curriculum-vitae-page .cv-featured-grid article {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 620ms ease, transform 620ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.curriculum-vitae-page .cv-timeline-item.is-visible,
+.curriculum-vitae-page .cv-profile.is-visible,
+.curriculum-vitae-page .cv-skills article.is-visible,
+.curriculum-vitae-page .cv-featured-grid article.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.curriculum-vitae-page .cv-timeline-marker {
+  left: calc(var(--cv-axis) - 7px);
+  border-color: #593854;
+  box-shadow: 0 0 0 10px #000;
+}
+
+.curriculum-vitae-page .cv-timeline-date {
+  color: rgba(255, 255, 255, 0.72);
+  text-align: right;
+}
+
+.curriculum-vitae-page .cv-timeline-card {
+  min-height: auto;
+  padding: clamp(22px, 3vw, 38px);
+}
+
+.curriculum-vitae-page .cv-timeline-card h3,
+.curriculum-vitae-page .cv-featured-grid h3 {
+  color: #fff;
+}
+
+@media (max-width: 1180px) {
+  .curriculum-vitae-page .cv-skills,
+  .curriculum-vitae-page .cv-featured-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .curriculum-vitae-page .cv-profile,
+  .curriculum-vitae-page .cv-skills,
+  .curriculum-vitae-page .cv-featured,
+  .curriculum-vitae-page .cv-timeline-section {
+    padding: 42px 20px;
+  }
+
+  .curriculum-vitae-page .cv-profile,
+  .curriculum-vitae-page .cv-skills,
+  .curriculum-vitae-page .cv-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .curriculum-vitae-page .cv-timeline:before {
+    left: 10px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding-left: 42px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-marker {
+    left: 3px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-date {
+    text-align: left;
+  }
+}
+
+/* CV skills section: one responsibility area per row for better scanning. */
+.curriculum-vitae-page .cv-skills {
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 2.4vw, 28px);
+  width: min(1180px, calc(100% - 40px));
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+.curriculum-vitae-page .cv-skills article {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(18px, 3vw, 42px);
+  min-height: 0;
+  padding: clamp(20px, 2.6vw, 34px);
+}
+
+.curriculum-vitae-page .cv-skills article h2 {
+  position: sticky;
+  top: 96px;
+  max-width: 100%;
+  font-size: clamp(24px, 3.1vw, 44px);
+  line-height: 1.14;
+  overflow-wrap: anywhere;
+}
+
+.curriculum-vitae-page .cv-skills article .cv-chip-grid,
+.curriculum-vitae-page .cv-skills article .cv-language-list {
+  align-self: start;
+  min-width: 0;
+}
+
+.curriculum-vitae-page .cv-skills article .cv-chip-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.curriculum-vitae-page .cv-skills article .cv-chip-grid span,
+.curriculum-vitae-page .cv-skills article .cv-language-list p {
+  min-height: 38px;
+  padding: 10px 12px;
+  font-size: clamp(9px, 0.72vw, 12px);
+}
+
+.curriculum-vitae-page .cv-skills article:first-child .cv-chip-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.curriculum-vitae-page .cv-skills article:nth-child(2) .cv-chip-grid,
+.curriculum-vitae-page .cv-language-list {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+@media (max-width: 1180px) {
+  .curriculum-vitae-page .cv-skills {
+    width: calc(100% - 40px);
+  }
+
+  .curriculum-vitae-page .cv-skills article {
+    grid-template-columns: minmax(150px, 0.28fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .curriculum-vitae-page .cv-skills {
+    width: 100%;
+    padding-inline: 20px;
+  }
+
+  .curriculum-vitae-page .cv-skills article {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .curriculum-vitae-page .cv-skills article h2 {
+    position: static;
+    text-align: center;
+  }
+
+  .curriculum-vitae-page .cv-skills article .cv-chip-grid,
+  .curriculum-vitae-page .cv-skills article:first-child .cv-chip-grid,
+  .curriculum-vitae-page .cv-skills article:nth-child(2) .cv-chip-grid,
+  .curriculum-vitae-page .cv-language-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CV skills stable desktop layout override */
+.curriculum-vitae-page .cv-skills {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+  width: 100%;
+  margin-inline: 0;
+  padding: clamp(48px, 7vw, 86px) clamp(20px, 5vw, 88px);
+}
+
+.curriculum-vitae-page .cv-skills article {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: clamp(18px, 2vw, 26px);
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(20px, 2.4vw, 30px);
+  overflow: hidden;
+}
+
+.curriculum-vitae-page .cv-skills article h2 {
+  position: static;
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(24px, 3vw, 42px);
+  line-height: 1.12;
+  text-align: left;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.curriculum-vitae-page .cv-skills article .cv-chip-grid,
+.curriculum-vitae-page .cv-skills article:first-child .cv-chip-grid,
+.curriculum-vitae-page .cv-skills article:nth-child(2) .cv-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.curriculum-vitae-page .cv-language-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.curriculum-vitae-page .cv-skills article .cv-chip-grid span,
+.curriculum-vitae-page .cv-skills article .cv-language-list p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  padding: 9px 8px;
+  font-size: clamp(8px, 0.68vw, 11px);
+  line-height: 1.18;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1180px) {
+  .curriculum-vitae-page .cv-skills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .curriculum-vitae-page .cv-skills article:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .curriculum-vitae-page .cv-skills {
+    grid-template-columns: 1fr;
+    padding: 36px 20px;
+  }
+
+  .curriculum-vitae-page .cv-skills article:last-child {
+    grid-column: auto;
+  }
+
+  .curriculum-vitae-page .cv-skills article h2 {
+    text-align: center;
+  }
+
+  .curriculum-vitae-page .cv-skills article .cv-chip-grid,
+  .curriculum-vitae-page .cv-skills article:first-child .cv-chip-grid,
+  .curriculum-vitae-page .cv-skills article:nth-child(2) .cv-chip-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Portfolio go-back component normalization */
+.fashion-page .go-back-link-host,
+.costume-page .go-back-link-host,
+.teachings-page .go-back-link-host {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(88px, 12vw, 140px);
+  margin-top: clamp(32px, 5vw, 58px);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  background: #000;
+  padding: 0 clamp(20px, 4vw, 34px);
+}
+
+.fashion-page .page-back-link,
+.costume-page .page-back-link,
+.teachings-page .page-back-link,
+.fashion-page .fashion-back-link,
+.costume-page .costume-back-link,
+.teachings-page .teachings-back-link {
+  display: block;
+  width: max-content;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  color: #593854;
+  background: #000;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.fashion-page,
+.costume-page,
+.teachings-page {
+  padding-bottom: 0;
+}
+
+.about-page .about-socials {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 82px;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.about-page .about-social-button {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+}
+
+.about-page .about-social-button svg {
+  justify-self: center;
+  align-self: center;
+}
+
+@media (max-width: 520px) {
+  .about-page .about-socials {
+    grid-auto-columns: 68px;
+  }
+}
+
+/* CV timeline date visibility fix */
+.curriculum-vitae-page .cv-timeline {
+  --cv-axis: clamp(210px, 24vw, 340px);
+  width: min(1120px, 100%);
+  overflow: visible;
+}
+
+.curriculum-vitae-page .cv-timeline-item {
+  grid-template-columns: var(--cv-axis) minmax(0, 1fr);
+  overflow: visible;
+}
+
+.curriculum-vitae-page .cv-timeline-date {
+  min-width: 0;
+  max-width: 100%;
+  padding-right: clamp(22px, 2.4vw, 34px);
+  color: rgba(255, 255, 255, 0.72);
+  text-align: right;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.curriculum-vitae-page .cv-timeline:before {
+  left: var(--cv-axis);
+}
+
+.curriculum-vitae-page .cv-timeline-marker {
+  left: calc(var(--cv-axis) - 7px);
+}
+
+@media (max-width: 900px) {
+  .curriculum-vitae-page .cv-timeline {
+    --cv-axis: 10px;
+    width: 100%;
+    max-width: 100%;
+    padding-left: 0;
+    overflow: hidden;
+  }
+
+  .curriculum-vitae-page .cv-timeline-item {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    width: 100%;
+    padding-left: 34px;
+    overflow: visible;
+  }
+
+  .curriculum-vitae-page .cv-timeline-date {
+    width: 100%;
+    max-width: 100%;
+    padding-right: 0;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .curriculum-vitae-page .cv-timeline:before {
+    left: 10px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-marker {
+    left: 3px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 18px;
+  }
+}
+
+.about-page .about-socials {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .curriculum-vitae-page .cv-timeline-item,
+  .curriculum-vitae-page .cv-profile,
+  .curriculum-vitae-page .cv-skills article,
+  .curriculum-vitae-page .cv-featured-grid article {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* CV readability pass */
+.curriculum-vitae-page .cv-profile,
+.curriculum-vitae-page .cv-skills,
+.curriculum-vitae-page .cv-featured,
+.curriculum-vitae-page .cv-timeline-section {
+  padding-inline: clamp(20px, 5vw, 88px);
+}
+
+.curriculum-vitae-page .cv-profile {
+  grid-template-columns: minmax(120px, 220px) minmax(0, 820px);
+  gap: clamp(22px, 4vw, 58px);
+}
+
+.curriculum-vitae-page .cv-profile h2,
+.curriculum-vitae-page .cv-skills h2,
+.curriculum-vitae-page .cv-featured h2,
+.curriculum-vitae-page .cv-timeline-section h2 {
+  font-size: clamp(24px, 3.2vw, 46px);
+  line-height: 1.12;
+}
+
+.curriculum-vitae-page .cv-profile div {
+  padding: clamp(20px, 2.4vw, 30px);
+}
+
+.curriculum-vitae-page .cv-profile p,
+.curriculum-vitae-page .cv-featured-grid p,
+.curriculum-vitae-page .cv-timeline-card p,
+.curriculum-vitae-page .cv-timeline-card li {
+  font-size: clamp(11px, 0.86vw, 14px);
+  line-height: 1.44;
+}
+
+.curriculum-vitae-page .cv-skills {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.86fr);
+  gap: clamp(16px, 2.4vw, 32px);
+}
+
+.curriculum-vitae-page .cv-skills article {
+  padding: clamp(18px, 2.2vw, 28px);
+  gap: 18px;
+}
+
+.curriculum-vitae-page .cv-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 8px;
+}
+
+.curriculum-vitae-page .cv-chip-grid span,
+.curriculum-vitae-page .cv-language-list p {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  min-height: 32px;
+  padding: 9px 10px;
+  font-size: clamp(9px, 0.76vw, 12px);
+  line-height: 1.16;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.curriculum-vitae-page .cv-featured {
+  gap: clamp(24px, 4vw, 46px);
+}
+
+.curriculum-vitae-page .cv-featured-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
+}
+
+.curriculum-vitae-page .cv-featured-grid article {
+  min-height: 0;
+  padding: clamp(18px, 2vw, 24px);
+}
+
+.curriculum-vitae-page .cv-featured-grid span,
+.curriculum-vitae-page .cv-timeline-date {
+  font-size: clamp(9px, 0.72vw, 12px);
+  line-height: 1.24;
+}
+
+.curriculum-vitae-page .cv-featured-grid h3,
+.curriculum-vitae-page .cv-timeline-card h3 {
+  font-size: clamp(16px, 1.55vw, 25px);
+  line-height: 1.16;
+  overflow-wrap: anywhere;
+}
+
+.curriculum-vitae-page .cv-timeline {
+  --cv-axis: clamp(120px, 16vw, 220px);
+  width: min(980px, 100%);
+}
+
+.curriculum-vitae-page .cv-timeline-item {
+  grid-template-columns: minmax(104px, var(--cv-axis)) minmax(0, 1fr);
+  gap: clamp(22px, 3vw, 44px);
+}
+
+.curriculum-vitae-page .cv-timeline-card {
+  padding: clamp(18px, 2.2vw, 28px);
+}
+
+.curriculum-vitae-page .cv-timeline-card ul {
+  gap: 7px;
+}
+
+@media (max-width: 1180px) {
+  .curriculum-vitae-page .cv-skills {
+    grid-template-columns: 1fr;
+  }
+
+  .curriculum-vitae-page .cv-featured-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .curriculum-vitae-page .cv-profile,
+  .curriculum-vitae-page .cv-skills,
+  .curriculum-vitae-page .cv-featured,
+  .curriculum-vitae-page .cv-timeline-section {
+    padding: 36px 20px;
+  }
+
+  .curriculum-vitae-page .cv-profile h2,
+  .curriculum-vitae-page .cv-skills h2,
+  .curriculum-vitae-page .cv-featured h2,
+  .curriculum-vitae-page .cv-timeline-section h2 {
+    font-size: clamp(22px, 7vw, 34px);
+  }
+
+  .curriculum-vitae-page .cv-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .curriculum-vitae-page .cv-timeline {
+    width: 100%;
+  }
+
+  .curriculum-vitae-page .cv-timeline-item {
+    padding-left: 38px;
   }
 }

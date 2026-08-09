@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { GoBackLinkComponent } from '../components/go-back-link.component';
 
 @Component({
   selector: 'app-about-page',
-  imports: [RouterLink],
+  imports: [RouterLink, GoBackLinkComponent],
   template: `
     <main class="detail-page about-page">
       <section class="about-layout page-section">
@@ -58,7 +59,7 @@ import { RouterLink } from '@angular/router';
         </a>
       </section>
 
-      <a class="back-link page-back-link about-back-link" routerLink="/home">/ Go back /</a>
+      <app-go-back-link routerLink="/home" variantClass="about-back-link" />
     </main>
   `
 })

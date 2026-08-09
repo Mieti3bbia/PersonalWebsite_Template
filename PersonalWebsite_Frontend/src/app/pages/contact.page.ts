@@ -1,5 +1,5 @@
-import { Location } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
+import { GoBackLinkComponent } from '../components/go-back-link.component';
 
 export interface ContactRequest {
   firstName: string;
@@ -14,6 +14,7 @@ export interface ContactRequest {
 
 @Component({
   selector: 'app-contact-page',
+  imports: [GoBackLinkComponent],
   template: `
     <main class="detail-page contact-page">
       <section class="contact-form-section page-section">
@@ -73,19 +74,14 @@ export interface ContactRequest {
           ></iframe>
         </div>
 
-        <button class="back-link page-back-link contact-back-link" type="button" (click)="goBack()">/ Go back /</button>
+        <app-go-back-link variantClass="contact-back-link" [historyBack]="true" />
       </section>
     </main>
   `
 })
 export class ContactPage {
-  private readonly location = inject(Location);
   protected lastContactRequest: ContactRequest | null = null;
   protected selectedType = '';
-
-  protected goBack(): void {
-    this.location.back();
-  }
 
   protected handleSubmit(event: SubmitEvent, form: HTMLFormElement): void {
     event.preventDefault();

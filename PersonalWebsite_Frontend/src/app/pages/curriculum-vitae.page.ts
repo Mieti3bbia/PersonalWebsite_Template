@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { GoBackLinkComponent } from '../components/go-back-link.component';
 
 interface TimelineItem {
   period: string;
@@ -10,7 +11,7 @@ interface TimelineItem {
 
 @Component({
   selector: 'app-curriculum-vitae-page',
-  imports: [RouterLink],
+  imports: [RouterLink, GoBackLinkComponent],
   template: `
     <main class="detail-page curriculum-vitae-page">
       <section class="cv-hero page-section">
@@ -126,11 +127,14 @@ interface TimelineItem {
         </div>
       </section>
 
-      <a class="back-link page-back-link curriculum-vitae-back-link" routerLink="/home">/ Go back /</a>
+      <app-go-back-link routerLink="/home" variantClass="curriculum-vitae-back-link" />
     </main>
   `
 })
-export class CurriculumVitaePage {
+export class CurriculumVitaePage implements AfterViewInit, OnDestroy {
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private observer: IntersectionObserver | null = null;
+
   protected readonly profile = [
     'Fashion & Costume Designer, Product Developer e Tutor con oltre due anni di esperienza nella progettazione e nello sviluppo di collezioni per il settore delle arti performative e della moda.',
     'Laureata in Fashion Design presso lo IED di Milano, con specializzazione in womenswear, menswear, product development e costume design.',
@@ -279,4 +283,25 @@ export class CurriculumVitaePage {
       ]
     }
   ];
+
+  ngAfterViewInit(): void {
+    const elements = Array.from(
+      this.elementRef.nativeElement.querySelectorAll('.cv-profile, .cv-skills article, .cv-featured-grid article, .cv-timeline-item')
+    ) as Element[];
+
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
+        });
+      },
+      { threshold: 0.18, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    elements.forEach((element) => this.observer?.observe(element));
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
+  }
 }
