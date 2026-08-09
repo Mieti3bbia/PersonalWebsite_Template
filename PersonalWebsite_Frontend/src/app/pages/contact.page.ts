@@ -1,4 +1,5 @@
-﻿import { Component } from '@angular/core';
+import { Location } from '@angular/common';
+import { Component, inject } from '@angular/core';
 
 export interface ContactRequest {
   firstName: string;
@@ -71,13 +72,20 @@ export interface ContactRequest {
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
+
+        <button class="back-link page-back-link contact-back-link" type="button" (click)="goBack()">/ Go back /</button>
       </section>
     </main>
   `
 })
 export class ContactPage {
+  private readonly location = inject(Location);
   protected lastContactRequest: ContactRequest | null = null;
   protected selectedType = '';
+
+  protected goBack(): void {
+    this.location.back();
+  }
 
   protected handleSubmit(event: SubmitEvent, form: HTMLFormElement): void {
     event.preventDefault();
@@ -109,4 +117,5 @@ export class ContactPage {
     return String(formData.get(key) ?? '').trim();
   }
 }
+
 

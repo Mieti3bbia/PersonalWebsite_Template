@@ -58,7 +58,7 @@ import { RouterLink } from '@angular/router';
         </a>
       </section>
 
-      <a class="back-link about-back-link" routerLink="/home">/ Go back /</a>
+      <a class="back-link page-back-link about-back-link" routerLink="/home">/ Go back /</a>
     </main>
   `
 })

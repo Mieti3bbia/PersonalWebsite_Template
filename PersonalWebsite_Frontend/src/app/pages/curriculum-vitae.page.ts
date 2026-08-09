@@ -126,7 +126,7 @@ interface TimelineItem {
         </div>
       </section>
 
-      <a class="back-link curriculum-vitae-back-link" routerLink="/home">/ Go back /</a>
+      <a class="back-link page-back-link curriculum-vitae-back-link" routerLink="/home">/ Go back /</a>
     </main>
   `
 })

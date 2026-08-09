@@ -2609,6 +2609,15 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   color: #593854;
 }
 
+.teachings-page {
+  padding-bottom: clamp(42px, 6vw, 72px);
+}
+
+.teachings-page .page-back-link {
+  padding-top: clamp(28px, 5vw, 58px);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
 /* Curriculum vitae page */
 .curriculum-vitae-page {
   background: #000;
@@ -2628,7 +2637,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   gap: clamp(22px, 4vw, 42px);
   min-height: calc(78svh - 72px);
   padding: clamp(104px, 12vw, 142px) clamp(20px, 8vw, 120px) clamp(48px, 7vw, 76px);
-  border-bottom: 2px solid #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   text-align: center;
 }
 
@@ -2702,7 +2711,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(220px, 0.72fr);
   gap: clamp(22px, 4vw, 48px);
   padding: clamp(48px, 8vw, 96px) clamp(20px, 8vw, 120px);
-  border-bottom: 2px solid #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .cv-skills article {
@@ -2802,7 +2811,7 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   display: grid;
   gap: clamp(34px, 6vw, 72px);
   padding: clamp(58px, 9vw, 116px) clamp(20px, 8vw, 120px);
-  border-bottom: 2px solid #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .cv-timeline-section header {
@@ -3818,5 +3827,51 @@ app-curriculum-vitae-page,
   .about-page .about-layout {
     min-height: 100svh;
     padding: 38px 20px 46px;
+  }
+}
+
+.page-back-link {
+  display: block;
+  width: max-content;
+  margin: clamp(32px, 5vw, 58px) auto 0;
+  color: #593854;
+  background: #000;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.page-back-link:hover,
+.page-back-link:focus-visible {
+  text-decoration: underline;
+}
+
+.curriculum-vitae-page .page-back-link {
+  color: #593854;
+}
+
+.contact-page .page-back-link {
+  justify-self: center;
+  grid-column: 1 / -1;
+}
+
+.about-page,
+.curriculum-vitae-page {
+  padding-bottom: clamp(42px, 6vw, 72px);
+}
+
+.contact-page .contact-form-section {
+  padding-bottom: clamp(58px, 8vw, 92px);
+}
+
+@media (max-width: 900px) {
+  .page-back-link {
+    margin-top: clamp(32px, 5vw, 58px);
+    margin-bottom: 0;
   }
 }
