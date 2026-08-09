@@ -3960,6 +3960,7 @@ app-curriculum-vitae-page,
 .about-page .about-layout {
   min-height: 100svh;
   height: 100svh;
+  background: #070707;
   padding: 72px clamp(20px, 4vw, 44px) 0;
 }
 
@@ -4006,22 +4007,50 @@ app-curriculum-vitae-page,
   height: 100svh;
   align-content: center;
   justify-items: center;
-  gap: clamp(18px, 3vw, 34px);
+  gap: 0;
+  background: #070707;
   padding: 72px clamp(20px, 4vw, 44px) 0;
 }
 
-.curriculum-vitae-page .cv-hero h1 {
-  width: min(1180px, 100%);
-  max-width: min(1180px, 100%);
-  font-size: clamp(38px, 5.8vw, 82px);
-  line-height: 1.2;
+.curriculum-vitae-page .cv-hero .eyebrow {
+  margin: 0;
   text-align: center;
 }
 
-.curriculum-vitae-page .cv-contact {
-  width: min(1180px, 100%);
-  justify-content: center;
+.curriculum-vitae-page .cv-hero h1 {
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: min(760px, 100%);
+  margin: clamp(22px, 4vw, 34px) auto 0;
+  color: #593854;
+  font-size: clamp(38px, 5.8vw, 82px);
+  line-height: 1.38;
   text-align: center;
+  text-transform: none;
+}
+
+.curriculum-vitae-page .cv-hero h1 span {
+  display: block;
+  max-width: 100%;
+}
+
+.curriculum-vitae-page .cv-contact {
+  width: 100%;
+  max-width: min(1180px, 100%);
+  margin: clamp(16px, 3vw, 28px) auto 0;
+  justify-content: center;
+  gap: 12px 24px;
+  color: rgba(89, 56, 84, 0.68);
+  font-size: clamp(13px, 1.45vw, 22px);
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.curriculum-vitae-page .cv-contact a {
+  color: #F207CB;
 }
 
 @media (max-width: 900px) {
@@ -4043,6 +4072,7 @@ app-curriculum-vitae-page,
 
   .curriculum-vitae-page .cv-contact {
     max-width: calc(100vw - 40px);
+    font-size: clamp(11px, 3.8vw, 16px);
   }
 }
 

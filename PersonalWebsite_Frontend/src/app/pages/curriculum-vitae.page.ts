@@ -16,7 +16,10 @@ interface TimelineItem {
     <main class="detail-page curriculum-vitae-page">
       <section class="cv-hero page-section">
         <p class="eyebrow">/ Curriculum vitae /</p>
-        <h1 class="slide-in">Maria Sole Montironi Lasca</h1>
+        <h1 class="slide-in">
+          <span>Maria Sole</span>
+          <span>Montironi Lasca</span>
+        </h1>
         <div class="cv-contact">
           <span>Milano</span>
           <a href="mailto:mariasole.freelancer@gmail.com">mariasole.freelancer@gmail.com</a>
