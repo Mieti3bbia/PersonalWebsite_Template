@@ -9,6 +9,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Roboto Condensed Medium";
+  src: url("/fonts/RobotoCondensed-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Condensed Bold";
+  src: url("/fonts/RobotoCondensed-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 * { box-sizing: border-box; }
 
 :root {
@@ -6043,7 +6059,7 @@ app-curriculum-vitae-page,
   position: absolute;
   top: 14px;
   left: 14px;
-  z-index: 1;
+  z-index: 2;
   color: rgba(242, 7, 203, 0.82);
   font-family: "911 Porscha", Arial, Helvetica, sans-serif;
   font-size: 11px;
@@ -6052,11 +6068,25 @@ app-curriculum-vitae-page,
 }
 
 .contact-page .contact-map iframe {
+  display: block;
   width: 100%;
   height: 100%;
   min-height: 100%;
-  filter: grayscale(1) invert(0.92) contrast(0.95);
-  opacity: 0.72;
+  border: 0;
+  filter: invert(1) hue-rotate(235deg) saturate(2.35) contrast(1.2) brightness(0.5);
+  opacity: 0.9;
+}
+
+.contact-page .contact-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(242, 7, 203, 0.28), transparent 24%),
+    linear-gradient(135deg, rgba(18, 0, 44, 0.78), rgba(242, 7, 203, 0.18) 48%, rgba(20, 0, 46, 0.72));
+  mix-blend-mode: color;
 }
 
 @media (min-width: 901px) {
@@ -6537,4 +6567,52 @@ app-page-title-hero {
 .costume-page .fashion-gallery-row > button:focus-visible {
   background: transparent;
   color: #F207CB;
+}
+
+@media (max-width: 900px) {
+  .curriculum-vitae-page .cv-profile {
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    gap: 18px;
+  }
+
+  .curriculum-vitae-page .cv-profile h2,
+  .curriculum-vitae-page .cv-profile div {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.curriculum-vitae-page .cv-profile p {
+  font-family: "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.curriculum-vitae-page .cv-chip-grid span,
+.curriculum-vitae-page .cv-language-list p {
+  font-family: "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.curriculum-vitae-page .cv-featured-grid p,
+.curriculum-vitae-page .cv-timeline-card p,
+.curriculum-vitae-page .cv-timeline-card li {
+  font-family: "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.about-page .about-body p {
+  font-family: "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.about-page .about-body strong {
+  font-family: "Roboto Condensed Bold", "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
+  font-weight: 700;
+}
+
+.services-page .service-summary,
+.services-page .service-details p {
+  font-family: "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
+  font-weight: 500;
 }

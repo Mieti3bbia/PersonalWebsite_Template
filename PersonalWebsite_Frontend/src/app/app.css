@@ -91,6 +91,24 @@
 .nav-links a:focus-visible:after,
 .nav-links a.is-active:after { transform: scaleX(1); }
 
+.nav-links .book-now-nav-link {
+  min-height: 34px;
+  border: 1px solid #F207CB;
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: rgba(242, 7, 203, 0.04);
+}
+
+.nav-links .book-now-nav-link:after {
+  display: none;
+}
+
+.nav-links .book-now-nav-link:hover,
+.nav-links .book-now-nav-link:focus-visible {
+  background: #F207CB;
+  color: #070707;
+}
+
 .icon-link {
   display: inline-flex;
   align-items: center;

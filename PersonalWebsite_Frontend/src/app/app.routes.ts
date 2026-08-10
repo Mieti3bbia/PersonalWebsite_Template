@@ -32,6 +32,7 @@ export const routes: Routes = [
   { path: 'portfolio/:slug', component: ProjectDetailPage },
   { path: 'aboutme', component: AboutPage },
   { path: 'curriculumvitae', component: CurriculumVitaePage },
+  { path: 'contacts', redirectTo: 'contact', pathMatch: 'full' },
   { path: 'contact', component: ContactPage },
   { path: '**', redirectTo: 'home' }
 ];

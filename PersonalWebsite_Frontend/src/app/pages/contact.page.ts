@@ -91,8 +91,8 @@ export interface ContactEmailContent {
 
         <div class="contact-map" aria-label="Google Maps location">
           <iframe
-            title="Milano Zona Navigli map"
-            src="https://www.google.com/maps?q=Milano%20Zona%20Navigli&z=15&output=embed"
+            title="Contact location map"
+            src="https://www.google.com/maps?q=45.452260,9.177442&z=15&output=embed"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
