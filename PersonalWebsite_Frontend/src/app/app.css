@@ -24,7 +24,7 @@
   align-items: center;
   gap: 12px;
   color: #F207CB;
-  font-size: 21px;
+  font-size: clamp(16px, 1.35vw, 21px);
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
@@ -118,9 +118,9 @@
 
 .site-footer p { margin: 0; }
 
-.floating-contact-link {
+.floating-contact-link,
+.floating-go-back-link {
   position: fixed;
-  right: clamp(18px, 2.4vw, 34px);
   bottom: clamp(18px, 2.4vw, 34px);
   z-index: 30;
   display: inline-flex;
@@ -143,18 +143,47 @@
     transform 180ms ease;
 }
 
-.floating-contact-link svg {
+.floating-contact-link {
+  right: clamp(18px, 2.4vw, 34px);
+}
+
+.floating-go-back-link {
+  top: calc(72px + clamp(24px, 3vw, 36px));
+  bottom: auto;
+  left: clamp(18px, 2.4vw, 34px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transform: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.floating-contact-link svg,
+.floating-go-back-link svg {
   display: block;
   width: 30px;
   height: 30px;
   fill: currentColor;
 }
 
+.floating-go-back-link svg {
+  width: 21px;
+  height: 21px;
+}
+
 .floating-contact-link:hover,
 .floating-contact-link:focus-visible,
-.floating-contact-link.is-active {
+.floating-contact-link.is-active,
+.floating-go-back-link:hover,
+.floating-go-back-link:focus-visible {
   background: #F207CB;
   color: #070707;
+  transform: translateY(-2px);
+}
+
+.floating-go-back-link:hover,
+.floating-go-back-link:focus-visible {
   transform: translateY(-2px);
 }
 
@@ -180,16 +209,32 @@
   .social-links { gap: 10px; }
   .site-footer { padding-inline: 20px; }
 
-  .floating-contact-link {
+  .floating-contact-link,
+  .floating-go-back-link {
     right: 14px;
     bottom: 14px;
     width: 55px;
     height: 55px;
   }
 
-  .floating-contact-link svg {
+  .floating-go-back-link {
+    right: auto;
+    top: 124px;
+    bottom: auto;
+    left: 14px;
+    width: 39px;
+    height: 39px;
+  }
+
+  .floating-contact-link svg,
+  .floating-go-back-link svg {
     width: 26px;
     height: 26px;
+  }
+
+  .floating-go-back-link svg {
+    width: 18px;
+    height: 18px;
   }
 }
 

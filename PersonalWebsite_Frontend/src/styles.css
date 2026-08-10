@@ -6177,8 +6177,9 @@ app-curriculum-vitae-page,
 
 .services-hero {
   display: grid;
+  place-content: center;
   place-items: center;
-  gap: clamp(14px, 2vw, 24px);
+  gap: clamp(4px, 0.8vw, 10px);
   min-height: clamp(260px, 42svh, 430px);
   padding: clamp(42px, 7vw, 88px) clamp(20px, 5vw, 64px);
   background: #070707;
@@ -6248,7 +6249,7 @@ app-curriculum-vitae-page,
   margin: 0;
   color: #593854;
   font-weight: 400;
-  font-size: clamp(28px, 4.8vw, 74px);
+  font-size: clamp(39px, 6.72vw, 104px);
   line-height: 1.04;
   text-transform: uppercase;
 }
@@ -6354,7 +6355,7 @@ app-page-title-hero {
   }
 
   .service-card h2 {
-    font-size: clamp(28px, 5.6vw, 58px);
+    font-size: clamp(39px, 7.84vw, 81px);
   }
 
   .service-media img {
@@ -6412,7 +6413,7 @@ app-page-title-hero {
 
   .service-card h2 {
     max-width: 100%;
-    font-size: clamp(22px, 7.2vw, 34px);
+    font-size: clamp(31px, 10.1vw, 48px);
     line-height: 1.12;
     overflow-wrap: anywhere;
   }
@@ -6449,7 +6450,7 @@ app-page-title-hero {
     font-size: 9px;
   }
 
-  .services-hero h1 {
+.services-hero h1 {
     max-width: calc(100vw - 32px);
     font-size: clamp(26px, 11vw, 42px);
     line-height: 1.08;
@@ -6466,7 +6467,7 @@ app-page-title-hero {
   }
 
   .service-card h2 {
-    font-size: clamp(20px, 6.8vw, 30px);
+    font-size: clamp(28px, 9.5vw, 42px);
     line-height: 1.14;
   }
 
@@ -6487,4 +6488,53 @@ app-page-title-hero {
   .service-media img {
     height: clamp(170px, 56vw, 260px);
   }
+}
+
+.project-detail-page .costume-page .costume-title-band h1,
+.project-detail-page .fashion-page .fashion-entry-title-band h2,
+.project-detail-page .teachings-page .teaching-card-copy p:first-child,
+.services-page .service-card h2 {
+  font-size: clamp(17px, 1.35vw, 21px);
+  line-height: 1.25;
+}
+
+@media (max-width: 900px) {
+  .project-detail-page .costume-page .costume-title-band h1,
+  .project-detail-page .fashion-page .fashion-entry-title-band h2,
+  .project-detail-page .teachings-page .teaching-card-copy p:first-child,
+  .services-page .service-card h2 {
+    font-size: clamp(15px, 2.8vw, 18px);
+    line-height: 1.28;
+  }
+}
+
+.services-page app-page-title-hero .services-hero h1,
+.about-page app-page-title-hero .services-hero h1,
+.curriculum-vitae-page app-page-title-hero .services-hero h1 {
+  font-size: clamp(46px, 7.2vw, 112px);
+  line-height: 1.04;
+}
+
+@media (max-width: 900px) {
+  .services-page app-page-title-hero .services-hero h1,
+  .about-page app-page-title-hero .services-hero h1,
+  .curriculum-vitae-page app-page-title-hero .services-hero h1 {
+    font-size: clamp(20px, 7vw, 30px);
+    line-height: 1.12;
+  }
+}
+
+.fashion-page .fashion-gallery-row > button,
+.costume-page .fashion-gallery-row > button {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.fashion-page .fashion-gallery-row > button:hover,
+.fashion-page .fashion-gallery-row > button:focus-visible,
+.costume-page .fashion-gallery-row > button:hover,
+.costume-page .fashion-gallery-row > button:focus-visible {
+  background: transparent;
+  color: #F207CB;
 }

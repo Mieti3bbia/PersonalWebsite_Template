@@ -23,7 +23,6 @@ interface ServiceItem {
         @for (service of services; track service.title) {
           <article class="service-card">
             <div class="service-card-copy">
-              <p class="service-eyebrow">{{ service.eyebrow }}</p>
               <h2>{{ service.title }}</h2>
               <p class="service-summary">{{ service.summary }}</p>
 

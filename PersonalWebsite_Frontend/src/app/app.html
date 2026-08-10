@@ -16,6 +16,12 @@
 
 <router-outlet />
 
+<button class="floating-go-back-link" type="button" (click)="goBack()" aria-label="Go back">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M14.7 5.3 8 12l6.7 6.7-1.4 1.4L5.2 12l8.1-8.1 1.4 1.4Z"/>
+  </svg>
+</button>
+
 <a class="floating-contact-link" routerLink="/contact" routerLinkActive="is-active" aria-label="Open contact page">
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M4 5h16v14H4V5Zm2 2v.28l6 4.5 6-4.5V7H6Zm12 10V9.78l-6 4.5-6-4.5V17h12Z"/>
