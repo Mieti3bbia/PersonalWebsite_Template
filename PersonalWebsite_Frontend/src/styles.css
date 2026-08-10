@@ -6166,3 +6166,205 @@ app-curriculum-vitae-page,
   text-decoration: none;
   box-shadow: none;
 }
+
+/* Services page */
+.services-page {
+  min-height: 100svh;
+  padding-top: 72px;
+  background: #000;
+  color: #fff;
+}
+
+.services-hero {
+  display: grid;
+  place-items: center;
+  gap: clamp(14px, 2vw, 24px);
+  min-height: clamp(260px, 42svh, 430px);
+  padding: clamp(48px, 7vw, 88px) clamp(20px, 5vw, 64px);
+  background: #070707;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+}
+
+.services-hero p {
+  margin: 0;
+  color: rgba(242, 7, 203, 0.72);
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(10px, 0.92vw, 14px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.services-hero h1 {
+  margin: 0;
+  color: #593854;
+  font-weight: 400;
+  font-size: clamp(52px, 8vw, 128px);
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+.services-list {
+  display: grid;
+  gap: clamp(34px, 5vw, 72px);
+  width: min(1420px, calc(100% - clamp(32px, 8vw, 128px)));
+  margin-inline: auto;
+  padding: clamp(42px, 6vw, 82px) 0 clamp(64px, 8vw, 108px);
+  background: #000;
+}
+
+.service-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
+  grid-template-areas:
+    "copy media"
+    "details media";
+  gap: clamp(24px, 4vw, 58px);
+  align-items: center;
+  padding: clamp(26px, 4vw, 58px);
+  border: 1px solid rgba(242, 7, 203, 0.28);
+  background: #070707;
+}
+
+.service-card-copy {
+  grid-area: copy;
+}
+
+.service-eyebrow {
+  margin: 0 0 clamp(12px, 1.6vw, 18px);
+  color: rgba(242, 7, 203, 0.78);
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(10px, 0.82vw, 13px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.service-card h2 {
+  width: min(920px, 100%);
+  margin: 0;
+  color: #593854;
+  font-weight: 400;
+  font-size: clamp(28px, 4.8vw, 74px);
+  line-height: 1.04;
+  text-transform: uppercase;
+}
+
+.service-summary {
+  width: min(920px, 100%);
+  margin: clamp(18px, 2.2vw, 28px) 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(14px, 1.1vw, 18px);
+  line-height: 1.55;
+}
+
+.service-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: clamp(20px, 2.4vw, 34px);
+}
+
+.service-actions a {
+  display: inline-grid;
+  place-items: center;
+  min-width: min(220px, 100%);
+  min-height: 48px;
+  border: 1px solid #F207CB;
+  background: rgba(242, 7, 203, 0.04);
+  color: #F207CB;
+  padding: 14px 22px;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(12px, 1vw, 16px);
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.service-actions a:hover,
+.service-actions a:focus-visible {
+  background: #F207CB;
+  color: #070707;
+}
+
+.service-media {
+  grid-area: media;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin: 0;
+  border: 1px solid rgba(242, 7, 203, 0.32);
+  background: #050505;
+  overflow: hidden;
+}
+
+.service-media img {
+  display: block;
+  width: 100%;
+  height: clamp(280px, 32vw, 520px);
+  object-fit: cover;
+}
+
+.service-details {
+  grid-area: details;
+  display: grid;
+  gap: 12px;
+  width: min(920px, 100%);
+  padding-top: clamp(18px, 2.2vw, 28px);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.service-details p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.64);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .services-page {
+    padding-top: 106px;
+  }
+
+  .services-hero {
+    min-height: 220px;
+    padding: 36px 20px;
+  }
+
+  .services-hero h1 {
+    font-size: clamp(36px, 13vw, 62px);
+  }
+
+  .services-list {
+    width: min(100%, calc(100% - 32px));
+    padding: 34px 0 64px;
+  }
+
+  .service-card {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "media"
+      "details";
+    padding: 18px;
+  }
+
+  .service-card h2 {
+    font-size: clamp(28px, 10vw, 44px);
+  }
+
+  .service-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .service-actions a {
+    width: 100%;
+  }
+
+  .service-media img {
+    height: clamp(220px, 62vw, 360px);
+  }
+}

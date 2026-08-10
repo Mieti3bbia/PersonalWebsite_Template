@@ -5,11 +5,13 @@ import { CurriculumVitaePage } from './pages/curriculum-vitae.page';
 import { HomePage } from './pages/home.page';
 import { ProjectDetailPage } from './pages/project-detail.page';
 import { ProjectsPage } from './pages/projects.page';
+import { ServicesPage } from './pages/services.page';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomePage },
   { path: 'portfolio', component: ProjectsPage },
+  { path: 'servizi', component: ServicesPage },
   { path: 'project', redirectTo: 'portfolio', pathMatch: 'full' },
   { path: 'projects', redirectTo: 'portfolio', pathMatch: 'full' },
   { path: 'project/project1', redirectTo: 'portfolio/costume-design', pathMatch: 'full' },
