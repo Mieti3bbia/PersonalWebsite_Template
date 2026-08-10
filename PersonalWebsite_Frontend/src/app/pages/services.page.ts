@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { PageTitleHeroComponent } from '../components/page-title-hero.component';
 
 interface ServiceItem {
   eyebrow: string;
@@ -13,13 +14,10 @@ interface ServiceItem {
 
 @Component({
   selector: 'app-services-page',
-  imports: [RouterLink],
+  imports: [RouterLink, PageTitleHeroComponent],
   template: `
     <main class="services-page">
-      <section class="services-hero page-section">
-        <p>/ servizi /</p>
-        <h1>Servizi</h1>
-      </section>
+      <app-page-title-hero eyebrow="/ servizi /" title="servizi" />
 
       <section class="services-list page-section">
         @for (service of services; track service.title) {

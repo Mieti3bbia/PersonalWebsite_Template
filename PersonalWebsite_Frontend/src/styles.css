@@ -6180,10 +6180,11 @@ app-curriculum-vitae-page,
   place-items: center;
   gap: clamp(14px, 2vw, 24px);
   min-height: clamp(260px, 42svh, 430px);
-  padding: clamp(48px, 7vw, 88px) clamp(20px, 5vw, 64px);
+  padding: clamp(42px, 7vw, 88px) clamp(20px, 5vw, 64px);
   background: #070707;
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   text-align: center;
+  overflow: hidden;
 }
 
 .services-hero p {
@@ -6196,12 +6197,15 @@ app-curriculum-vitae-page,
 }
 
 .services-hero h1 {
+  width: 100%;
+  max-width: min(1180px, calc(100vw - 40px));
   margin: 0;
   color: #593854;
   font-weight: 400;
-  font-size: clamp(52px, 8vw, 128px);
+  font-size: clamp(42px, 8vw, 128px);
   line-height: 1.02;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .services-list {
@@ -6323,23 +6327,66 @@ app-curriculum-vitae-page,
   line-height: 1.5;
 }
 
+app-page-title-hero {
+  display: block;
+}
+
+.about-page.detail-page,
+.curriculum-vitae-page.detail-page {
+  padding-top: 72px;
+}
+
+.services-page app-page-title-hero .services-hero,
+.about-page app-page-title-hero .services-hero,
+.curriculum-vitae-page app-page-title-hero .services-hero {
+  background: #070707;
+}
+
+@media (max-width: 1180px) {
+  .services-list {
+    width: min(100%, calc(100% - 48px));
+  }
+
+  .service-card {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.46fr);
+    gap: clamp(22px, 3vw, 38px);
+    padding: clamp(24px, 3.4vw, 42px);
+  }
+
+  .service-card h2 {
+    font-size: clamp(28px, 5.6vw, 58px);
+  }
+
+  .service-media img {
+    height: clamp(240px, 30vw, 380px);
+  }
+}
+
 @media (max-width: 900px) {
   .services-page {
     padding-top: 106px;
   }
 
+  .about-page.detail-page,
+  .curriculum-vitae-page.detail-page {
+    padding-top: 106px;
+  }
+
   .services-hero {
-    min-height: 220px;
-    padding: 36px 20px;
+    min-height: clamp(180px, 32svh, 260px);
+    padding: clamp(28px, 8vw, 44px) 20px;
   }
 
   .services-hero h1 {
-    font-size: clamp(36px, 13vw, 62px);
+    max-width: calc(100vw - 40px);
+    font-size: clamp(30px, 12vw, 62px);
+    line-height: 1.06;
   }
 
   .services-list {
     width: min(100%, calc(100% - 32px));
-    padding: 34px 0 64px;
+    gap: 28px;
+    padding: 30px 0 64px;
   }
 
   .service-card {
@@ -6348,11 +6395,32 @@ app-curriculum-vitae-page,
       "copy"
       "media"
       "details";
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    gap: 20px;
     padding: 18px;
   }
 
+  .service-card-copy,
+  .service-details,
+  .service-media,
+  .service-actions {
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .service-card h2 {
-    font-size: clamp(28px, 10vw, 44px);
+    max-width: 100%;
+    font-size: clamp(22px, 7.2vw, 34px);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+
+  .service-summary,
+  .service-details p {
+    font-size: clamp(13px, 3.6vw, 15px);
+    line-height: 1.48;
   }
 
   .service-actions {
@@ -6362,9 +6430,61 @@ app-curriculum-vitae-page,
 
   .service-actions a {
     width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .service-media img {
-    height: clamp(220px, 62vw, 360px);
+    height: clamp(160px, 52vw, 280px);
+  }
+}
+
+@media (max-width: 420px) {
+  .services-hero {
+    min-height: clamp(150px, 28svh, 210px);
+    padding: 24px 16px;
+  }
+
+  .services-hero p {
+    font-size: 9px;
+  }
+
+  .services-hero h1 {
+    max-width: calc(100vw - 32px);
+    font-size: clamp(26px, 11vw, 42px);
+    line-height: 1.08;
+  }
+
+  .services-list {
+    width: min(100%, calc(100% - 20px));
+    gap: 22px;
+    padding-top: 24px;
+  }
+
+  .service-card {
+    padding: 14px;
+  }
+
+  .service-card h2 {
+    font-size: clamp(20px, 6.8vw, 30px);
+    line-height: 1.14;
+  }
+
+  .service-summary {
+    margin-top: 14px;
+  }
+
+  .service-actions {
+    gap: 10px;
+  }
+
+  .service-actions a {
+    min-height: 44px;
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+
+  .service-media img {
+    height: clamp(170px, 56vw, 260px);
   }
 }

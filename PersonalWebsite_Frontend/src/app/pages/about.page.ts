@@ -1,23 +1,13 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
+import { PageTitleHeroComponent } from '../components/page-title-hero.component';
 
 @Component({
   selector: 'app-about-page',
-  imports: [RouterLink, GoBackLinkComponent],
+  imports: [GoBackLinkComponent, PageTitleHeroComponent],
   template: `
     <main class="detail-page about-page">
-      <section class="about-layout page-section">
-        <div>
-          <p class="eyebrow">/ About me /</p>
-          <h1 class="slide-in">
-            <span>Maria Sole</span>
-            <span>Montironi Lasca</span>
-          </h1>
-          <p class="about-subtitle">Fashion &amp; Costume Designer e Tutor</p>
-        </div>
-        <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85" alt="Portrait in a creative studio">
-      </section>
+      <app-page-title-hero eyebrow="/ about me /" title="about me" />
 
       <section class="about-body page-section">
         <p>Sono una Fashion Designer, Costume Designer &amp; Maker e Tutor, ma nessuna di queste definizioni, da sola, riesce davvero a raccontare chi sono.</p>

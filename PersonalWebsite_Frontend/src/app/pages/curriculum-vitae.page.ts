@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
+import { PageTitleHeroComponent } from '../components/page-title-hero.component';
 
 interface TimelineItem {
   period: string;
@@ -11,22 +11,10 @@ interface TimelineItem {
 
 @Component({
   selector: 'app-curriculum-vitae-page',
-  imports: [RouterLink, GoBackLinkComponent],
+  imports: [GoBackLinkComponent, PageTitleHeroComponent],
   template: `
     <main class="detail-page curriculum-vitae-page">
-      <section class="cv-hero page-section">
-        <p class="eyebrow">/ Curriculum vitae /</p>
-        <h1 class="slide-in">
-          <span>Maria Sole</span>
-          <span>Montironi Lasca</span>
-        </h1>
-        <div class="cv-contact">
-          <span>Milano</span>
-          <a href="mailto:mariasole.freelancer@gmail.com">mariasole.freelancer@gmail.com</a>
-          <a href="tel:+393312827693">+39 3312827693</a>
-          <span>25/09/2001</span>
-        </div>
-      </section>
+      <app-page-title-hero eyebrow="/ curriculum /" title="curriculum" />
 
       <section class="cv-profile page-section">
         <h2>Profilo</h2>

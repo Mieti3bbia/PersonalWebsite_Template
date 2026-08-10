@@ -146,7 +146,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
             <p class="teachings-empty">Loading teachings...</p>
           }
 
-          <app-go-back-link routerLink="/portfolio" variantClass="teachings-back-link" />
+          <app-go-back-link variantClass="teachings-back-link" [historyBack]="true" />
         </section>
       } @else if (isFashionDesign) {
         <section class="fashion-page page-section">
@@ -209,7 +209,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
             }
           </article>
 
-          <app-go-back-link routerLink="/portfolio" variantClass="fashion-back-link" />
+          <app-go-back-link variantClass="fashion-back-link" [historyBack]="true" />
         </section>
       } @else if (isCostumeDesign) {
         <section class="costume-page page-section">
@@ -281,7 +281,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
             }
           </div>
 
-          <app-go-back-link routerLink="/portfolio" variantClass="costume-back-link" />
+          <app-go-back-link variantClass="costume-back-link" [historyBack]="true" />
         </section>
       } @else {
         <section class="project-detail-layout page-section">
