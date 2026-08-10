@@ -9,12 +9,17 @@
       <a routerLink="/portfolio" routerLinkActive="is-active">portfolio</a>
       <a routerLink="/aboutme" routerLinkActive="is-active">About me</a>
       <a routerLink="/curriculumvitae" routerLinkActive="is-active">CV</a>
-      <a routerLink="/contact" routerLinkActive="is-active">contact</a>
     </nav>
   </div>
 </header>
 
 <router-outlet />
+
+<a class="floating-contact-link" routerLink="/contact" routerLinkActive="is-active" aria-label="Open contact page">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 5h16v14H4V5Zm2 2v.28l6 4.5 6-4.5V7H6Zm12 10V9.78l-6 4.5-6-4.5V17h12Z"/>
+  </svg>
+</a>
 
 <footer class="site-footer">
   <p>&copy; Copyright 2026 all rights reserved</p>

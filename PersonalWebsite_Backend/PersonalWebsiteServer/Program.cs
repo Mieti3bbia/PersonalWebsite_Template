@@ -2,14 +2,25 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 const long MaxUploadSize = 1024L * 1024L * 1024L;
 const string DashboardUsername = "admin";
 const string DashboardPassword = "terapiatapioca";
+const string DefaultContactDestinationEmail = "test.012012@libero.it";
+const string DefaultSmtpHost = "smtp.libero.it";
+const string DefaultSmtpPort = "465";
+const string DefaultSmtpUser = "test.012012@libero.it";
+const string DefaultSmtpFromEmail = "test.012012@libero.it";
+var contactRateLimit = new ConcurrentDictionary<string, ContactRateLimitEntry>();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -233,6 +244,75 @@ app.MapGet("/api/costume-designs", async (PersonalWebsiteDbContext db) =>
 })
 .WithName("GetCostumeDesigns");
 
+app.MapPost("/api/contact", async (HttpContext context, ContactRequest? request) =>
+{
+    Console.WriteLine("Contact form has entered the inbox runway. Tiny SMTP hat: on.");
+    Console.WriteLine(JsonSerializer.Serialize(request, new JsonSerializerOptions { WriteIndented = true }));
+
+    var clientKey = GetClientKey(context);
+
+    if (IsRateLimited(contactRateLimit, clientKey))
+    {
+        return Results.Json(
+            new { ok = false, error = "Too many contact requests. Please try again later." },
+            statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    var recipientEmail = GetSetting("CONTACT_DESTINATION_EMAIL", DefaultContactDestinationEmail);
+    var validationErrors = ValidateContactRequest(request, recipientEmail);
+
+    if (validationErrors.Count > 0)
+    {
+        return Results.Json(
+            new { ok = false, error = string.Join(" ", validationErrors) },
+            statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    if (LooksLikeSpam(request!.Form))
+    {
+        return Results.Json(
+            new { ok = false, error = "Invalid contact request." },
+            statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    try
+    {
+        await SendContactEmail(request, recipientEmail!);
+        Console.WriteLine($"Contact email sent to {recipientEmail}.");
+        return Results.Json(new { ok = true }, statusCode: StatusCodes.Status200OK);
+    }
+    catch (InvalidOperationException exception)
+    {
+        Console.WriteLine($"Contact email configuration error: {exception.Message}");
+        return Results.Json(
+            new { ok = false, error = exception.Message },
+            statusCode: StatusCodes.Status500InternalServerError);
+    }
+    catch (SmtpCommandException exception)
+    {
+        Console.WriteLine($"SMTP provider rejected contact email: {exception.Message}");
+        return Results.Json(
+            new { ok = false, error = $"SMTP provider rejected contact email: {exception.Message}" },
+            statusCode: StatusCodes.Status500InternalServerError);
+    }
+    catch (SmtpProtocolException exception)
+    {
+        Console.WriteLine($"SMTP protocol error: {exception.Message}");
+        return Results.Json(
+            new { ok = false, error = $"SMTP protocol error: {exception.Message}" },
+            statusCode: StatusCodes.Status500InternalServerError);
+    }
+    catch (Exception exception)
+    {
+        Console.WriteLine($"Unexpected contact email error: {exception.Message}");
+        return Results.Json(
+            new { ok = false, error = "Unexpected contact email error." },
+            statusCode: StatusCodes.Status500InternalServerError);
+    }
+})
+.DisableAntiforgery()
+.WithName("PostContact");
+
 app.MapGet("/dashboard", async (PersonalWebsiteDbContext db) =>
 {
     var teachings = await db.Teachings
@@ -453,6 +533,150 @@ app.Run();
 static string ReadRequiredFormValue(IFormCollection form, string key)
 {
     return form[key].ToString().Trim();
+}
+
+static IReadOnlyList<string> ValidateContactRequest(ContactRequest? request, string? recipientEmail)
+{
+    var errors = new List<string>();
+
+    if (request is null)
+    {
+        return ["Request body is required."];
+    }
+
+    AddRequiredError(errors, recipientEmail, "CONTACT_DESTINATION_EMAIL");
+    AddRequiredError(errors, request.Form?.FirstName, "form.firstName");
+    AddRequiredError(errors, request.Form?.LastName, "form.lastName");
+    AddRequiredError(errors, request.Form?.Email, "form.email");
+    AddRequiredError(errors, request.Form?.Type, "form.type");
+    AddRequiredError(errors, request.Form?.Subject, "form.subject");
+    AddRequiredError(errors, request.Form?.Message, "form.message");
+
+    if (!string.IsNullOrWhiteSpace(recipientEmail) && !IsEmailAddress(recipientEmail))
+    {
+        errors.Add("CONTACT_DESTINATION_EMAIL must be a valid email address.");
+    }
+
+    if (!string.IsNullOrWhiteSpace(request.Form?.Email) && !IsEmailAddress(request.Form.Email))
+    {
+        errors.Add("form.email must be a valid email address.");
+    }
+
+    if (!string.IsNullOrWhiteSpace(request.Email?.ReplyTo) && !IsEmailAddress(request.Email.ReplyTo))
+    {
+        errors.Add("email.replyTo must be a valid email address.");
+    }
+
+    return errors;
+}
+
+static void AddRequiredError(List<string> errors, string? value, string field)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        errors.Add($"{field} is required.");
+    }
+}
+
+static bool IsEmailAddress(string value)
+{
+    return MailboxAddress.TryParse(value, out _);
+}
+
+static bool LooksLikeSpam(ContactForm form)
+{
+    var combinedText = $"{form.FirstName} {form.LastName} {form.Type} {form.Subject} {form.Message}";
+    var urlCount = Regex.Matches(combinedText, @"https?://|www\.", RegexOptions.IgnoreCase).Count;
+
+    return urlCount > 3 ||
+        form.Message.Length < 10 ||
+        form.Message.Length > 5000 ||
+        form.Subject.Length > 200;
+}
+
+static string GetClientKey(HttpContext context)
+{
+    return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+}
+
+static string GetSetting(string name, string fallback)
+{
+    var value = Environment.GetEnvironmentVariable(name);
+    return string.IsNullOrWhiteSpace(value) ? fallback : value;
+}
+
+static bool IsRateLimited(ConcurrentDictionary<string, ContactRateLimitEntry> rateLimits, string key)
+{
+    var now = DateTimeOffset.UtcNow;
+    var entry = rateLimits.AddOrUpdate(
+        key,
+        _ => new ContactRateLimitEntry(now, 1),
+        (_, current) => now - current.WindowStartedAt > TimeSpan.FromMinutes(15)
+            ? new ContactRateLimitEntry(now, 1)
+            : current with { Count = current.Count + 1 });
+
+    return entry.Count > 5;
+}
+
+static async Task SendContactEmail(ContactRequest request, string recipientEmail)
+{
+    var host = GetSetting("SMTP_HOST", DefaultSmtpHost);
+    var portValue = GetSetting("SMTP_PORT", DefaultSmtpPort);
+    var username = GetSetting("SMTP_USER", DefaultSmtpUser);
+    var password = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
+    var fromEmail = GetSetting("SMTP_FROM_EMAIL", DefaultSmtpFromEmail);
+
+    Console.WriteLine($"SMTP config: host={host ?? "<missing>"}, port={portValue ?? "<missing>"}, user={username ?? "<missing>"}, from={fromEmail ?? "<missing>"}, passwordSet={!string.IsNullOrWhiteSpace(password)}");
+
+    if (string.IsNullOrWhiteSpace(host) ||
+        string.IsNullOrWhiteSpace(portValue) ||
+        string.IsNullOrWhiteSpace(username) ||
+        string.IsNullOrWhiteSpace(password) ||
+        string.IsNullOrWhiteSpace(fromEmail) ||
+        !int.TryParse(portValue, out var port))
+    {
+        throw new InvalidOperationException("SMTP configuration is incomplete.");
+    }
+
+    var message = new MimeMessage();
+    message.From.Add(MailboxAddress.Parse(fromEmail));
+    message.To.Add(MailboxAddress.Parse(recipientEmail));
+    message.ReplyTo.Add(MailboxAddress.Parse(string.IsNullOrWhiteSpace(request.Email?.ReplyTo)
+        ? request.Form.Email
+        : request.Email.ReplyTo));
+    message.Subject = string.IsNullOrWhiteSpace(request.Email?.Subject)
+        ? $"{request.Form.Type} - {request.Form.Subject}"
+        : request.Email.Subject;
+    message.Body = new TextPart("plain")
+    {
+        Text = string.IsNullOrWhiteSpace(request.Email?.Text)
+            ? BuildContactEmailBody(request.Form)
+            : request.Email.Text
+    };
+
+    using var client = new MailKit.Net.Smtp.SmtpClient();
+    var secureSocketOptions = port == 465
+        ? SecureSocketOptions.SslOnConnect
+        : SecureSocketOptions.StartTls;
+
+    await client.ConnectAsync(host, port, secureSocketOptions);
+    client.AuthenticationMechanisms.Remove("XOAUTH2");
+    await client.AuthenticateAsync(username, password);
+    await client.SendAsync(message);
+    await client.DisconnectAsync(true);
+}
+
+static string BuildContactEmailBody(ContactForm form)
+{
+    return $"""
+        Nome: {form.FirstName} {form.LastName}
+        Email: {form.Email}
+        Tipologia: {form.Type}
+        Oggetto: {form.Subject}
+
+        Messaggio:
+        {form.Message}
+        """;
 }
 
 static async Task<string?> SaveUploadedFile(IFormFile? file, string uploadsPath, string resourceFolder, string kind)
@@ -1445,3 +1669,27 @@ sealed record CostumeDesignDto(
     string[] Gallery,
     string Description,
     string Credits);
+
+sealed record ContactRequest(
+    string? RecipientEmail,
+    ContactForm Form,
+    ContactEmail? Email,
+    DateTimeOffset? CreatedAt,
+    string? Source);
+
+sealed record ContactForm(
+    string FirstName,
+    string LastName,
+    string Email,
+    string Type,
+    string Subject,
+    string Message);
+
+sealed record ContactEmail(
+    string? ReplyTo,
+    string? Subject,
+    string? Text);
+
+sealed record ContactRateLimitEntry(
+    DateTimeOffset WindowStartedAt,
+    int Count);

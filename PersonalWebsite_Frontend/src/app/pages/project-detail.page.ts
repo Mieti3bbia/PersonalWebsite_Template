@@ -103,23 +103,39 @@ const PROJECTS: Record<string, PortfolioProject> = {
                       <p class="teaching-school">{{ card.school || 'School not provided' }}</p>
                     </div>
 
-                    <a
-                      class="teaching-preview"
-                      [href]="card.pdfUrl || '#'"
-                      [attr.target]="card.pdfUrl ? '_blank' : null"
-                      rel="noopener"
-                        [attr.aria-label]="card.pdfUrl ? 'Open ' + (card.title || 'teaching') + ' PDF' : 'Teaching preview placeholder'"
-                    >
+                    <div class="gallery-frame">
                       @if (card.previewImage) {
-                        <img
-                          [src]="card.previewImage"
-                          [alt]="card.title + ' preview'"
-                          (error)="card.previewImage = ''"
+                        <a
+                          class="teaching-preview"
+                          [href]="card.pdfUrl || '#'"
+                          [attr.target]="card.pdfUrl ? '_blank' : null"
+                          rel="noopener"
+                          [attr.aria-label]="card.pdfUrl ? 'Open ' + (card.title || 'teaching') + ' PDF' : 'Teaching preview placeholder'"
                         >
+                          <img
+                            #teachingPreviewImage
+                            [src]="card.previewImage"
+                            [alt]="card.title + ' preview'"
+                            (error)="card.previewImage = ''"
+                          >
+                        </a>
+                        <button type="button" class="gallery-fullscreen-button" aria-label="Open preview fullscreen" (click)="openGalleryViewer([card.previewImage], 0)">
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 9V5h4v2H7v2H5Zm10-4h4v4h-2V7h-2V5ZM7 15v2h2v2H5v-4h2Zm10 2v-2h2v4h-4v-2h2Z"/>
+                          </svg>
+                        </button>
                       } @else {
-                        <span>anteprima</span>
+                        <a
+                          class="teaching-preview"
+                          [href]="card.pdfUrl || '#'"
+                          [attr.target]="card.pdfUrl ? '_blank' : null"
+                          rel="noopener"
+                          [attr.aria-label]="card.pdfUrl ? 'Open ' + (card.title || 'teaching') + ' PDF' : 'Teaching preview placeholder'"
+                        >
+                          <span>anteprima</span>
+                        </a>
                       }
-                    </a>
+                    </div>
                   </div>
                 </article>
               }
@@ -159,7 +175,14 @@ const PROJECTS: Record<string, PortfolioProject> = {
                       @if (entry.gallery.length > 0) {
                         <div class="fashion-gallery-row" aria-label="Fashion gallery">
                           <button type="button" aria-label="Previous gallery item" (click)="showPreviousFashionImage()">→</button>
-                          <img class="fashion-gallery-panel" [src]="currentFashionImageFor(entry)" alt="Fashion design gallery image">
+                          <div class="gallery-frame">
+                            <img #fashionGalleryImage class="fashion-gallery-panel" [src]="currentFashionImageFor(entry)" alt="Fashion design gallery image">
+                            <button type="button" class="gallery-fullscreen-button" aria-label="Open fashion gallery image fullscreen" (click)="openGalleryViewer(entry.gallery, fashionGalleryIndex % entry.gallery.length)">
+                              <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5 9V5h4v2H7v2H5Zm10-4h4v4h-2V7h-2V5ZM7 15v2h2v2H5v-4h2Zm10 2v-2h2v4h-4v-2h2Z"/>
+                              </svg>
+                            </button>
+                          </div>
                           <button type="button" aria-label="Next gallery item" (click)="showNextFashionImage()">→</button>
                         </div>
                       }
@@ -217,7 +240,14 @@ const PROJECTS: Record<string, PortfolioProject> = {
                     <div class="fashion-gallery-row" aria-label="Costume gallery">
                       <button type="button" aria-label="Previous gallery item" (click)="showPreviousCostumeImage()">→</button>
                       @if (currentCostumeGalleryItemFor(entry).isImage) {
-                        <img class="fashion-gallery-panel" [src]="currentCostumeGalleryItemFor(entry).value" alt="Costume gallery image">
+                        <div class="gallery-frame">
+                          <img #costumeGalleryImage class="fashion-gallery-panel" [src]="currentCostumeGalleryItemFor(entry).value" alt="Costume gallery image">
+                          <button type="button" class="gallery-fullscreen-button" aria-label="Open costume gallery image fullscreen" (click)="openGalleryViewer(entry.gallery, costumeGalleryIndex % entry.gallery.length)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M5 9V5h4v2H7v2H5Zm10-4h4v4h-2V7h-2V5ZM7 15v2h2v2H5v-4h2Zm10 2v-2h2v4h-4v-2h2Z"/>
+                            </svg>
+                          </button>
+                        </div>
                       } @else {
                         <div class="fashion-gallery-panel costume-gallery-placeholder">{{ currentCostumeGalleryItemFor(entry).value }}</div>
                       }
@@ -272,6 +302,26 @@ const PROJECTS: Record<string, PortfolioProject> = {
           <img [src]="project.secondaryImage" [alt]="project.title + ' detail'">
         </section>
       }
+
+      @if (fullscreenGalleryItems.length > 0) {
+        <section
+          class="gallery-viewer"
+          aria-modal="true"
+          role="dialog"
+          aria-label="Fullscreen gallery"
+          (touchstart)="handleGalleryTouchStart($event)"
+          (touchend)="handleGalleryTouchEnd($event)"
+        >
+          <button type="button" class="gallery-viewer-close" aria-label="Close fullscreen gallery" (click)="closeGalleryViewer()">×</button>
+          @if (fullscreenGalleryItems.length > 1) {
+            <button type="button" class="gallery-viewer-arrow gallery-viewer-prev" aria-label="Previous fullscreen image" (click)="showPreviousFullscreenImage()">←</button>
+          }
+          <img [src]="currentFullscreenImage" alt="Fullscreen gallery image">
+          @if (fullscreenGalleryItems.length > 1) {
+            <button type="button" class="gallery-viewer-arrow gallery-viewer-next" aria-label="Next fullscreen image" (click)="showNextFullscreenImage()">→</button>
+          }
+        </section>
+      }
     </main>
   `
 })
@@ -293,6 +343,9 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   protected fashionGalleryIndex = 0;
   protected teachingCards: TeachingCard[] = [];
   protected teachingsLoaded = false;
+  protected fullscreenGalleryItems: string[] = [];
+  protected fullscreenGalleryIndex = 0;
+  private galleryTouchStartX = 0;
   private fadeElements: HTMLElement[] = [];
   private animationFrame = 0;
 
@@ -428,6 +481,66 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     }
 
     this.costumeGalleryIndex = (this.costumeGalleryIndex + 1) % galleryLength;
+  }
+
+  protected get currentFullscreenImage(): string {
+    return this.fullscreenGalleryItems[this.fullscreenGalleryIndex] ?? '';
+  }
+
+  protected openGalleryViewer(items: string[], index: number): void {
+    const imageItems = items.filter((item) => this.isImageUrl(item));
+
+    if (imageItems.length === 0) {
+      return;
+    }
+
+    this.fullscreenGalleryItems = imageItems;
+    this.fullscreenGalleryIndex = Math.min(Math.max(index, 0), imageItems.length - 1);
+  }
+
+  protected closeGalleryViewer(): void {
+    this.fullscreenGalleryItems = [];
+    this.fullscreenGalleryIndex = 0;
+  }
+
+  protected showPreviousFullscreenImage(): void {
+    const galleryLength = this.fullscreenGalleryItems.length;
+
+    if (galleryLength < 2) {
+      return;
+    }
+
+    this.fullscreenGalleryIndex = (this.fullscreenGalleryIndex + galleryLength - 1) % galleryLength;
+  }
+
+  protected showNextFullscreenImage(): void {
+    const galleryLength = this.fullscreenGalleryItems.length;
+
+    if (galleryLength < 2) {
+      return;
+    }
+
+    this.fullscreenGalleryIndex = (this.fullscreenGalleryIndex + 1) % galleryLength;
+  }
+
+  protected handleGalleryTouchStart(event: TouchEvent): void {
+    this.galleryTouchStartX = event.changedTouches[0]?.clientX ?? 0;
+  }
+
+  protected handleGalleryTouchEnd(event: TouchEvent): void {
+    const touchEndX = event.changedTouches[0]?.clientX ?? this.galleryTouchStartX;
+    const deltaX = touchEndX - this.galleryTouchStartX;
+
+    if (Math.abs(deltaX) < 40) {
+      return;
+    }
+
+    if (deltaX > 0) {
+      this.showPreviousFullscreenImage();
+      return;
+    }
+
+    this.showNextFullscreenImage();
   }
 
   private async loadCostumeProjects(): Promise<void> {

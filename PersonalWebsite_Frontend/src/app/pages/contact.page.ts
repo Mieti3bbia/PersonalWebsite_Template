@@ -2,14 +2,25 @@ import { Component } from '@angular/core';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
 
 export interface ContactRequest {
+  form: ContactFormData;
+  email: ContactEmailContent;
+  createdAt: string;
+  source: 'website-contact-form';
+}
+
+export interface ContactFormData {
   firstName: string;
   lastName: string;
   email: string;
   type: string;
   subject: string;
   message: string;
-  createdAt: string;
-  source: 'website-contact-form';
+}
+
+export interface ContactEmailContent {
+  replyTo: string;
+  subject: string;
+  text: string;
 }
 
 @Component({
@@ -18,8 +29,6 @@ export interface ContactRequest {
   template: `
     <main class="detail-page contact-page">
       <section class="contact-form-section page-section">
-        <h1 class="slide-in">Contact</h1>
-
         <form class="contact-form" #contactForm (submit)="handleSubmit($event, contactForm)">
           <label>
             <span>Nome</span>
@@ -38,18 +47,28 @@ export interface ContactRequest {
 
           <label>
             <span>Tipologia</span>
-            <select
-              name="type"
-              required
-              [class.is-placeholder]="!selectedType"
-              (change)="selectedType = typeSelect.value"
-              #typeSelect
-            >
-              <option value="" disabled hidden selected></option>
-              <option value="tipo1">tipo1</option>
-              <option value="tipo2">tipo2</option>
-              <option value="tipo3">tipo3</option>
-            </select>
+            <div class="contact-type-select" [class.is-open]="typeDropdownOpen">
+              <input class="contact-type-value" name="type" [value]="selectedType" required readonly tabindex="-1">
+              <button
+                type="button"
+                class="contact-type-trigger"
+                [class.is-placeholder]="!selectedType"
+                aria-haspopup="listbox"
+                [attr.aria-expanded]="typeDropdownOpen"
+                (click)="typeDropdownOpen = !typeDropdownOpen"
+              >
+                {{ selectedType }}
+              </button>
+              @if (typeDropdownOpen) {
+                <div class="contact-type-options" role="listbox">
+                  @for (option of contactTypeOptions; track option) {
+                    <button type="button" role="option" [attr.aria-selected]="selectedType === option" (click)="selectContactType(option)">
+                      {{ option }}
+                    </button>
+                  }
+                </div>
+              }
+            </div>
           </label>
 
           <label>
@@ -62,7 +81,12 @@ export interface ContactRequest {
             <textarea name="message" rows="8" required></textarea>
           </label>
 
-          <button type="submit">Invia</button>
+          <button type="submit" [disabled]="isSubmitting">
+            Conferma
+          </button>
+          @if (submitMessage) {
+            <p class="contact-submit-message" [class.is-error]="submitError">{{ submitMessage }}</p>
+          }
         </form>
 
         <div class="contact-map" aria-label="Google Maps location">
@@ -73,18 +97,43 @@ export interface ContactRequest {
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
-
-        <app-go-back-link variantClass="contact-back-link" [historyBack]="true" />
       </section>
+
+      <app-go-back-link variantClass="contact-back-link" [historyBack]="true" />
     </main>
   `
 })
 export class ContactPage {
   protected lastContactRequest: ContactRequest | null = null;
   protected selectedType = '';
+  protected typeDropdownOpen = false;
+  protected isSubmitting = false;
+  protected submitMessage = '';
+  protected submitError = false;
+  protected readonly contactTypeOptions = [
+    'Consulenza in Fashion Design',
+    'Consulenza in Costume Design',
+    'Lezione conoscitiva per il tutoraggio',
+    'Corso di Disegno Tecnico',
+    'Corso di Modellistica',
+    'Corso di Cucito',
+    'Corso di Progettazione di Moda'
+  ];
 
-  protected handleSubmit(event: SubmitEvent, form: HTMLFormElement): void {
+  protected selectContactType(option: string): void {
+    this.selectedType = option;
+    this.typeDropdownOpen = false;
+  }
+
+  protected async handleSubmit(event: SubmitEvent, form: HTMLFormElement): Promise<void> {
     event.preventDefault();
+    this.submitMessage = '';
+    this.submitError = false;
+
+    if (!this.selectedType) {
+      this.typeDropdownOpen = true;
+      return;
+    }
 
     if (!form.checkValidity()) {
       form.reportValidity();
@@ -92,25 +141,89 @@ export class ContactPage {
     }
 
     const formData = new FormData(form);
-    const contactRequest: ContactRequest = {
+    const contactFormData: ContactFormData = {
       firstName: this.readFormValue(formData, 'firstName'),
       lastName: this.readFormValue(formData, 'lastName'),
       email: this.readFormValue(formData, 'email'),
       type: this.readFormValue(formData, 'type'),
       subject: this.readFormValue(formData, 'subject'),
-      message: this.readFormValue(formData, 'message'),
-      createdAt: new Date().toISOString(),
-      source: 'website-contact-form'
+      message: this.readFormValue(formData, 'message')
     };
+    const contactRequest = this.buildContactRequest(contactFormData);
 
     this.lastContactRequest = contactRequest;
-    console.info('Contact request ready for server handling:', contactRequest);
-    form.reset();
-    this.selectedType = '';
+
+    try {
+      this.isSubmitting = true;
+      await this.sendContactRequest(contactRequest);
+      this.submitMessage = 'Richiesta inviata correttamente.';
+      form.reset();
+      this.selectedType = '';
+      this.typeDropdownOpen = false;
+    } catch (error) {
+      this.submitError = true;
+      this.submitMessage = 'Invio non riuscito. Riprova piu tardi.';
+      console.error('Unable to send contact request.', error);
+    } finally {
+      this.isSubmitting = false;
+    }
   }
 
   private readFormValue(formData: FormData, key: string): string {
     return String(formData.get(key) ?? '').trim();
+  }
+
+  private buildContactRequest(formData: ContactFormData): ContactRequest {
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+
+    return {
+      form: formData,
+      email: {
+        replyTo: formData.email,
+        subject: `[Maria Sole Website] ${formData.type} - ${formData.subject}`,
+        text: [
+          `Nome: ${fullName}`,
+          `Email: ${formData.email}`,
+          `Tipologia: ${formData.type}`,
+          `Oggetto: ${formData.subject}`,
+          '',
+          'Messaggio:',
+          formData.message
+        ].join('\n')
+      },
+      createdAt: new Date().toISOString(),
+      source: 'website-contact-form'
+    };
+  }
+
+  private async sendContactRequest(contactRequest: ContactRequest): Promise<void> {
+    const abortController = new AbortController();
+    const timeout = window.setTimeout(() => abortController.abort(), 15000);
+
+    const response = await fetch('http://localhost:5109/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(contactRequest),
+      signal: abortController.signal
+    }).finally(() => window.clearTimeout(timeout));
+
+    if (!response.ok) {
+      throw new Error(`Contact API failed with status ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type') ?? '';
+
+    if (!contentType.includes('application/json')) {
+      return;
+    }
+
+    const ack = await response.json() as { ok?: boolean };
+
+    if (ack.ok !== true) {
+      throw new Error('Contact API did not return a positive acknowledgement.');
+    }
   }
 }
 

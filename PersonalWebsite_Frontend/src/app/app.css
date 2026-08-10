@@ -118,6 +118,46 @@
 
 .site-footer p { margin: 0; }
 
+.floating-contact-link {
+  position: fixed;
+  right: clamp(18px, 2.4vw, 34px);
+  bottom: clamp(18px, 2.4vw, 34px);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 63px;
+  height: 63px;
+  padding: 0;
+  border: 1px solid #F207CB;
+  border-radius: 50%;
+  background: rgba(7, 7, 7, 0.86);
+  color: #F207CB;
+  text-decoration: none;
+  text-transform: uppercase;
+  line-height: 1;
+  backdrop-filter: blur(10px);
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.floating-contact-link svg {
+  display: block;
+  width: 30px;
+  height: 30px;
+  fill: currentColor;
+}
+
+.floating-contact-link:hover,
+.floating-contact-link:focus-visible,
+.floating-contact-link.is-active {
+  background: #F207CB;
+  color: #070707;
+  transform: translateY(-2px);
+}
+
 @media (max-width: 760px) {
   .site-header {
     grid-template-columns: 1fr;
@@ -139,6 +179,18 @@
   .nav-links,
   .social-links { gap: 10px; }
   .site-footer { padding-inline: 20px; }
+
+  .floating-contact-link {
+    right: 14px;
+    bottom: 14px;
+    width: 55px;
+    height: 55px;
+  }
+
+  .floating-contact-link svg {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 /* Stable responsive navigation */
