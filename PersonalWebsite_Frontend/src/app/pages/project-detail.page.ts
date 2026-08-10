@@ -92,10 +92,6 @@ const PROJECTS: Record<string, PortfolioProject> = {
     <main class="detail-page project-detail-page">
       @if (isTeachings) {
         <section class="teachings-page page-section">
-          <header class="teachings-header">
-            <h1 class="slide-in">teachings</h1>
-          </header>
-
           @if (teachingCards.length > 0) {
             <div class="teachings-card-list">
               @for (card of teachingCards; track $index) {
@@ -103,8 +99,8 @@ const PROJECTS: Record<string, PortfolioProject> = {
                   <div class="teaching-card-body">
                     <div class="teaching-card-copy">
                       <p>"{{ card.title || 'Untitled' }}"</p>
-                      <p>{{ card.author || 'Author not provided' }}</p>
-                      <p>{{ card.school || 'School not provided' }}</p>
+                      <p class="teaching-author">{{ card.author || 'Author not provided' }}</p>
+                      <p class="teaching-school">{{ card.school || 'School not provided' }}</p>
                     </div>
 
                     <a

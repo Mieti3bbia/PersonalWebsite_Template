@@ -4739,3 +4739,772 @@ app-curriculum-vitae-page,
     padding-left: 38px;
   }
 }
+
+/* Integrated costume design cards */
+.costume-page {
+  background: #000;
+}
+
+.costume-page .costume-shell {
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+  width: min(1420px, calc(100% - clamp(32px, 8vw, 128px)));
+  margin-inline: auto;
+}
+
+.costume-page .costume-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+  grid-template-areas:
+    "title title"
+    "meta meta"
+    "media copy"
+    "gallery credits";
+  gap: clamp(18px, 2.4vw, 34px);
+  width: 100%;
+  padding: clamp(22px, 3vw, 42px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #070707;
+}
+
+.costume-page .costume-entry:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.costume-page .costume-title-band,
+.costume-page .costume-meta,
+.costume-page .costume-video-band,
+.costume-page .costume-gallery-band,
+.costume-page .costume-description,
+.costume-page .costume-credits {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.costume-page .costume-title-band {
+  grid-area: title;
+  place-items: start;
+}
+
+.costume-page .costume-title-band h1 {
+  max-width: 100%;
+  color: #593854;
+  font-size: clamp(28px, 4.8vw, 72px);
+  line-height: 1.02;
+  text-align: left;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.costume-page .costume-meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px 18px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(11px, 1vw, 15px);
+  text-align: left;
+}
+
+.costume-page .costume-meta p {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.costume-page .costume-video-band {
+  grid-area: media;
+  align-self: stretch;
+}
+
+.costume-page .costume-gallery-band {
+  grid-area: gallery;
+}
+
+.costume-page .costume-video-band .fashion-video,
+.costume-page .costume-gallery-band .fashion-gallery-row {
+  width: 100%;
+  min-height: clamp(220px, 28vw, 420px);
+}
+
+.costume-page .costume-gallery-band .fashion-gallery-row {
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  gap: 14px;
+}
+
+.costume-page .costume-gallery-band .fashion-gallery-panel {
+  width: 100%;
+  max-width: 100%;
+  min-height: clamp(220px, 28vw, 420px);
+  object-fit: cover;
+}
+
+.costume-page .costume-description {
+  grid-area: copy;
+  align-self: stretch;
+  display: grid;
+  align-content: start;
+  color: rgba(255, 255, 255, 0.64);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  text-align: left;
+}
+
+.costume-page .costume-description p {
+  width: 100%;
+}
+
+.costume-page .costume-credits {
+  grid-area: credits;
+  align-self: stretch;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(11px, 0.9vw, 14px);
+  line-height: 1.5;
+}
+
+.costume-page a,
+.costume-page button {
+  color: #F207CB;
+}
+
+.costume-page .fashion-gallery-row > button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  min-width: 48px;
+  height: 100%;
+  min-height: 48px;
+  border: 1px solid #F207CB;
+  color: #F207CB;
+  background: transparent;
+}
+
+.costume-page .fashion-gallery-row > button:hover,
+.costume-page .fashion-gallery-row > button:focus-visible {
+  background: #F207CB;
+  color: #070707;
+}
+
+@media (max-width: 900px) {
+  .costume-page .costume-shell {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .costume-page .costume-entry {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "title"
+      "meta"
+      "media"
+      "gallery"
+      "copy"
+      "credits";
+    padding: 18px;
+  }
+
+  .costume-page .costume-title-band h1 {
+    font-size: clamp(26px, 10vw, 42px);
+  }
+
+  .costume-page .costume-gallery-band .fashion-gallery-row {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 10px;
+  }
+
+  .costume-page .fashion-gallery-row > button {
+    width: 42px;
+    min-width: 42px;
+  }
+}
+
+/* Costume card template refinement */
+.costume-page .costume-entry {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "title"
+    "meta"
+    "media"
+    "gallery"
+    "copy"
+    "credits";
+  justify-items: center;
+  row-gap: clamp(16px, 2.2vw, 28px);
+  padding-top: clamp(34px, 4vw, 58px);
+  border-color: rgba(242, 7, 203, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.costume-page .costume-entry::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #F207CB 18%, rgba(89, 56, 84, 0.8) 50%, #F207CB 82%, transparent);
+  opacity: 0.72;
+}
+
+.costume-page .costume-shell {
+  counter-reset: costume-card;
+}
+
+.costume-page .costume-entry {
+  counter-increment: costume-card;
+}
+
+.costume-page .costume-title-band {
+  place-items: center;
+}
+
+.costume-page .costume-title-band h1 {
+  position: relative;
+  width: min(980px, 100%);
+  padding-bottom: clamp(12px, 1.6vw, 20px);
+  text-align: center;
+}
+
+.costume-page .costume-title-band h1::after {
+  content: "";
+  display: block;
+  width: min(220px, 42%);
+  height: 1px;
+  margin: clamp(12px, 1.6vw, 18px) auto 0;
+  background: rgba(242, 7, 203, 0.54);
+}
+
+.costume-page .costume-meta {
+  justify-content: center;
+  text-align: center;
+}
+
+.costume-page .costume-meta p {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.costume-page .costume-video-band {
+  width: min(360px, 100%);
+}
+
+.costume-page .costume-video-band .fashion-video {
+  width: 100%;
+  min-height: 0;
+  height: clamp(120px, 11vw, 190px);
+  border-color: rgba(242, 7, 203, 0.36);
+  object-fit: contain;
+  background: #050505;
+}
+
+.costume-page .costume-gallery-band {
+  width: min(420px, 100%);
+}
+
+.costume-page .costume-gallery-band .fashion-gallery-row {
+  grid-template-columns: clamp(34px, 4vw, 52px) minmax(120px, 260px) clamp(34px, 4vw, 52px);
+  gap: clamp(10px, 1.6vw, 18px);
+  width: 100%;
+  min-height: 0;
+}
+
+.costume-page .costume-gallery-band .fashion-gallery-panel {
+  width: 100%;
+  height: clamp(130px, 16vw, 230px);
+  min-height: 0;
+  border-color: rgba(242, 7, 203, 0.36);
+  object-fit: contain;
+  background: #050505;
+}
+
+.costume-page .costume-video-band::before,
+.costume-page .costume-gallery-band::before,
+.costume-page .costume-description::before,
+.costume-page .costume-credits::before {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(242, 7, 203, 0.78);
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(9px, 0.78vw, 12px);
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.costume-page .costume-video-band::before {
+  content: "/ video /";
+}
+
+.costume-page .costume-gallery-band::before {
+  content: "/ gallery /";
+}
+
+.costume-page .costume-description::before {
+  content: "/ description /";
+  text-align: left;
+}
+
+.costume-page .costume-credits::before {
+  content: "/ credits /";
+  text-align: left;
+}
+
+.costume-page .fashion-gallery-row > button {
+  width: 100%;
+  min-width: 0;
+  height: clamp(130px, 16vw, 230px);
+  min-height: 0;
+  border: 1px solid #F207CB;
+  border-radius: 999px;
+  color: #F207CB;
+  background:
+    linear-gradient(180deg, rgba(242, 7, 203, 0.08), rgba(242, 7, 203, 0.02)),
+    #070707;
+  font-size: clamp(18px, 2vw, 28px);
+}
+
+.costume-page .fashion-gallery-row > button:hover,
+.costume-page .fashion-gallery-row > button:focus-visible {
+  background: rgba(242, 7, 203, 0.12);
+  color: #F207CB;
+}
+
+.costume-page .costume-description,
+.costume-page .costume-credits {
+  width: min(980px, 100%);
+  padding: clamp(16px, 2vw, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.costume-page .costume-description {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.costume-page .costume-credits {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+@media (max-width: 700px) {
+  .costume-page .costume-gallery-band .fashion-gallery-row {
+    grid-template-columns: 34px minmax(0, 220px) 34px;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .costume-page .costume-gallery-band .fashion-gallery-panel {
+    height: clamp(130px, 48vw, 220px);
+  }
+
+  .costume-page .fashion-gallery-row > button {
+    width: 34px;
+    height: clamp(130px, 48vw, 220px);
+    border-radius: 999px;
+    font-size: 18px;
+  }
+
+  .costume-page .costume-description,
+  .costume-page .costume-credits {
+    padding: 14px;
+  }
+}
+
+/* Integrated fashion design cards */
+.fashion-page {
+  background: #000;
+}
+
+.fashion-page .fashion-shell {
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+  width: min(1420px, calc(100% - clamp(32px, 8vw, 128px)));
+  margin-inline: auto;
+}
+
+.fashion-page .fashion-entry {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: clamp(16px, 2.2vw, 28px);
+  width: 100%;
+  padding: clamp(34px, 4vw, 58px) clamp(22px, 3vw, 42px) clamp(22px, 3vw, 42px);
+  overflow: hidden;
+  border: 1px solid rgba(242, 7, 203, 0.28);
+  background: #070707;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.fashion-page .fashion-entry::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #F207CB 18%, rgba(89, 56, 84, 0.8) 50%, #F207CB 82%, transparent);
+  opacity: 0.72;
+}
+
+.fashion-page .fashion-entry:last-child {
+  border-bottom: 1px solid rgba(242, 7, 203, 0.28);
+}
+
+.fashion-page .fashion-entry-title-band,
+.fashion-page .fashion-band {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.fashion-page .fashion-entry-title-band h2 {
+  width: min(980px, 100%);
+  padding-bottom: clamp(12px, 1.6vw, 20px);
+  color: #593854;
+  font-size: clamp(28px, 4.8vw, 72px);
+  line-height: 1.02;
+  text-align: center;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.fashion-page .fashion-entry-title-band h2::after {
+  content: "";
+  display: block;
+  width: min(220px, 42%);
+  height: 1px;
+  margin: clamp(12px, 1.6vw, 18px) auto 0;
+  background: rgba(242, 7, 203, 0.54);
+}
+
+.fashion-page .fashion-band:has(.fashion-video) {
+  width: min(360px, 100%);
+}
+
+.fashion-page .fashion-video {
+  width: 100%;
+  min-height: 0;
+  height: clamp(120px, 11vw, 190px);
+  border-color: rgba(242, 7, 203, 0.36);
+  background: #050505;
+  object-fit: contain;
+}
+
+.fashion-page .fashion-band:has(.fashion-description) {
+  width: min(980px, 100%);
+  padding: clamp(16px, 2vw, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.fashion-page .fashion-description {
+  width: 100%;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  text-align: left;
+}
+
+.fashion-page .fashion-gallery-shell {
+  width: min(420px, 100%);
+  gap: clamp(14px, 2vw, 22px);
+}
+
+.fashion-page .fashion-gallery-row {
+  grid-template-columns: clamp(34px, 4vw, 52px) minmax(120px, 260px) clamp(34px, 4vw, 52px);
+  gap: clamp(10px, 1.6vw, 18px);
+  width: 100%;
+  min-height: 0;
+}
+
+.fashion-page .fashion-gallery-panel {
+  width: 100%;
+  height: clamp(130px, 16vw, 230px);
+  min-height: 0;
+  border-color: rgba(242, 7, 203, 0.36);
+  background: #050505;
+  object-fit: contain;
+}
+
+.fashion-page .fashion-gallery-row > button {
+  width: 100%;
+  min-width: 0;
+  height: clamp(130px, 16vw, 230px);
+  min-height: 0;
+  border: 1px solid #F207CB;
+  border-radius: 999px;
+  color: #F207CB;
+  background:
+    linear-gradient(180deg, rgba(242, 7, 203, 0.08), rgba(242, 7, 203, 0.02)),
+    #070707;
+  font-size: clamp(18px, 2vw, 28px);
+}
+
+.fashion-page .fashion-gallery-row > button:hover,
+.fashion-page .fashion-gallery-row > button:focus-visible {
+  background: rgba(242, 7, 203, 0.12);
+  color: #F207CB;
+}
+
+.fashion-page .fashion-pdf-panel {
+  min-height: 0;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.fashion-page .fashion-band:has(.fashion-video)::before,
+.fashion-page .fashion-band:has(.fashion-description)::before,
+.fashion-page .fashion-gallery-shell::before {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(242, 7, 203, 0.78);
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(9px, 0.78vw, 12px);
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.fashion-page .fashion-band:has(.fashion-video)::before {
+  content: "/ video /";
+}
+
+.fashion-page .fashion-band:has(.fashion-description)::before {
+  content: "/ description /";
+  text-align: left;
+}
+
+.fashion-page .fashion-gallery-shell::before {
+  content: "/ gallery /";
+}
+
+@media (max-width: 700px) {
+  .fashion-page .fashion-shell {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .fashion-page .fashion-entry {
+    padding: 18px;
+  }
+
+  .fashion-page .fashion-entry-title-band h2 {
+    font-size: clamp(26px, 10vw, 42px);
+  }
+
+  .fashion-page .fashion-gallery-row {
+    grid-template-columns: 34px minmax(0, 220px) 34px;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .fashion-page .fashion-gallery-panel {
+    height: clamp(130px, 48vw, 220px);
+  }
+
+  .fashion-page .fashion-gallery-row > button {
+    width: 34px;
+    height: clamp(130px, 48vw, 220px);
+    font-size: 18px;
+  }
+
+  .fashion-page .fashion-band:has(.fashion-description) {
+    padding: 14px;
+  }
+}
+
+/* Integrated teachings cards */
+.teachings-page {
+  background: #000;
+}
+
+.teachings-page .teachings-card-list {
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+  width: min(1420px, calc(100% - clamp(32px, 8vw, 128px)));
+}
+
+.fashion-page,
+.costume-page,
+.teachings-page {
+  padding-top: clamp(76px, 8vw, 104px);
+}
+
+@media (max-width: 900px) {
+  .fashion-page,
+  .costume-page,
+  .teachings-page {
+    padding-top: clamp(86px, 20vw, 118px);
+  }
+}
+
+.teachings-page .teaching-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(242, 7, 203, 0.28);
+  background: #070707;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.teachings-page .teaching-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, #F207CB 18%, rgba(89, 56, 84, 0.8) 50%, #F207CB 82%, transparent);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.teachings-page .teaching-card::after {
+  content: "";
+  position: absolute;
+  inset: auto clamp(22px, 3vw, 42px) 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(242, 7, 203, 0.5), transparent);
+  pointer-events: none;
+}
+
+.teachings-page .teaching-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(220px, 420px);
+  gap: clamp(18px, 3vw, 42px);
+  align-items: center;
+  min-height: 0;
+  padding: clamp(34px, 4vw, 58px) clamp(22px, 3vw, 42px) clamp(22px, 3vw, 42px);
+}
+
+.teachings-page .teaching-card-copy {
+  display: grid;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.68);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.45;
+}
+
+.teachings-page .teaching-author::before,
+.teachings-page .teaching-school::before {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(242, 7, 203, 0.78);
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(9px, 0.78vw, 12px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.teachings-page .teaching-author::before {
+  content: "/ author /";
+}
+
+.teachings-page .teaching-school::before {
+  content: "/ school /";
+}
+
+.teachings-page .teaching-card-copy p {
+  margin: 0;
+}
+
+.teachings-page .teaching-card-copy p:first-child {
+  position: relative;
+  width: min(760px, 100%);
+  margin: 0 0 clamp(10px, 1.5vw, 18px);
+  padding-bottom: clamp(12px, 1.6vw, 20px);
+  color: #593854;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(24px, 3.8vw, 56px);
+  line-height: 1.04;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.teachings-page .teaching-card-copy p:first-child::after {
+  content: "";
+  display: block;
+  width: min(220px, 42%);
+  height: 1px;
+  margin-top: clamp(12px, 1.6vw, 18px);
+  background: rgba(242, 7, 203, 0.54);
+}
+
+.teachings-page .teaching-card-copy p:not(:first-child) {
+  width: max-content;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.teachings-page .teaching-preview {
+  position: relative;
+  width: min(320px, 100%);
+  min-height: 0;
+  justify-self: center;
+  border: 1px solid rgba(242, 7, 203, 0.36);
+  background: #050505;
+  color: #F207CB;
+}
+
+.teachings-page .teaching-preview:hover,
+.teachings-page .teaching-preview:focus-visible {
+  border-color: #F207CB;
+  background: rgba(242, 7, 203, 0.08);
+  color: #F207CB;
+  transform: translateY(-2px);
+}
+
+.teachings-page .teaching-preview img {
+  width: 100%;
+  max-height: clamp(160px, 22vw, 280px);
+  object-fit: contain;
+  background: #050505;
+}
+
+.teachings-page .teaching-preview span {
+  padding: clamp(48px, 8vw, 92px) 24px;
+  color: #F207CB;
+}
+
+.teachings-page a {
+  color: #F207CB;
+}
+
+@media (max-width: 900px) {
+  .teachings-page .teachings-card-list {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .teachings-page .teaching-card-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px;
+  }
+
+  .teachings-page .teaching-card-copy p:first-child {
+    font-size: clamp(24px, 9vw, 42px);
+  }
+
+  .teachings-page .teaching-preview {
+    width: min(280px, 100%);
+  }
+
+  .teachings-page .teaching-preview img {
+    max-height: clamp(150px, 54vw, 240px);
+  }
+}
