@@ -4579,8 +4579,25 @@ app-curriculum-vitae-page,
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 18px;
   width: 100%;
+  min-height: clamp(132px, 20svh, 210px);
+  padding: clamp(24px, 4svh, 42px) clamp(20px, 4vw, 34px);
   text-align: center;
+}
+
+.about-page .about-social-button {
+  display: inline-grid;
+  place-items: center;
+  line-height: 0;
+}
+
+.about-page .about-social-button svg {
+  display: block;
+}
+
+.about-page .go-back-link-host {
+  margin-top: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
