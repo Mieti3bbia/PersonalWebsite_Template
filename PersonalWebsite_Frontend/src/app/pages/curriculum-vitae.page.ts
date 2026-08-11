@@ -14,7 +14,7 @@ interface TimelineItem {
   imports: [GoBackLinkComponent, PageTitleHeroComponent],
   template: `
     <main class="detail-page curriculum-vitae-page">
-      <app-page-title-hero eyebrow="/ curriculum /" title="curriculum" />
+      <app-page-title-hero eyebrow="Curriculum" title="curriculum" />
 
       <section class="cv-profile page-section">
         <h2>Profilo</h2>
@@ -70,7 +70,7 @@ interface TimelineItem {
 
       <section class="cv-timeline-section page-section">
         <header>
-          <p class="eyebrow">/ Work /</p>
+          <p class="eyebrow">Work</p>
           <h2>Esperienze lavorative</h2>
         </header>
 
@@ -95,7 +95,7 @@ interface TimelineItem {
 
       <section class="cv-timeline-section cv-training-section page-section">
         <header>
-          <p class="eyebrow">/ Formazione /</p>
+          <p class="eyebrow">Formazione</p>
           <h2>Formazione e tutoraggio</h2>
         </header>
 

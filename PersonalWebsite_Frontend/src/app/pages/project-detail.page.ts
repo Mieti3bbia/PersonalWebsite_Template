@@ -61,7 +61,7 @@ const COSTUME_PROJECT: CostumeProjectContent = {
 const PROJECTS: Record<string, PortfolioProject> = {
   'costume-design': {
     title: 'Costume Design',
-    kicker: '/ Fashion research /',
+    kicker: 'Fashion research',
     description: 'A focused project built around visual research, garment language and editorial direction.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel turpis ac arcu facilisis gravida. Suspendisse potenti. Curabitur at lorem sed nibh luctus consequat vitae sed erat.',
     image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1400&q=85',
@@ -69,7 +69,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
   },
   'fashion-design': {
     title: 'Fashion Design',
-    kicker: '/ Graphic identity /',
+    kicker: 'Graphic identity',
     description: 'A visual system exploring typography, image hierarchy and contemporary brand identity.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent non lectus sed arcu tempor efficitur. Donec et nisl vel nibh fermentum cursus in in justo.',
     image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1400&q=80',
@@ -77,7 +77,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
   },
   teachings: {
     title: 'Teachings',
-    kicker: '/ Digital fashion /',
+    kicker: 'Digital fashion',
     description: 'A digital fashion direction project connecting material references, motion and image-based storytelling.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel justo at augue posuere cursus. Sed vitae lacus sed neque viverra aliquet at id est.',
     image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1400&q=80',
@@ -312,11 +312,16 @@ const PROJECTS: Record<string, PortfolioProject> = {
           (touchstart)="handleGalleryTouchStart($event)"
           (touchend)="handleGalleryTouchEnd($event)"
         >
-          <button type="button" class="gallery-viewer-close" aria-label="Close fullscreen gallery" (click)="closeGalleryViewer()">×</button>
+          <div class="gallery-viewer-toolbar">
+            <span>{{ fullscreenGalleryIndex + 1 }} / {{ fullscreenGalleryItems.length }}</span>
+            <button type="button" class="gallery-viewer-close" aria-label="Close fullscreen gallery" (click)="closeGalleryViewer()">Close</button>
+          </div>
           @if (fullscreenGalleryItems.length > 1) {
             <button type="button" class="gallery-viewer-arrow gallery-viewer-prev" aria-label="Previous fullscreen image" (click)="showPreviousFullscreenImage()">←</button>
           }
-          <img [src]="currentFullscreenImage" alt="Fullscreen gallery image">
+          <figure class="gallery-viewer-frame">
+            <img [src]="currentFullscreenImage" alt="Fullscreen gallery image">
+          </figure>
           @if (fullscreenGalleryItems.length > 1) {
             <button type="button" class="gallery-viewer-arrow gallery-viewer-next" aria-label="Next fullscreen image" (click)="showNextFullscreenImage()">→</button>
           }
@@ -364,6 +369,8 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   };
 
   async ngOnInit(): Promise<void> {
+    document.documentElement.classList.add('project-detail-view-open');
+
     if (this.isFashionDesign) {
       await this.loadFashionProject();
       return;
@@ -406,6 +413,8 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     window.removeEventListener('scroll', this.updateVisibility);
     window.removeEventListener('resize', this.updateVisibility);
     cancelAnimationFrame(this.animationFrame);
+    document.documentElement.classList.remove('gallery-viewer-open');
+    document.documentElement.classList.remove('project-detail-view-open');
   }
 
   protected get currentFashionImage(): string {
@@ -496,11 +505,13 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
     this.fullscreenGalleryItems = imageItems;
     this.fullscreenGalleryIndex = Math.min(Math.max(index, 0), imageItems.length - 1);
+    document.documentElement.classList.add('gallery-viewer-open');
   }
 
   protected closeGalleryViewer(): void {
     this.fullscreenGalleryItems = [];
     this.fullscreenGalleryIndex = 0;
+    document.documentElement.classList.remove('gallery-viewer-open');
   }
 
   protected showPreviousFullscreenImage(): void {

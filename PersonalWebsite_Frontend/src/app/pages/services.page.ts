@@ -17,7 +17,7 @@ interface ServiceItem {
   imports: [RouterLink, PageTitleHeroComponent],
   template: `
     <main class="services-page">
-      <app-page-title-hero eyebrow="/ servizi /" title="servizi" />
+      <app-page-title-hero eyebrow="Servizi" title="servizi" />
 
       <section class="services-list page-section">
         @for (service of services; track service.title) {
@@ -27,7 +27,7 @@ interface ServiceItem {
               <p class="service-summary">{{ service.summary }}</p>
 
               <div class="service-actions" aria-label="Service actions">
-                <a routerLink="/contact">Book now</a>
+                <a class="studio-fill-button" routerLink="/contact"><span>Book now</span></a>
                 <a [routerLink]="service.portfolioRoute">Show more</a>
               </div>
             </div>

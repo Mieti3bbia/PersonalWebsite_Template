@@ -1,435 +1,1019 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import * as THREE from 'three';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
+
+interface FashionProjectContent {
+  title: string;
+  fields: string[];
+  videoUrl: string;
+  description: string;
+  pdfUrl: string;
+  gallery: string[];
+}
+
+interface CostumeProjectContent {
+  title: string;
+  season: string;
+  role: string;
+  videoUrl: string;
+  description: string;
+  gallery: string[];
+  credits: string;
+}
+
+interface TeachingCard {
+  title: string;
+  author: string;
+  school: string;
+  previewImage: string;
+  pdfUrl: string;
+}
+
+interface TimelineItem {
+  period: string;
+  title: string;
+  place: string;
+  details: string[];
+}
+
+interface ServiceItem {
+  eyebrow: string;
+  title: string;
+  summary: string;
+  details: string[];
+  workOnValue: string;
+}
+
+interface ClientItem {
+  name: string;
+  detail: string;
+  className: string;
+  logoUrl?: string;
+}
+
+const FALLBACK_COSTUME_PROJECTS: CostumeProjectContent[] = [
+  {
+    title: 'Costume Design',
+    season: 'Performing arts and stagewear',
+    role: 'Costume Designer & Costume Maker',
+    videoUrl: '',
+    description: 'Ricerca, prototipazione e costruzione sartoriale per corpi in movimento. Ogni costume viene pensato come un sistema scenico: identita visiva, resistenza, comfort, fitting e relazione con la performance.',
+    gallery: ['/assets/home/landing-red-horizontal.jpg', '/assets/home/anteprima-imperfetto-divenire.png'],
+    credits: 'Direzione creativa, moodboard, bozzetti, materiali, cartamodelli, fitting e confezione.'
+  }
+];
+
+const FALLBACK_FASHION_PROJECTS: FashionProjectContent[] = [
+  {
+    title: 'Fashion Design',
+    fields: ['collection design', 'product development', 'visual research'],
+    videoUrl: '',
+    description: 'Sviluppo di collezioni e capsule con una lettura editoriale del prodotto: concept, target, silhouette, materiali, schede tecniche e racconto visivo.',
+    pdfUrl: '',
+    gallery: ['/assets/home/anteprima-imperfetto-divenire.png', '/assets/home/landing-red-horizontal.jpg']
+  }
+];
+
+const FALLBACK_TEACHINGS: TeachingCard[] = [
+  {
+    title: 'Pezzi di vetro',
+    author: 'Teaching portfolio',
+    school: 'Tutoraggio tesi e progetti accademici',
+    previewImage: '/assets/teachings/pezzi-di-vetro-preview.png',
+    pdfUrl: '/assets/teachings/pezzi-di-vetro.pdf'
+  }
+];
 
 @Component({
   selector: 'app-projects-page',
-  imports: [RouterLink],
   template: `
-    <main class="projects-page projects-sun-page">
-      <section class="vehicle-tracker project-sun-tracker" aria-label="Vehicle tracker">
-        <div class="vehicle-copy">
-          <h2>portfolio</h2>
+    <main class="studio-home">
+      <section id="home-top" class="studio-hero" aria-label="Home">
+        <div class="studio-hero-copy">
+          <p class="studio-kicker">Fashion and costume designer</p>
+          <h1><span>Maria</span><span>Sole</span><span>Montironi Lasca</span></h1>
+          <p>
+            Progettazione moda, costume design e tutoraggio. Un archivio essenziale di ricerca,
+            materia, silhouette e progetti costruiti per il corpo, il prodotto e la scena.
+          </p>
+          <a
+            class="studio-fill-button"
+            href="/home#footer-contact"
+          >
+            <span>Book now</span>
+          </a>
         </div>
 
-        <div class="vehicle-stage sun-stage">
-          <canvas #sunCanvas aria-label="Rotating 3D sun"></canvas>
-        </div>
+        <figure class="studio-artwork" aria-label="Editorial artwork">
+          <div class="studio-artwork-object studio-artwork-object-large">
+            <img src="/assets/home/hero-costume-wireframe.png" alt="Wireframe costume designer studio with mannequins">
+          </div>
+        </figure>
+      </section>
 
-        <div class="vehicle-controls" aria-label="Vehicle tracker controls">
-          <button type="button" routerLink="/portfolio/costume-design" (mouseenter)="focusVehicle('project1')" (focus)="focusVehicle('project1')">Costume Design</button>
-          <button type="button" routerLink="/portfolio/fashion-design" (mouseenter)="focusVehicle('project2')" (focus)="focusVehicle('project2')">Fashion Design</button>
-          <button type="button" routerLink="/portfolio/teachings" (mouseenter)="focusVehicle('project3')" (focus)="focusVehicle('project3')">Teachings</button>
+      <section id="clients" class="studio-clients" aria-label="Current and former clients">
+        <div class="studio-client-grid">
+          @for (client of clients; track client.name) {
+            <article [attr.class]="'studio-client-logo studio-client-reveal ' + client.className">
+              @if (client.logoUrl) {
+                <img class="studio-client-logo-image" [src]="client.logoUrl" [alt]="client.name + ' logo'">
+              } @else {
+                <strong>{{ client.name }}</strong>
+                @if (client.detail) {
+                  <span>{{ client.detail }}</span>
+                }
+              }
+            </article>
+          }
         </div>
       </section>
+
+      <section id="services" class="studio-section studio-services" aria-label="Services">
+        <header class="studio-section-header">
+          <p>Services</p>
+          <h2>Dal concept alla realizzazione.</h2>
+        </header>
+        <div class="studio-service-grid">
+          @for (service of services; track service.title) {
+            <article class="studio-service-card">
+              <span>{{ service.eyebrow }}</span>
+              <h3>{{ service.title }}</h3>
+              <p>{{ service.summary }}</p>
+              <ul>
+                @for (detail of service.details; track detail) {
+                  <li>{{ detail }}</li>
+                }
+              </ul>
+              <a
+                class="studio-service-book-button studio-fill-button"
+                [href]="contactHrefFor(service.workOnValue)"
+                (click)="bookService($event, service.workOnValue)"
+              >
+                <span>Book now</span>
+              </a>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section id="costume-design" class="studio-section studio-work-section" aria-label="Costume design">
+        <header class="studio-section-header">
+          <p>Costume Design</p>
+          <h2>Costumi come sistemi scenici.</h2>
+        </header>
+
+        <div
+          class="studio-costume-grid"
+          [style.--costume-columns]="costumeDesktopColumnCount"
+          [style.--costume-tablet-columns]="costumeTabletColumnCount"
+        >
+          @for (project of costumeProjects; track $index) {
+            <article class="studio-costume-card">
+              <div class="studio-costume-media-stack">
+                <button type="button" class="studio-costume-main-media" (click)="openGalleryViewer(project.gallery, 0)">
+                  @if (firstCostumeImage(project)) {
+                    <img [src]="firstCostumeImage(project)" [alt]="project.title + ' preview'">
+                  } @else {
+                    <span>Image archive</span>
+                  }
+                </button>
+
+                @if (costumePreviewImages(project).length > 1) {
+                  <div class="studio-costume-thumb-row" aria-label="Gallery previews">
+                    @for (image of costumePreviewImages(project); track image) {
+                      <button type="button" (click)="openGalleryViewer(costumePreviewImages(project), $index)">
+                        <img [src]="image" [alt]="project.title + ' gallery image ' + paddedIndex($index)">
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="studio-costume-copy">
+                <span>{{ paddedIndex($index) }}</span>
+                <h3>{{ project.title }}</h3>
+                <p>{{ project.description }}</p>
+                <div class="studio-chip-row">
+                  @if (project.season) {
+                    <span>{{ project.season }}</span>
+                  }
+                  @if (project.role) {
+                    <span>{{ project.role }}</span>
+                  }
+                </div>
+                @if (project.videoUrl) {
+                  <a class="studio-fill-button" [href]="project.videoUrl" target="_blank" rel="noopener"><span>See video</span></a>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section id="fashion-design" class="studio-section studio-work-section" aria-label="Fashion design">
+        <header class="studio-section-header">
+          <p>Fashion Design</p>
+          <h2>Collezioni, prodotto, identita.</h2>
+        </header>
+
+        <div
+          class="studio-fashion-grid"
+          [style.--fashion-columns]="fashionDesktopColumnCount"
+          [style.--fashion-tablet-columns]="fashionTabletColumnCount"
+        >
+          @for (project of fashionProjects; track $index) {
+            <article class="studio-work-card">
+              <div class="studio-fashion-media-stack">
+                <button type="button" class="studio-work-media" (click)="openGalleryViewer(project.gallery, 0)">
+                  @if (firstFashionImage(project)) {
+                    <img [src]="firstFashionImage(project)" [alt]="project.title + ' preview'">
+                  } @else {
+                    <span>Visual board</span>
+                  }
+                </button>
+
+                @if (fashionPreviewImages(project).length > 1) {
+                  <div class="studio-fashion-thumb-row" aria-label="Gallery previews">
+                    @for (image of fashionPreviewImages(project); track image) {
+                      <button type="button" (click)="openGalleryViewer(fashionPreviewImages(project), $index)">
+                        <img [src]="image" [alt]="project.title + ' gallery image ' + paddedIndex($index)">
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+              <div class="studio-work-copy">
+                <span>{{ paddedIndex($index) }}</span>
+                <h3>{{ project.title }}</h3>
+                <p>{{ project.description }}</p>
+                <div class="studio-chip-row">
+                  @for (field of project.fields; track field) {
+                    <span>{{ field }}</span>
+                  }
+                </div>
+                @if (project.pdfUrl) {
+                  <a class="studio-fill-button" [href]="project.pdfUrl" target="_blank" rel="noopener"><span>See PDF</span></a>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section id="teachings" class="studio-section studio-work-section" aria-label="Teachings">
+        <header class="studio-section-header">
+          <p>Teachings</p>
+          <h2>Tesi, metodo e revisione progettuale.</h2>
+        </header>
+
+        <div
+          class="studio-teaching-grid"
+          [style.--teaching-columns]="teachingDesktopColumnCount"
+          [style.--teaching-tablet-columns]="teachingTabletColumnCount"
+        >
+          @for (card of teachingCards; track $index) {
+            <article class="studio-teaching-card">
+              <button type="button" class="studio-work-media" (click)="openGalleryViewer([card.previewImage], 0)">
+                @if (card.previewImage) {
+                  <img [src]="card.previewImage" [alt]="card.title + ' preview'">
+                } @else {
+                  <span>Preview</span>
+                }
+              </button>
+              <div class="studio-teaching-copy">
+                <span>{{ paddedIndex($index) }}</span>
+                <h3>{{ card.title || 'Untitled' }}</h3>
+                <p>{{ card.author || 'Author not provided' }}</p>
+                <p>{{ card.school || 'School not provided' }}</p>
+                @if (card.pdfUrl) {
+                  <a class="studio-fill-button" [href]="card.pdfUrl" target="_blank" rel="noopener"><span>See PDF</span></a>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section id="curriculumvitae" class="studio-section studio-cv" aria-label="Curriculum vitae">
+        <header class="studio-section-header">
+          <p>Curriculum</p>
+          <h2>Esperienza, competenze, collaborazioni.</h2>
+        </header>
+
+        <div class="studio-cv-grid">
+          <article class="studio-profile-panel">
+            <h3>Profilo</h3>
+            @for (paragraph of profile; track paragraph) {
+              <p>{{ paragraph }}</p>
+            }
+          </article>
+
+          <article>
+            <h3>Hard skills</h3>
+            <div class="studio-chip-row">
+              @for (skill of hardSkills; track skill) {
+                <span>{{ skill }}</span>
+              }
+            </div>
+          </article>
+
+          <article>
+            <h3>Soft skills</h3>
+            <div class="studio-chip-row">
+              @for (skill of softSkills; track skill) {
+                <span>{{ skill }}</span>
+              }
+            </div>
+          </article>
+
+          <article>
+            <h3>Software</h3>
+            <div class="studio-chip-row">
+              @for (tool of software; track tool) {
+                <span>{{ tool }}</span>
+              }
+            </div>
+          </article>
+
+          <article>
+            <h3>Lingue</h3>
+            <div class="studio-language-list">
+              @for (language of languages; track language) {
+                <p>{{ language }}</p>
+              }
+            </div>
+          </article>
+
+          <article>
+            <h3>Collaborazioni</h3>
+            <div class="studio-collab-list">
+              @for (item of collaborations; track item.title) {
+                <p><span>{{ item.period }}</span>{{ item.title }}</p>
+              }
+            </div>
+          </article>
+        </div>
+
+        <div class="studio-cv-timelines">
+          <section>
+            <h3>Esperienze lavorative</h3>
+            <div class="studio-timeline">
+              @for (item of workTimeline; track item.title) {
+                <article>
+                  <span>{{ item.period }}</span>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.place }}</p>
+                  @if (item.details.length > 0) {
+                    <ul>
+                      @for (detail of item.details; track detail) {
+                        <li>{{ detail }}</li>
+                      }
+                    </ul>
+                  }
+                </article>
+              }
+            </div>
+          </section>
+
+          <section>
+            <h3>Formazione scolastica</h3>
+            <div class="studio-timeline studio-training-timeline">
+              @for (item of trainingTimeline; track item.title) {
+                <article>
+                  <span>{{ item.period }}</span>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.place }}</p>
+                  @if (item.details.length > 0) {
+                    <ul>
+                      @for (detail of item.details; track detail) {
+                        <li>{{ detail }}</li>
+                      }
+                    </ul>
+                  }
+                </article>
+              }
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="aboutme" class="studio-section studio-about" aria-label="About me">
+        <header class="studio-section-header">
+          <p>About</p>
+          <h2>Tra moda, costume e costruzione.</h2>
+        </header>
+        <div class="studio-about-grid">
+          <div class="studio-about-art" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div>
+            @for (paragraph of aboutParagraphs; track paragraph) {
+              <p>{{ paragraph }}</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      @if (fullscreenGalleryItems.length > 0) {
+        <section class="gallery-viewer" aria-modal="true" role="dialog" aria-label="Fullscreen gallery">
+          <div class="gallery-viewer-toolbar">
+            <span>{{ fullscreenGalleryIndex + 1 }} / {{ fullscreenGalleryItems.length }}</span>
+            <button type="button" class="gallery-viewer-close" aria-label="Close fullscreen gallery" (click)="closeGalleryViewer()">Close</button>
+          </div>
+          @if (fullscreenGalleryItems.length > 1) {
+            <button type="button" class="gallery-viewer-arrow gallery-viewer-prev" aria-label="Previous fullscreen image" (click)="showPreviousFullscreenImage()">&lt;</button>
+          }
+          <figure class="gallery-viewer-frame">
+            <img [src]="currentFullscreenImage" alt="Fullscreen gallery image">
+          </figure>
+          @if (fullscreenGalleryItems.length > 1) {
+            <button type="button" class="gallery-viewer-arrow gallery-viewer-next" aria-label="Next fullscreen image" (click)="showNextFullscreenImage()">&gt;</button>
+          }
+        </section>
+      }
     </main>
-  `,
-  styles: [`
-    main.projects-sun-page {
-      min-height: calc(100svh - 72px);
-      padding-top: 72px;
-      overflow: hidden;
-      background: #070707;
-      color: #f7f5f0;
-    }
-
-    .project-sun-tracker {
-      min-height: calc(100svh - 72px);
-      padding: 34px;
-      background: #070707;
-    }
-
-    .project-sun-tracker .vehicle-copy h2 {
-      color: #D91259;
-      font-size: clamp(46px, 7.2vw, 112px);
-    }
-
-    .sun-stage {
-      min-height: clamp(380px, 68svh, 720px);
-    }
-
-    .sun-stage:before,
-    .sun-stage:after {
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .sun-stage canvas {
-      width: 100%;
-      height: clamp(380px, 68svh, 720px);
-    }
-
-    .sun-stage:before {
-      inset: 4%;
-      border-color: rgba(255, 193, 91, 0.06);
-      box-shadow: none;
-    }
-
-    .sun-stage:after {
-      inset: 16%;
-      border-color: rgba(255, 236, 177, 0.04);
-    }
-
-    .project-sun-tracker .vehicle-controls {
-      justify-items: center;
-      gap: 18px;
-      margin-top: clamp(18px, 3vh, 34px);
-      transform: translateX(-54px);
-    }
-
-    .project-sun-tracker .vehicle-controls button {
-      width: min(280px, 100%);
-      min-height: 66px;
-      border-radius: 12px;
-      border-color: #D91259;
-      background: transparent;
-      color: #D91259;
-      padding: 22px 32px;
-      font-family: "911 Porscha", Arial, Helvetica, sans-serif;
-      font-weight: 400;
-      font-size: 20px;
-    }
-
-    .project-sun-tracker .vehicle-controls button:hover,
-    .project-sun-tracker .vehicle-controls button:focus-visible {
-      border-color: #D91259;
-      background: transparent;
-      color: #D91259;
-    }
-
-    @media (max-width: 900px) {
-      main.projects-sun-page {
-        padding-top: 106px;
-      }
-
-      .project-sun-tracker {
-        min-height: calc(100svh - 106px);
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: auto auto auto;
-        align-content: center;
-        justify-items: center;
-        gap: clamp(12px, 2.6vh, 22px);
-        padding: 22px 20px 34px;
-        text-align: center;
-      }
-
-      .project-sun-tracker .vehicle-copy h2 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(20px, 7vw, 30px);
-        line-height: 1.12;
-        overflow-wrap: anywhere;
-      }
-
-      .project-sun-tracker .vehicle-copy {
-        width: 100%;
-        text-align: center;
-      }
-
-      .sun-stage {
-        width: min(100%, 360px);
-        min-height: clamp(220px, 36vh, 320px);
-      }
-
-      .sun-stage canvas {
-        height: clamp(220px, 36vh, 320px);
-      }
-
-      .project-sun-tracker .vehicle-controls {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        width: 100%;
-        margin-top: clamp(34px, 7vh, 72px);
-        transform: none;
-      }
-
-      .project-sun-tracker .vehicle-controls button {
-        width: min(280px, calc(100vw - 40px));
-        min-height: 58px;
-        padding: 14px 16px;
-        font-size: clamp(15px, 4.8vw, 18px);
-        overflow-wrap: anywhere;
-      }
-    }
-  `]
+  `
 })
-export class ProjectsPage implements AfterViewInit, OnDestroy {
-  @ViewChild('sunCanvas') private sunCanvas?: ElementRef<HTMLCanvasElement>;
+export class ProjectsPage implements OnInit, AfterViewInit, OnDestroy {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private clientRevealObserver?: IntersectionObserver;
 
-  private sunFrame = 0;
-  private renderer?: THREE.WebGLRenderer;
-  private scene?: THREE.Scene;
-  private camera?: THREE.PerspectiveCamera;
-  private sun?: THREE.Group;
-  private lavaJets?: THREE.Group;
-  private surface?: THREE.Mesh;
-  private sunMaterial?: THREE.MeshBasicMaterial;
-  private readonly clock = new THREE.Clock();
-  private targetRotation = new THREE.Euler(0.12, 0, 0.06);
-  private readonly resizeSun = (): void => this.resizeSunRenderer();
+  protected costumeProjects: CostumeProjectContent[] = FALLBACK_COSTUME_PROJECTS;
+  protected fashionProjects: FashionProjectContent[] = FALLBACK_FASHION_PROJECTS;
+  protected teachingCards: TeachingCard[] = FALLBACK_TEACHINGS;
+  protected fullscreenGalleryItems: string[] = [];
+  protected fullscreenGalleryIndex = 0;
 
-  ngAfterViewInit(): void {
-    window.addEventListener('resize', this.resizeSun, { passive: true });
-    this.initSun();
+  protected readonly clients: ClientItem[] = [
+    { name: 'PWC', detail: '', className: 'studio-client-pwc', logoUrl: '/assets/clients/pwc.svg' },
+    { name: 'VivaRai', detail: '', className: 'studio-client-vivarai', logoUrl: '/assets/clients/vivarai2.svg' },
+    { name: 'kataklo', detail: '', className: 'studio-client-kataklo', logoUrl: '/assets/clients/kataklo.svg' },
+    { name: 'ariella vidach AiEP', detail: '', className: 'studio-client-aiep', logoUrl: '/assets/clients/ariella-vidach-aiep.svg' },
+    { name: 'Rai', detail: '', className: 'studio-client-rai' }
+  ];
+
+  protected readonly services: ServiceItem[] = [
+    {
+      eyebrow: 'Costume',
+      title: 'Costume Design per arti performative',
+      summary: 'Ricerca, progettazione e realizzazione di costumi pensati per scena, corpo e movimento.',
+      workOnValue: 'Costume Design',
+      details: [
+        'Analisi del concept, del linguaggio performativo e delle esigenze tecniche.',
+        'Moodboard, palette, silhouette, materiali, prototipi e soluzioni sartoriali.',
+        'Fitting, vestibilita, resistenza e funzionalita scenica.'
+      ]
+    },
+    {
+      eyebrow: 'Fashion',
+      title: 'Fashion Design e sviluppo prodotto',
+      summary: 'Collezioni, capsule e identita di prodotto per womenswear, menswear e brand emergenti.',
+      workOnValue: 'Fashion Design',
+      details: [
+        'Ricerca di mercato, target, concept e direzione stilistica.',
+        'Schede tecniche, materiali, fornitori, fitting e campionario.',
+        'Traduzione di un immaginario in prodotto coerente e realizzabile.'
+      ]
+    },
+    {
+      eyebrow: 'Teaching',
+      title: 'Tutoraggio accademico e corsi',
+      summary: 'Supporto per tesi, portfolio, collezioni, sketchbook e presentazioni finali.',
+      workOnValue: 'Teaching / tutoring',
+      details: [
+        'Revisioni per studenti IED, NABA, Marangoni, Politecnico e Ferrari Fashion School.',
+        'Disegno tecnico, modellistica, cucito e progettazione moda.',
+        'Metodo costruito su ascolto, revisione critica e strumenti concreti.'
+      ]
+    }
+  ];
+
+  protected readonly profile = [
+    'Fashion & Costume Designer, Product Developer e Tutor con oltre due anni di esperienza nella progettazione e nello sviluppo di collezioni per il settore delle arti performative e della moda.',
+    'Laureata in Fashion Design presso lo IED di Milano, con specializzazione in womenswear, menswear, product development e costume design.',
+    'Accompagno ogni progetto dall analisi iniziale fino alla realizzazione finale, integrando ricerca creativa, sviluppo concettuale, modellistica, prototipazione e confezione.',
+    'Collaboro con realta come RAI Italia, Ariella Vidach AIEP e Kataklo Athletic Dance Theatre, oltre a contribuire allo sviluppo creativo e tecnico di brand emergenti.',
+    'Parallelamente svolgo attivita di tutoraggio per studenti di IED, NABA, Marangoni, Politecnico di Milano e Ferrari Fashion School.'
+  ];
+
+  protected readonly hardSkills = [
+    'AI-assisted Design',
+    'Collection Design & Development',
+    'Womenswear',
+    'Menswear',
+    'Kidswear',
+    'Knitwear',
+    'Accessori',
+    'Costume Design',
+    'Product Development',
+    'Trend Research',
+    'Concept Development',
+    'Moodboard & Visual Storytelling',
+    'Material & Fabric Research',
+    'Textile Manipulations',
+    'Technical Drawing',
+    'Technical Sheets',
+    'Pattern Making',
+    'Fit Adjustments',
+    'Prototyping',
+    'Sample Fittings',
+    'Garment Construction'
+  ];
+
+  protected readonly softSkills = [
+    'Ascolto e revisione critica',
+    'Direzione creativa',
+    'Problem solving sartoriale',
+    'Organizzazione del processo',
+    'Autonomia progettuale',
+    'Collaborazione con performer e studenti',
+    'Adattabilita a set, scena e fitting',
+    'Presentazione e storytelling'
+  ];
+
+  protected readonly software = [
+    'Adobe Photoshop',
+    'Adobe Illustrator',
+    'Adobe InDesign',
+    'CLO 3D',
+    'Procreate',
+    'Microsoft Office',
+    'Windows',
+    'macOS'
+  ];
+
+  protected readonly languages = [
+    'Italiano: madrelingua',
+    'Inglese: livello B1'
+  ];
+
+  protected readonly collaborations = [
+    { title: 'Myss Keta - Tour Live', period: 'Aprile - Maggio 2025' },
+    { title: 'Big Mama x Sephora Pride Campaign', period: 'Giugno 2024' },
+    { title: 'PWC - "Vanitatis" Runway', period: 'Aprile 2024' },
+    { title: 'Lenoire - "Non Posso" Videoclip', period: 'Febbraio 2024' },
+    { title: 'Editoriali moda internazionali', period: '2024 - 2026' }
+  ];
+
+  protected readonly workTimeline: TimelineItem[] = [
+    {
+      period: 'Marzo 2026 - in corso',
+      title: 'Lead Costume Designer & Costume Maker',
+      place: 'Ariella Vidach AIEP - Milano',
+      details: [
+        'Sviluppo concept costumi con la direzione artistica.',
+        'Cartamodelli, prototipazione, fitting e confezione.',
+        'Supervisione styling e make-up dei performer.'
+      ]
+    },
+    {
+      period: 'Gennaio 2025 - in corso',
+      title: 'Tutor di tesi per studenti di Fashion Styling & Design',
+      place: 'IED, NABA, Marangoni, Politecnico, Ferrari Fashion School',
+      details: [
+        'Concept di tesi, target, posizionamento e ricerca.',
+        'Supporto su collezioni, sketchbook, disegno tecnico e prototipazione.',
+        'Preparazione a esami, fitting, shooting e presentazione finale.'
+      ]
+    },
+    {
+      period: 'Marzo 2025 - Marzo 2026',
+      title: 'Fashion Designer, Product Developer & Brand Developer',
+      place: 'Freelance',
+      details: [
+        'Consulenze per streetwear maschile e lusso femminile.',
+        'Analisi trend, identita stilistica e concept di collezione.',
+        'Ricerca fornitori, materiali e sviluppo tech pack.'
+      ]
+    },
+    {
+      period: 'Febbraio 2025 - Febbraio 2026',
+      title: 'Costume Designer & Costume Maker',
+      place: 'Kataklo Athletic Dance Theatre - Milano',
+      details: [
+        'Concept visivo e soluzioni materiche per scena e movimento.',
+        'Test tessili, manipolazioni, prototipazione e confezione.',
+        'Fitting sui performer e supporto a shooting e allestimenti.'
+      ]
+    },
+    {
+      period: 'Aprile - Maggio 2024',
+      title: 'Costume Designer - Viva Rai2!',
+      place: 'RAI Italia',
+      details: [
+        'Costumi di scena per performance televisiva.',
+        'Bozzetti e confezione sartoriale su misura.'
+      ]
+    }
+  ];
+
+  protected readonly trainingTimeline: TimelineItem[] = [
+    {
+      period: 'Formazione accademica',
+      title: 'Fashion Design',
+      place: 'IED Milano',
+      details: [
+        'Specializzazione in womenswear, menswear, product development e costume design.',
+        'Percorso orientato a ricerca, concept, modellistica, prototipazione e confezione.'
+      ]
+    },
+    {
+      period: 'Metodo progettuale',
+      title: 'Ricerca, tecnica e fattibilita',
+      place: 'Fashion & Costume Design',
+      details: [
+        'Traduzione della ricerca in prodotti e costumi realizzabili.',
+        'Integrazione di visione estetica, competenze tecniche e identita progettuale.'
+      ]
+    },
+    {
+      period: 'Tutoraggio continuativo',
+      title: 'Supporto a tesi e collezioni',
+      place: 'IED, NABA, Marangoni, Politecnico, Ferrari Fashion School',
+      details: [
+        'Accompagnamento nello sviluppo creativo e tecnico.',
+        'Costruzione di collezioni, shooting, fashion film e presentazione finale.'
+      ]
+    }
+  ];
+
+  protected readonly aboutParagraphs = [
+    'Sono una Fashion Designer, Costume Designer & Maker e Tutor, ma nessuna di queste definizioni, da sola, riesce davvero a raccontare chi sono.',
+    'Il mio percorso e iniziato allo IED Istituto Europeo di Design di Milano, dove mi sono formata grazie a una borsa di studio ottenuta per merito.',
+    'Da una parte la moda. Dall altra il costume. Due mondi che spesso vengono percepiti come opposti, ma che per me non hanno mai smesso di dialogare.',
+    'La moda richiede attenzione al mercato, al target, alla riconoscibilita e alla costruzione di un identita. Il costume appartiene invece alle arti performative e al corpo in movimento.',
+    'Credo che il design nasca dall incontro tra ricerca, tecnica e sensibilita.'
+  ];
+
+  async ngOnInit(): Promise<void> {
+    await Promise.allSettled([
+      this.loadCostumeProjects(),
+      this.loadFashionProjects(),
+      this.loadTeachingCards()
+    ]);
   }
 
-  protected focusVehicle(vehicle: 'project1' | 'project2' | 'project3'): void {
-    const rotations = {
-      project1: new THREE.Euler(0.1, 0.08, 0.04),
-      project2: new THREE.Euler(-0.2, 0.68, -0.1),
-      project3: new THREE.Euler(0.32, -0.68, 0.16)
-    };
-
-    this.targetRotation = rotations[vehicle];
+  ngAfterViewInit(): void {
+    this.prepareClientReveal();
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.resizeSun);
-    cancelAnimationFrame(this.sunFrame);
-    this.renderer?.dispose();
+    this.clientRevealObserver?.disconnect();
+    document.documentElement.classList.remove('gallery-viewer-open');
   }
 
-  private initSun(): void {
-    const canvas = this.sunCanvas?.nativeElement;
+  protected paddedIndex(index: number): string {
+    return String(index + 1).padStart(2, '0');
+  }
 
-    if (!canvas) {
+  protected firstCostumeImage(project: CostumeProjectContent): string {
+    return project.gallery.find((item) => this.isImageUrl(item)) ?? '';
+  }
+
+  protected costumePreviewImages(project: CostumeProjectContent): string[] {
+    return project.gallery.filter((item) => this.isImageUrl(item)).slice(0, 4);
+  }
+
+  protected firstFashionImage(project: FashionProjectContent): string {
+    return project.gallery.find((item) => this.isImageUrl(item)) ?? '';
+  }
+
+  protected fashionPreviewImages(project: FashionProjectContent): string[] {
+    return project.gallery.filter((item) => this.isImageUrl(item)).slice(0, 4);
+  }
+
+  protected get currentFullscreenImage(): string {
+    return this.fullscreenGalleryItems[this.fullscreenGalleryIndex] ?? '';
+  }
+
+  protected get costumeDesktopColumnCount(): number {
+    return this.compactColumnCount(this.costumeProjects.length, [4, 3, 2]);
+  }
+
+  protected get costumeTabletColumnCount(): number {
+    return this.costumeProjects.length === 1 ? 1 : 2;
+  }
+
+  protected get teachingDesktopColumnCount(): number {
+    return this.compactColumnCount(this.teachingCards.length, [5, 4, 3]);
+  }
+
+  protected get teachingTabletColumnCount(): number {
+    return this.teachingCards.length === 1 ? 1 : 2;
+  }
+
+  protected get fashionDesktopColumnCount(): number {
+    return this.compactColumnCount(this.fashionProjects.length, [4, 3, 2]);
+  }
+
+  protected get fashionTabletColumnCount(): number {
+    return this.fashionProjects.length === 1 ? 1 : 2;
+  }
+
+  private compactColumnCount(itemCount: number, candidates: number[]): number {
+    const count = Math.max(1, itemCount);
+    const availableColumns = candidates.filter((columnCount) => columnCount <= count);
+
+    if (availableColumns.length === 0) {
+      return 1;
+    }
+
+    const exactColumnCount = availableColumns.find((columnCount) => count % columnCount === 0);
+
+    if (exactColumnCount) {
+      return exactColumnCount;
+    }
+
+    return availableColumns
+      .map((columnCount) => {
+        const remainder = count % columnCount;
+        const rows = Math.ceil(count / columnCount);
+        const balancePenalty = remainder === 1 ? 10 : 0;
+
+        return {
+          columnCount,
+          score: balancePenalty + rows
+        };
+      })
+      .sort((first, second) => first.score - second.score || second.columnCount - first.columnCount)[0]
+      .columnCount;
+  }
+
+  protected contactHrefFor(workOnValue: string): string {
+    return `/home?workOn=${encodeURIComponent(workOnValue)}#footer-contact`;
+  }
+
+  protected bookService(event: MouseEvent, workOnValue: string): void {
+    event.preventDefault();
+    const href = this.contactHrefFor(workOnValue);
+
+    window.dispatchEvent(new CustomEvent('footer-work-on', { detail: workOnValue }));
+    window.history.pushState(null, '', href);
+    document.getElementById('footer-contact')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+
+  protected openGalleryViewer(items: string[], index: number): void {
+    const imageItems = items.filter((item) => this.isImageUrl(item));
+
+    if (imageItems.length === 0) {
       return;
     }
 
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-    this.camera.position.set(0, 0, 5.35);
-
-    this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3));
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.45;
-
-    this.sun = new THREE.Group();
-    const realSunTexture = new THREE.TextureLoader().load('/assets/sun/real-sun-4096.jpg');
-    realSunTexture.colorSpace = THREE.SRGBColorSpace;
-    realSunTexture.wrapS = THREE.RepeatWrapping;
-    realSunTexture.wrapT = THREE.RepeatWrapping;
-    realSunTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    realSunTexture.minFilter = THREE.LinearMipmapLinearFilter;
-    realSunTexture.magFilter = THREE.LinearFilter;
-
-    const sunMaterial = this.createSunMaterial(realSunTexture);
-    this.sunMaterial = sunMaterial;
-    this.surface = new THREE.Mesh(new THREE.SphereGeometry(1.58, 320, 320), sunMaterial);
-    this.lavaJets = this.createLavaJets();
-
-    this.sun.add(this.surface, this.lavaJets);
-    this.scene.add(this.sun);
-
-    const coreLight = new THREE.PointLight(0xffb347, 5.5, 10);
-    coreLight.position.set(0, 0, 1.1);
-    const fill = new THREE.AmbientLight(0xffd8a3, 0.55);
-    this.scene.add(coreLight, fill);
-
-    this.resizeSunRenderer();
-    requestAnimationFrame(() => this.resizeSunRenderer());
-    this.animateSun();
+    this.fullscreenGalleryItems = imageItems;
+    this.fullscreenGalleryIndex = Math.min(Math.max(index, 0), imageItems.length - 1);
+    document.documentElement.classList.add('gallery-viewer-open');
   }
 
-  private animateSun(): void {
-    if (!this.renderer || !this.scene || !this.camera || !this.sun) {
+  protected closeGalleryViewer(): void {
+    this.fullscreenGalleryItems = [];
+    this.fullscreenGalleryIndex = 0;
+    document.documentElement.classList.remove('gallery-viewer-open');
+  }
+
+  protected showPreviousFullscreenImage(): void {
+    const galleryLength = this.fullscreenGalleryItems.length;
+
+    if (galleryLength < 2) {
       return;
     }
 
-    this.sun.rotation.x += (this.targetRotation.x - this.sun.rotation.x) * 0.025;
-    this.sun.rotation.y += (this.targetRotation.y - this.sun.rotation.y) * 0.025;
-    this.sun.rotation.z += (this.targetRotation.z - this.sun.rotation.z) * 0.025;
-
-    if (this.surface) {
-      this.surface.rotation.y += 0.00038;
-    }
-
-    const elapsed = this.clock.getElapsedTime();
-
-    if (this.lavaJets) {
-      this.lavaJets.children.forEach((jet, index) => {
-        const pulse = 0.88 + Math.sin(elapsed * 1.7 + index * 0.71) * 0.1;
-        jet.scale.setScalar(pulse);
-      });
-    }
-
-    this.renderer.render(this.scene, this.camera);
-    this.sunFrame = requestAnimationFrame(() => this.animateSun());
+    this.fullscreenGalleryIndex = (this.fullscreenGalleryIndex + galleryLength - 1) % galleryLength;
   }
 
-  private createSunMaterial(realSunTexture: THREE.Texture): THREE.MeshBasicMaterial {
-    return new THREE.MeshBasicMaterial({
-      color: 0xfff2cf,
-      map: realSunTexture
-    });
-  }
+  protected showNextFullscreenImage(): void {
+    const galleryLength = this.fullscreenGalleryItems.length;
 
-  private resizeSunRenderer(): void {
-    const canvas = this.sunCanvas?.nativeElement;
-
-    if (!canvas || !this.renderer || !this.camera) {
+    if (galleryLength < 2) {
       return;
     }
 
-    const rect = canvas.getBoundingClientRect();
-    const width = Math.max(1, Math.floor(rect.width));
-    const height = Math.max(1, Math.floor(rect.height));
-    this.renderer.setSize(width, height, false);
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
+    this.fullscreenGalleryIndex = (this.fullscreenGalleryIndex + 1) % galleryLength;
   }
 
-  private createLavaJets(): THREE.Group {
-    const jets = new THREE.Group();
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xffb13b,
-      transparent: true,
-      opacity: 0.18,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    const hotMaterial = new THREE.MeshBasicMaterial({
-      color: 0xfff0a0,
-      transparent: true,
-      opacity: 0.1,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    const configs = [
-      { angle: -2.35, lift: 0.22, height: 0.22, tilt: 0.18 },
-      { angle: -1.38, lift: -0.06, height: 0.16, tilt: -0.16 },
-      { angle: -0.64, lift: 0.18, height: 0.2, tilt: 0.1 },
-      { angle: 0.92, lift: -0.14, height: 0.18, tilt: -0.12 },
-      { angle: 1.86, lift: 0.08, height: 0.24, tilt: 0.14 },
-      { angle: 2.64, lift: -0.18, height: 0.15, tilt: -0.1 }
-    ];
-
-    configs.forEach((config, index) => {
-      const root = new THREE.Vector3(
-        Math.cos(config.angle) * 1.58,
-        Math.sin(config.angle) * 1.58,
-        config.lift
-      );
-      const normal = root.clone().normalize();
-      const tangent = new THREE.Vector3(-normal.y, normal.x, 0).normalize();
-      const tip = root.clone()
-        .add(normal.clone().multiplyScalar(config.height))
-        .add(tangent.clone().multiplyScalar(config.tilt));
-      const control = root.clone()
-        .add(normal.clone().multiplyScalar(config.height * 1.2))
-        .add(tangent.clone().multiplyScalar(config.tilt * 0.42));
-      const curve = new THREE.QuadraticBezierCurve3(root, control, tip);
-      const geometry = new THREE.TubeGeometry(curve, 28, index % 2 === 0 ? 0.009 : 0.006, 8, false);
-      const jet = new THREE.Mesh(geometry, index % 2 === 0 ? material : hotMaterial);
-
-      jets.add(jet);
-    });
-
-    return jets;
+  private async loadCostumeProjects(): Promise<void> {
+    this.costumeProjects = await this.fetchWithFallback(
+      ['/api/costume-designs', 'http://localhost:5109/api/costume-designs'],
+      (response) => this.normalizeCostumeProjects(response),
+      FALLBACK_COSTUME_PROJECTS
+    );
+    this.changeDetectorRef.detectChanges();
   }
 
-  private createSunTexture(isBump = false): THREE.CanvasTexture {
-    const canvas = document.createElement('canvas');
-    canvas.width = 4096;
-    canvas.height = 2048;
-    const context = canvas.getContext('2d');
+  private async loadFashionProjects(): Promise<void> {
+    this.fashionProjects = await this.fetchWithFallback(
+      ['/api/fashion-designs', 'http://localhost:5109/api/fashion-designs'],
+      (response) => this.normalizeFashionProjects(response),
+      FALLBACK_FASHION_PROJECTS
+    );
+    this.changeDetectorRef.detectChanges();
+  }
 
-    if (!context) {
-      return new THREE.CanvasTexture(canvas);
+  private async loadTeachingCards(): Promise<void> {
+    this.teachingCards = await this.fetchWithFallback(
+      ['/api/teachings', 'http://localhost:5109/api/teachings'],
+      (response) => this.normalizeTeachingCards(response),
+      FALLBACK_TEACHINGS
+    );
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private prepareClientReveal(): void {
+    const root = this.elementRef.nativeElement as HTMLElement;
+    const revealItems = Array.from(root.querySelectorAll('.studio-client-reveal')).filter(
+      (item): item is HTMLElement => item instanceof HTMLElement
+    );
+
+    revealItems.forEach((item, index) => {
+      item.style.setProperty('--client-reveal-delay', `${Math.min(index * 70, 560)}ms`);
+    });
+
+    if (!('IntersectionObserver' in window)) {
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+      return;
     }
 
-    const base = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-    base.addColorStop(0, isBump ? '#9a9a9a' : '#ffea8a');
-    base.addColorStop(0.35, isBump ? '#707070' : '#ff9d1f');
-    base.addColorStop(0.72, isBump ? '#b8b8b8' : '#ff5c00');
-    base.addColorStop(1, isBump ? '#858585' : '#ffe08a');
-    context.fillStyle = base;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    this.clientRevealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
 
-    for (let y = 0; y < canvas.height; y += 18) {
-      context.beginPath();
-      context.moveTo(0, y);
+          entry.target.classList.add('is-visible');
+          this.clientRevealObserver?.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '0px 0px 10% 0px', threshold: 0.06 }
+    );
 
-      for (let x = 0; x <= canvas.width; x += 22) {
-        const wave = Math.sin(x * 0.009 + y * 0.022) * 28 + Math.sin(x * 0.026) * 12;
-        context.lineTo(x, y + wave);
+    revealItems.forEach((item) => this.clientRevealObserver?.observe(item));
+  }
+
+  private async fetchWithFallback<T>(urls: string[], normalize: (response: unknown) => T[], fallback: T[]): Promise<T[]> {
+    for (const url of urls) {
+      try {
+        const response = await this.fetchJson(url);
+        const items = normalize(response);
+
+        if (items.length > 0) {
+          return items;
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return fallback;
+  }
+
+  private async fetchJson(url: string): Promise<unknown> {
+    const abortController = new AbortController();
+    const timeout = window.setTimeout(() => abortController.abort(), 5000);
+
+    try {
+      const response = await fetch(url, { signal: abortController.signal });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with ${response.status}`);
       }
 
-      context.lineWidth = 3 + Math.random() * 10;
-      context.strokeStyle = isBump ? 'rgba(210, 210, 210, 0.26)' : 'rgba(255, 238, 132, 0.18)';
-      context.stroke();
+      return await response.json();
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  private normalizeTeachingCards(response: unknown): TeachingCard[] {
+    return this.readRecordArray(this.parseResponse(response))
+      .map((card) => ({
+        title: this.readField(card, ['title', 'Title', 'name', 'Name']),
+        author: this.readField(card, ['author', 'Author']),
+        school: this.readField(card, ['school', 'School']),
+        previewImage: this.normalizeTeachingAssetUrl(this.readField(card, ['previewImage', 'PreviewImage', 'previewImageUrl', 'PreviewImageUrl', 'preview_image', 'image', 'Image'])),
+        pdfUrl: this.normalizeAssetUrl(this.readField(card, ['pdfUrl', 'PdfUrl', 'PDFUrl', 'pdfURL', 'PdfURL', 'pdf', 'Pdf']))
+      }))
+      .filter((card) => card.title || card.author || card.school || card.previewImage || card.pdfUrl);
+  }
+
+  private normalizeFashionProjects(response: unknown): FashionProjectContent[] {
+    return this.readRecordArray(this.parseResponse(response))
+      .map((record) => ({
+        title: this.readField(record, ['title', 'Title', 'name', 'Name']) || 'Fashion Design',
+        fields: this.readStringArray(record, ['fields', 'Fields', 'categories', 'Categories', 'tags', 'Tags']),
+        videoUrl: this.normalizeAssetUrl(this.readField(record, ['explainingVideo', 'ExplainingVideo', 'video', 'Video', 'videoUrl', 'VideoUrl', 'videoURL', 'VideoURL'])),
+        description: this.readField(record, ['description', 'Description', 'body', 'Body', 'text', 'Text']),
+        pdfUrl: this.normalizeAssetUrl(this.readField(record, ['pdf', 'Pdf', 'pdfUrl', 'PdfUrl', 'PDFUrl', 'pdfURL', 'PdfURL'])),
+        gallery: this.readStringArray(record, ['gallery', 'Gallery', 'images', 'Images', 'imageUrls', 'ImageUrls']).map((url) => this.normalizeAssetUrl(url))
+      }))
+      .filter((project) => project.title || project.videoUrl || project.description || project.pdfUrl || project.gallery.length > 0);
+  }
+
+  private normalizeCostumeProjects(response: unknown): CostumeProjectContent[] {
+    return this.readRecordArray(this.parseResponse(response))
+      .map((record) => ({
+        title: this.readField(record, ['title', 'Title', 'name', 'Name']) || 'Costume Design',
+        season: this.readField(record, ['season', 'Season']),
+        role: this.readField(record, ['role', 'Role']),
+        videoUrl: this.normalizeAssetUrl(this.readField(record, ['video', 'Video', 'videoUrl', 'VideoUrl', 'videoURL', 'VideoURL'])),
+        description: this.readField(record, ['description', 'Description', 'body', 'Body', 'text', 'Text']),
+        gallery: this.readStringArray(record, ['gallery', 'Gallery', 'images', 'Images', 'imageUrls', 'ImageUrls']).map((url) => this.normalizeAssetUrl(url)),
+        credits: this.readField(record, ['credits', 'Credits'])
+      }))
+      .filter((project) => project.title || project.season || project.role || project.videoUrl || project.description || project.gallery.length > 0 || project.credits);
+  }
+
+  private parseResponse(response: unknown): unknown {
+    if (typeof response !== 'string') {
+      return response;
     }
 
-    for (let i = 0; i < 620; i += 1) {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      const radius = 18 + Math.random() * 118;
-      const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+    try {
+      return JSON.parse(response);
+    } catch {
+      return response;
+    }
+  }
 
-      if (isBump) {
-        gradient.addColorStop(0, 'rgba(235, 235, 235, 0.36)');
-        gradient.addColorStop(0.5, 'rgba(120, 120, 120, 0.28)');
-        gradient.addColorStop(1, 'rgba(120, 120, 120, 0)');
-      } else {
-        gradient.addColorStop(0, 'rgba(255, 246, 170, 0.54)');
-        gradient.addColorStop(0.42, 'rgba(255, 130, 20, 0.34)');
-        gradient.addColorStop(1, 'rgba(150, 32, 0, 0)');
+  private readRecordArray(response: unknown): Record<string, unknown>[] {
+    if (Array.isArray(response)) {
+      return response.filter(this.isRecord);
+    }
+
+    if (!this.isRecord(response)) {
+      return [];
+    }
+
+    const values =
+      response['value'] ??
+      response['Value'] ??
+      response['$values'] ??
+      response['data'] ??
+      response['Data'] ??
+      response['items'] ??
+      response['Items'] ??
+      response['results'] ??
+      response['Results'];
+
+    if (Array.isArray(values)) {
+      return values.filter(this.isRecord);
+    }
+
+    return [response];
+  }
+
+  private readField(record: Record<string, unknown>, aliases: string[]): string {
+    const value = aliases.map((key) => record[key]).find((item) => item !== undefined);
+
+    return String(value ?? '').trim();
+  }
+
+  private readStringArray(record: Record<string, unknown>, aliases: string[]): string[] {
+    const value = aliases.map((key) => record[key]).find((item) => item !== undefined);
+
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item ?? '').trim()).filter(Boolean);
+    }
+
+    if (this.isRecord(value)) {
+      const values = value['$values'] ?? value['items'] ?? value['Items'];
+
+      if (Array.isArray(values)) {
+        return values.map((item) => String(item ?? '').trim()).filter(Boolean);
       }
-
-      context.fillStyle = gradient;
-      context.beginPath();
-      context.arc(x, y, radius, 0, Math.PI * 2);
-      context.fill();
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 16;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    return texture;
+    if (typeof value === 'string') {
+      return value.split(',').map((item) => item.trim()).filter(Boolean);
+    }
+
+    return [];
   }
 
-  private createCoronaTexture(isHot = false): THREE.CanvasTexture {
-    const canvas = document.createElement('canvas');
-    canvas.width = 2048;
-    canvas.height = 2048;
-    const context = canvas.getContext('2d');
-
-    if (!context) {
-      return new THREE.CanvasTexture(canvas);
+  private normalizeTeachingAssetUrl(url: string): string {
+    if (url.endsWith('/uploads/teachings/pezzi-di-vetro-preview.png')) {
+      return '/assets/teachings/pezzi-di-vetro-preview.png';
     }
 
-    const center = canvas.width / 2;
-    const gradient = context.createRadialGradient(center, center, 0, center, center, center);
-    gradient.addColorStop(0, isHot ? 'rgba(255, 255, 220, 0.72)' : 'rgba(255, 222, 126, 0.52)');
-    gradient.addColorStop(0.28, isHot ? 'rgba(255, 150, 26, 0.32)' : 'rgba(255, 104, 0, 0.28)');
-    gradient.addColorStop(0.58, isHot ? 'rgba(255, 80, 0, 0.12)' : 'rgba(255, 72, 0, 0.16)');
-    gradient.addColorStop(1, 'rgba(255, 72, 0, 0)');
-
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < 180; i += 1) {
-      const angle = Math.random() * Math.PI * 2;
-      const inner = center * (0.3 + Math.random() * 0.1);
-      const outer = center * (0.64 + Math.random() * 0.34);
-      const width = 2 + Math.random() * (isHot ? 5 : 12);
-
-      context.beginPath();
-      context.moveTo(center + Math.cos(angle) * inner, center + Math.sin(angle) * inner);
-      context.lineTo(center + Math.cos(angle) * outer, center + Math.sin(angle) * outer);
-      context.lineWidth = width;
-      context.strokeStyle = isHot ? 'rgba(255, 246, 190, 0.18)' : 'rgba(255, 105, 0, 0.12)';
-      context.stroke();
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 16;
-    return texture;
+    return this.normalizeAssetUrl(url);
   }
+
+  private normalizeAssetUrl(url: string): string {
+    if (!url || url.startsWith('http') || url.startsWith('/')) {
+      return url;
+    }
+
+    return `/${url.replace(/^\/+/, '')}`;
+  }
+
+  private isImageUrl(url: string): boolean {
+    return /\.(jpe?g|png|webp|gif|avif)(\?.*)?$/i.test(url);
+  }
+
+  private readonly isRecord = (value: unknown): value is Record<string, unknown> => (
+    typeof value === 'object' && value !== null
+  );
 }

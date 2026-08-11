@@ -10,9 +10,9 @@ import { RouterLink } from '@angular/router';
   },
   template: `
     @if (historyBack) {
-      <button [class]="classes" type="button" (click)="goBack()">/ Go back /</button>
+      <button [class]="classes" type="button" (click)="goBack()">Go back</button>
     } @else {
-      <a [class]="classes" [routerLink]="routerLink">/ Go back /</a>
+      <a [class]="classes" [routerLink]="routerLink">Go back</a>
     }
   `
 })

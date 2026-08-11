@@ -1,33 +1,184 @@
 ﻿<header class="site-header" aria-label="Primary navigation">
-  <a class="logo" routerLink="/home" aria-label="Vai alla home">
-    <span class="logo-mark" aria-hidden="true"></span>
+  <a
+    class="logo"
+    routerLink="/home"
+    aria-label="Vai alla home"
+    (click)="navigateToHomeTop($event)"
+    (pointermove)="handleLogoMagnetMove($event)"
+    (pointerleave)="resetLogoMagnet($event)"
+    (blur)="resetLogoMagnet($event)"
+  >
+    <svg class="logo-mark" viewBox="0 0 128 96" aria-hidden="true" focusable="false">
+      <g class="logo-sun">
+        <path d="M45 33a19 19 0 0 1 38 0" />
+        <path d="M64 6v14" />
+        <path d="M48 11l6 12" />
+        <path d="M80 11l-6 12" />
+        <path d="M35 23l11 8" />
+        <path d="M93 23l-11 8" />
+        <path d="M36 34h17" />
+        <path d="M75 34h17" />
+      </g>
+      <g class="logo-needle">
+        <path class="logo-needle-line" d="M64 18v65" />
+        <path class="logo-needle-eye" d="M59 29c0-10 10-10 10 0 0 7-4 11-10 17" />
+        <path class="logo-thread" d="M54 44c9 10 21-7 10-13-9-5-13 10-5 24 6 11 19 14 20 2" />
+      </g>
+      <g class="logo-wings">
+        <path class="logo-wing-left" d="M26 37 9 51v33l17 10V37Z" />
+        <path class="logo-wing-right" d="M102 37v57l17-10V51l-17-14Z" />
+        <path class="logo-stitch logo-stitch-left" d="M18 56v22" />
+        <path class="logo-stitch logo-stitch-right" d="M110 56v22" />
+      </g>
+      <g class="logo-body">
+        <path class="logo-top-left" d="M31 39h23l10 10 10-10h23" />
+        <path class="logo-main-left" d="M26 37 64 86" />
+        <path class="logo-main-right" d="M102 37 64 86" />
+        <path class="logo-fold-left" d="M31 46 63 69" />
+        <path class="logo-fold-right" d="M97 46 65 69" />
+        <path class="logo-stitch logo-stitch-body-left" d="M36 48 61 79" />
+        <path class="logo-stitch logo-stitch-body-right" d="M92 48 67 79" />
+      </g>
+    </svg>
   </a>
 
   <div class="header-actions">
-    <nav class="nav-links" aria-label="Menu principale">
-      <a routerLink="/portfolio" routerLinkActive="is-active">portfolio</a>
-      <a routerLink="/servizi" routerLinkActive="is-active">servizi</a>
-      <a routerLink="/aboutme" routerLinkActive="is-active">About me</a>
-      <a routerLink="/curriculumvitae" routerLinkActive="is-active">CV</a>
-      <a class="book-now-nav-link" routerLink="/contacts">Book now</a>
-    </nav>
+    <button
+      type="button"
+      class="hamburger-menu-button"
+      [class.is-open]="menuOpen"
+      [attr.aria-expanded]="menuOpen"
+      aria-controls="site-menu"
+      aria-label="Apri menu"
+      (click)="toggleMenu()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-links" aria-label="Menu principale"></nav>
   </div>
+
+  <div class="scroll-progress-line" aria-hidden="true"><span></span></div>
 </header>
+
+<button
+  type="button"
+  class="hamburger-menu-scrim"
+  [class.is-open]="menuOpen"
+  aria-label="Chiudi menu"
+  tabindex="-1"
+  (click)="closeMenu()"
+></button>
+
+<aside id="site-menu" class="hamburger-menu-panel" [class.is-open]="menuOpen" aria-label="Navigazione rapida">
+  <nav>
+    <a href="/home#home-top" (click)="closeMenu()">Home</a>
+    <a href="/home#costume-design" (click)="closeMenu()">Costume Design</a>
+    <a href="/home#fashion-design" (click)="closeMenu()">Fashion Design</a>
+    <a href="/home#teachings" (click)="closeMenu()">Teachings</a>
+    <a href="/home#curriculumvitae" (click)="closeMenu()">Curriculum</a>
+    <a href="/home#aboutme" (click)="closeMenu()">About</a>
+    <a href="/home#footer-contact" (click)="navigateToFooterContact($event)">Contact</a>
+  </nav>
+</aside>
 
 <router-outlet />
 
-<button class="floating-go-back-link" type="button" (click)="goBack()" aria-label="Go back">
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M14.7 5.3 8 12l6.7 6.7-1.4 1.4L5.2 12l8.1-8.1 1.4 1.4Z"/>
-  </svg>
-</button>
+<footer id="footer-contact" class="site-footer" aria-label="Contact footer">
+  <section class="footer-contact-panel">
+    <div class="footer-contact-info">
+      <article>
+        <span>Phone</span>
+        <a href="tel:+393312827693">+39 3312827693</a>
+      </article>
 
-<a class="floating-contact-link" routerLink="/contact" routerLinkActive="is-active" aria-label="Open contact page">
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M4 5h16v14H4V5Zm2 2v.28l6 4.5 6-4.5V7H6Zm12 10V9.78l-6 4.5-6-4.5V17h12Z"/>
-  </svg>
-</a>
+      <article>
+        <span>Address</span>
+        <p>Via Giuseppe Meda, 6<br>20136 Milano MI, Italia</p>
+      </article>
 
-<footer class="site-footer">
-  <p>&copy; Copyright 2026 all rights reserved</p>
+      <article>
+        <span>Email</span>
+        <a href="mailto:mariasole.freelancer@gmail.com">mariasole.freelancer@gmail.com</a>
+      </article>
+
+      <article>
+        <span>Opening Hours</span>
+        <p>Mon - Fri: 9:00 - 19:00</p>
+        <p>Saturday: by appointment</p>
+      </article>
+
+      <article>
+        <span>Local Time</span>
+        <p>{{ footerLocalTime }}</p>
+      </article>
+
+      <div class="footer-map" aria-label="Google Maps location">
+        <iframe
+          title="Via Giuseppe Meda, 6, Milano map"
+          src="https://www.google.com/maps?q=Via%20Giuseppe%20Meda%2C%206%2C%2020136%20Milano%20MI%2C%20Italia&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </div>
+
+    <div class="footer-contact-main">
+      <h2>Do not hesitate to contact me to discuss a possible project or discover more about my work.</h2>
+
+      <form class="footer-contact-form" #footerContactForm (submit)="handleFooterContactSubmit($event, footerContactForm)">
+        <label>
+          <span>Name</span>
+          <input name="firstName" type="text" autocomplete="given-name" placeholder="Mario" required>
+        </label>
+
+        <label>
+          <span>Surname</span>
+          <input name="lastName" type="text" autocomplete="family-name" placeholder="Rossi" required>
+        </label>
+
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="email" placeholder="mario.rossi@example.com" required>
+        </label>
+
+        <label>
+          <span>I work on</span>
+          <select name="type" required [value]="footerSelectedWorkOn" (change)="handleFooterWorkOnChange($event)">
+            <option value="" selected disabled>Select project type</option>
+            <option>Fashion Design</option>
+            <option>Costume Design</option>
+            <option>Teaching / tutoring</option>
+            <option>Technical drawing</option>
+            <option>Pattern making</option>
+            <option>Other request</option>
+          </select>
+        </label>
+
+        <label class="footer-contact-subject">
+          <span>Subject</span>
+          <input name="subject" type="text" placeholder="Costume project" required>
+        </label>
+
+        <label class="footer-contact-message">
+          <span>Details about the project</span>
+          <textarea name="message" rows="7" placeholder="Project brief, timing and requested support." required></textarea>
+        </label>
+
+        <button class="studio-fill-button" type="submit" [disabled]="footerContactSubmitting"><span>Send request</span></button>
+        @if (footerContactMessage) {
+          <p class="footer-contact-submit-message" [class.is-error]="footerContactError">{{ footerContactMessage }}</p>
+        }
+      </form>
+    </div>
+  </section>
+
+  <div class="footer-bottom">
+    <span>Maria Sole Montironi Lasca</span>
+    <span>&copy; Copyright 2026 all rights reserved</span>
+  </div>
 </footer>
+
+<div class="chasing-cursor" aria-hidden="true"></div>

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { GoBackLinkComponent } from '../components/go-back-link.component';
 
 export interface ContactRequest {
   form: ContactFormData;
@@ -25,10 +24,15 @@ export interface ContactEmailContent {
 
 @Component({
   selector: 'app-contact-page',
-  imports: [GoBackLinkComponent],
   template: `
     <main class="detail-page contact-page">
       <section class="contact-form-section page-section">
+        <header class="contact-intro">
+          <p>Start a project</p>
+          <h1>Parlami del progetto</h1>
+          <p>Consulenze, costumi, sviluppo prodotto e tutoraggio partono da qui. Seleziona una tipologia e lascia i dettagli essenziali.</p>
+        </header>
+
         <form class="contact-form" #contactForm (submit)="handleSubmit($event, contactForm)">
           <label>
             <span>Nome</span>
@@ -98,8 +102,6 @@ export interface ContactEmailContent {
           ></iframe>
         </div>
       </section>
-
-      <app-go-back-link variantClass="contact-back-link" [historyBack]="true" />
     </main>
   `
 })

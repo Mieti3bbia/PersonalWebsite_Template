@@ -7,7 +7,7 @@ import { PageTitleHeroComponent } from '../components/page-title-hero.component'
   imports: [GoBackLinkComponent, PageTitleHeroComponent],
   template: `
     <main class="detail-page about-page">
-      <app-page-title-hero eyebrow="/ about me /" title="about me" />
+      <app-page-title-hero eyebrow="About me" title="about me" />
 
       <section class="about-body page-section">
         <p>Sono una Fashion Designer, Costume Designer &amp; Maker e Tutor, ma nessuna di queste definizioni, da sola, riesce davvero a raccontare chi sono.</p>

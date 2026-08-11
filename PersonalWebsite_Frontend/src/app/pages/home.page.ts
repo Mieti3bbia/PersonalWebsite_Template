@@ -12,12 +12,12 @@ import { RouterLink } from '@angular/router';
           alt="Abstract red fashion concept image"
         >
         <div class="splash-overlay">
-          <p>/ home /</p>
+          <p>Studio home</p>
           <h1 class="slide-in">
             <span>Maria Sole</span>
             <span>Montironi Lasca</span>
           </h1>
-          <a class="home-cta" routerLink="/contact">Book now</a>
+          <a class="home-cta studio-fill-button" routerLink="/contact"><span>Book now</span></a>
         </div>
       </section>
 
