@@ -40,7 +40,7 @@ import * as THREE from 'three';
     }
 
     .project-sun-tracker .vehicle-copy h2 {
-      color: #F2072B;
+      color: #D91259;
       font-size: clamp(46px, 7.2vw, 112px);
     }
 
@@ -81,8 +81,9 @@ import * as THREE from 'three';
       width: min(280px, 100%);
       min-height: 66px;
       border-radius: 12px;
-      border-color: #F207CB;
-      color: #F207CB;
+      border-color: #D91259;
+      background: transparent;
+      color: #D91259;
       padding: 22px 32px;
       font-family: "911 Porscha", Arial, Helvetica, sans-serif;
       font-weight: 400;
@@ -91,9 +92,9 @@ import * as THREE from 'three';
 
     .project-sun-tracker .vehicle-controls button:hover,
     .project-sun-tracker .vehicle-controls button:focus-visible {
-      border-color: #F207CB;
+      border-color: #D91259;
       background: transparent;
-      color: #F207CB;
+      color: #D91259;
     }
 
     @media (max-width: 900px) {
