@@ -108,12 +108,12 @@
   min-height: 34px;
   border: 1px solid #F207CB;
   border-radius: 12px;
-  padding: 9px 16px;
+  padding: 9px clamp(10px, 1.1vw, 16px);
   background: rgba(242, 7, 203, 0.04);
   color: #ff2fdb;
   text-decoration: none;
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: clamp(11px, 1.1vw, 13px);
   line-height: 1;
   white-space: nowrap;
 }
@@ -244,8 +244,8 @@
 @media (max-width: 760px) {
   .site-header {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 14px;
-    padding: 16px 20px;
+    gap: 8px;
+    padding: 16px 14px;
   }
 
   .header-actions,
@@ -255,7 +255,7 @@
 
   .header-actions {
     position: relative;
-    gap: 12px;
+    gap: 8px;
   }
 
   .social-links { gap: 10px; }
@@ -324,22 +324,23 @@
 
   .logo {
     height: 32px;
+    gap: 8px;
     max-width: 100%;
     overflow: hidden;
   }
 
   .logo-mark {
-    width: 46px;
+    width: 36px;
   }
 
   .logo-name {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 2px;
-    max-width: 118px;
+    gap: 3px;
+    max-width: 124px;
     overflow: hidden;
-    font-size: 9px;
+    font-size: 8.5px;
     line-height: 1;
     white-space: nowrap;
   }
@@ -351,7 +352,10 @@
   }
 
   .book-now-nav-link {
-    padding-inline: 12px;
+    min-height: clamp(28px, 8.5vw, 34px);
+    padding: clamp(6px, 1.9vw, 8px) clamp(7px, 2.6vw, 10px);
+    border-radius: 10px;
+    font-size: clamp(8px, 2.7vw, 11px);
   }
 
   .header-actions {
@@ -360,7 +364,9 @@
 
   .mobile-menu-toggle {
     display: inline-flex;
-    flex: 0 0 42px;
+    flex: 0 0 clamp(34px, 9.8vw, 38px);
+    width: clamp(34px, 9.8vw, 38px);
+    height: clamp(34px, 9.8vw, 38px);
   }
 
   .nav-links {
@@ -407,6 +413,51 @@
   .site-footer {
   margin-top: 0;
     padding: 22px 20px;
+  }
+}
+
+@media (max-width: 390px) {
+  .site-header {
+    padding-inline: 10px;
+  }
+
+  .logo {
+    gap: 6px;
+  }
+
+  .logo-mark {
+    width: 32px;
+  }
+
+  .logo-name {
+    max-width: 112px;
+    font-size: 8px;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .book-now-nav-link {
+    min-height: 28px;
+    padding: 6px 7px;
+    border-radius: 9px;
+    font-size: 8px;
+  }
+
+  .mobile-menu-toggle {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 340px) {
+  .book-now-nav-link {
+    max-width: 58px;
+    white-space: normal;
+    text-align: center;
+    line-height: 0.9;
   }
 }
 
