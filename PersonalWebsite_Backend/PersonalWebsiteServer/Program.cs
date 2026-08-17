@@ -67,8 +67,11 @@ builder.Services
         options.SlidingExpiration = true;
     });
 builder.Services.AddAuthorization();
+var personalWebsiteConnectionString = builder.Configuration.GetConnectionString("PersonalWebsite")
+    ?? "Data Source=personal-website.db";
+EnsureSqliteDatabaseDirectoryExists(personalWebsiteConnectionString);
 builder.Services.AddDbContext<PersonalWebsiteDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("PersonalWebsite")));
+    options.UseSqlite(personalWebsiteConnectionString));
 
 var dashboardUsername = GetSetting("DASHBOARD_USERNAME", DefaultDashboardUsername);
 var dashboardPassword = GetSetting("DASHBOARD_PASSWORD", DefaultDashboardPassword);
@@ -686,6 +689,46 @@ static void InitializeDisplayOrder(PersonalWebsiteDbContext db, string tableName
 static bool IsKnownDashboardTable(string tableName)
 {
     return tableName is "teachings" or "fashion_designs" or "costume_designs";
+}
+
+static void EnsureSqliteDatabaseDirectoryExists(string connectionString)
+{
+    var dataSource = ReadSqliteConnectionStringValue(connectionString, "Data Source");
+
+    if (string.IsNullOrWhiteSpace(dataSource) ||
+        dataSource.Equals(":memory:", StringComparison.OrdinalIgnoreCase))
+    {
+        return;
+    }
+
+    var directory = Path.GetDirectoryName(dataSource);
+
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+}
+
+static string? ReadSqliteConnectionStringValue(string connectionString, string key)
+{
+    foreach (var segment in connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+    {
+        var separatorIndex = segment.IndexOf('=');
+
+        if (separatorIndex <= 0)
+        {
+            continue;
+        }
+
+        var segmentKey = segment[..separatorIndex].Trim();
+
+        if (segmentKey.Equals(key, StringComparison.OrdinalIgnoreCase))
+        {
+            return segment[(separatorIndex + 1)..].Trim().Trim('"');
+        }
+    }
+
+    return null;
 }
 
 static async Task<int> GetNextDisplayOrder<TEntry>(DbSet<TEntry> entries)
