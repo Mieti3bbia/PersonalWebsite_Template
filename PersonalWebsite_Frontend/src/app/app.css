@@ -26,6 +26,7 @@
   text-decoration: none;
   height: 36px;
   min-width: 0;
+  max-width: 100%;
 }
 
 .logo-mark {
@@ -44,6 +45,7 @@
   line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .header-actions {
@@ -318,6 +320,8 @@
 
   .logo {
     height: 32px;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .logo-mark {
@@ -325,10 +329,16 @@
   }
 
   .logo-name {
-    font-size: 11px;
-    line-height: 1.1;
+    display: block;
+    max-width: clamp(92px, 30vw, 128px);
+    overflow-wrap: anywhere;
+    font-size: 10px;
+    line-height: 1.12;
     white-space: normal;
-    max-width: min(38vw, 156px);
+  }
+
+  .book-now-nav-link {
+    padding-inline: 12px;
   }
 
   .header-actions {
