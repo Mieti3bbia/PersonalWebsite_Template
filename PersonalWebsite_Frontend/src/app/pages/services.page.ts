@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { GoBackLinkComponent } from '../components/go-back-link.component';
 import { PageTitleHeroComponent } from '../components/page-title-hero.component';
 
 interface ServiceItem {
@@ -14,7 +15,7 @@ interface ServiceItem {
 
 @Component({
   selector: 'app-services-page',
-  imports: [RouterLink, PageTitleHeroComponent],
+  imports: [RouterLink, GoBackLinkComponent, PageTitleHeroComponent],
   template: `
     <main class="services-page">
       <app-page-title-hero eyebrow="/ servizi /" title="servizi" />
@@ -23,6 +24,7 @@ interface ServiceItem {
         @for (service of services; track service.title) {
           <article class="service-card">
             <div class="service-card-copy">
+              <p class="service-eyebrow">{{ service.eyebrow }}</p>
               <h2>{{ service.title }}</h2>
               <p class="service-summary">{{ service.summary }}</p>
 
@@ -44,6 +46,8 @@ interface ServiceItem {
           </article>
         }
       </section>
+
+      <app-go-back-link routerLink="/home" variantClass="about-back-link" />
     </main>
   `
 })

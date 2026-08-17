@@ -9,6 +9,10 @@ import { PageTitleHeroComponent } from '../components/page-title-hero.component'
     <main class="detail-page about-page">
       <app-page-title-hero eyebrow="/ about me /" title="about me" />
 
+      <section class="about-portrait page-section" aria-label="Maria Sole Montironi Lasca portrait">
+        <img src="/assets/about/mariasole.jpeg" alt="Maria Sole Montironi Lasca">
+      </section>
+
       <section class="about-body page-section">
         <p>Sono una Fashion Designer, Costume Designer &amp; Maker e Tutor, ma nessuna di queste definizioni, da sola, riesce davvero a raccontare chi sono.</p>
         <p>Il mio percorso e' iniziato allo IED Istituto Europeo di Design di Milano, dove mi sono formata grazie a una borsa di studio ottenuta per merito. E' li' che ho scoperto quella che oggi considero la mia piu' grande forza: una duplice, anzi triplice, identita'.</p>
@@ -38,13 +42,13 @@ import { PageTitleHeroComponent } from '../components/page-title-hero.component'
       </section>
 
       <section class="about-socials page-section" aria-label="Social links">
-        <a class="about-social-button" href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
+        <a class="about-social-button" href="https://www.instagram.com/mariasole.montironilasca?igsh=OWNwajlodjI0eDdo" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2.25a3.5 3.5 0 0 0-3.5 3.5v8.5a3.5 3.5 0 0 0 3.5 3.5h8.5a3.5 3.5 0 0 0 3.5-3.5v-8.5a3.5 3.5 0 0 0-3.5-3.5h-8.5ZM12 7.25A4.75 4.75 0 1 1 12 16.75 4.75 4.75 0 0 1 12 7.25Zm0 2.25A2.5 2.5 0 1 0 12 14.5 2.5 2.5 0 0 0 12 9.5Zm5.15-2.95a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0Z"/></svg>
         </a>
-        <a class="about-social-button" href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <a class="about-social-button" href="https://www.linkedin.com/in/maria-sole-montironi-lasca-b8359b368" target="_blank" rel="noopener" aria-label="LinkedIn">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.37 7.84H2.16V21h3.21V7.84ZM3.77 2A1.87 1.87 0 1 0 3.8 5.74 1.87 1.87 0 0 0 3.77 2Zm17.98 11.72c0-3.53-1.88-5.17-4.38-5.17a3.78 3.78 0 0 0-3.43 1.89h-.04v-1.6h-3.08V21h3.21v-6.02c0-1.59.3-3.13 2.27-3.13 1.95 0 1.98 1.82 1.98 3.23V21h3.21v-7.28h.26Z"/></svg>
         </a>
-        <a class="about-social-button" href="https://www.pinterest.com/" target="_blank" rel="noopener" aria-label="Pinterest">
+        <a class="about-social-button" href="https://it.pinterest.com/mariasolefreelancer/" target="_blank" rel="noopener" aria-label="Pinterest">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.25 2C6.7 2 3 5.67 3 10.63c0 3.64 2.04 5.7 3.24 5.7.5 0 .78-1.38.78-1.77 0-.47-1.19-1.46-1.19-3.4 0-4.03 3.06-6.89 7.03-6.89 3.41 0 5.94 1.94 5.94 5.5 0 2.66-1.07 7.65-4.52 7.65-1.24 0-2.31-.9-1.99-2.2.38-1.55 1.12-3.22 1.12-4.35 0-2.52-3.58-2.06-3.58 1 0 .64.08 1.34.37 1.92-.53 2.24-1.6 5.57-1.6 7.88 0 .72.1 1.43.17 2.13l.1.04c.14-.2.29-.39.43-.6 1.22-1.68 1.16-2.01 1.73-4.21.31.59 1.13 1.12 2.03 1.12 5.33 0 7.74-5.2 7.74-9.87C20.8 5.9 17.08 2 12.25 2Z"/></svg>
         </a>
       </section>

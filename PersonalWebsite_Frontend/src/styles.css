@@ -2351,6 +2351,23 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   border-top: 0;
 }
 
+.about-page .about-portrait {
+  display: grid;
+  place-items: center;
+  padding: clamp(38px, 6vw, 82px) clamp(20px, 8vw, 120px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  background: #000;
+}
+
+.about-page .about-portrait img {
+  display: block;
+  width: min(156px, 100%);
+  aspect-ratio: 4 / 5;
+  border: 1px solid rgba(242, 7, 203, 0.28);
+  object-fit: cover;
+  object-position: center top;
+}
+
 .about-page .about-body p {
   width: 100%;
   margin: 0;
@@ -3879,11 +3896,6 @@ app-curriculum-vitae-page,
   color: #593854;
 }
 
-.contact-page .page-back-link {
-  justify-self: center;
-  grid-column: 1 / -1;
-}
-
 .teachings-page .page-back-link {
   padding-top: 0;
   border-top: 0;
@@ -5223,13 +5235,14 @@ app-curriculum-vitae-page,
 }
 
 .fashion-page .fashion-band:has(.fashion-video) {
-  width: min(360px, 100%);
+  width: min(980px, 100%);
 }
 
 .fashion-page .fashion-video {
   width: 100%;
   min-height: 0;
-  height: clamp(120px, 11vw, 190px);
+  height: auto;
+  min-height: clamp(220px, 28vw, 420px);
   border-color: rgba(242, 7, 203, 0.36);
   background: #050505;
   object-fit: contain;
@@ -5252,7 +5265,6 @@ app-curriculum-vitae-page,
 }
 
 .fashion-page .fashion-gallery-shell {
-<<<<<<< HEAD
   width: min(1180px, 100%);
   max-width: 100%;
   gap: clamp(14px, 2vw, 22px);
@@ -5266,40 +5278,6 @@ app-curriculum-vitae-page,
   grid-auto-flow: dense;
   gap: clamp(8px, 1.15vw, 16px);
   width: 100%;
-=======
-  width: min(420px, 100%);
-  gap: clamp(14px, 2vw, 22px);
-}
-
-.fashion-page .fashion-gallery-row {
-  grid-template-columns: clamp(34px, 4vw, 52px) minmax(120px, 260px) clamp(34px, 4vw, 52px);
-  gap: clamp(10px, 1.6vw, 18px);
-  width: 100%;
-  min-height: 0;
-}
-
-.fashion-page .fashion-gallery-panel {
-  width: 100%;
-  height: clamp(130px, 16vw, 230px);
-  min-height: 0;
-  border-color: rgba(242, 7, 203, 0.36);
-  background: #050505;
-  object-fit: contain;
-}
-
-.fashion-page .fashion-gallery-row > button {
-  width: 100%;
-  min-width: 0;
-  height: clamp(130px, 16vw, 230px);
-  min-height: 0;
-  border: 1px solid #F207CB;
-  border-radius: 999px;
-  color: #F207CB;
-  background:
-    linear-gradient(180deg, rgba(242, 7, 203, 0.08), rgba(242, 7, 203, 0.02)),
-    #070707;
-  font-size: clamp(18px, 2vw, 28px);
->>>>>>> parent of 4f08af4 (Live UI update)
 }
 
 .exploded-gallery-tile {
@@ -5424,31 +5402,15 @@ app-curriculum-vitae-page,
     font-size: clamp(26px, 10vw, 42px);
   }
 
-<<<<<<< HEAD
   .exploded-gallery-grid {
     grid-template-columns: repeat(auto-fill, minmax(min(128px, 42vw), 1fr));
     grid-auto-rows: clamp(128px, 42vw, 180px);
-=======
-  .fashion-page .fashion-gallery-row {
-    grid-template-columns: 34px minmax(0, 220px) 34px;
->>>>>>> parent of 4f08af4 (Live UI update)
     gap: 8px;
   }
 
-<<<<<<< HEAD
   .exploded-gallery-tile:nth-child(n) {
     grid-column: span 1;
     grid-row: span 1;
-=======
-  .fashion-page .fashion-gallery-panel {
-    height: clamp(130px, 48vw, 220px);
-  }
-
-  .fashion-page .fashion-gallery-row > button {
-    width: 34px;
-    height: clamp(130px, 48vw, 220px);
-    font-size: 18px;
->>>>>>> parent of 4f08af4 (Live UI update)
   }
 
   .fashion-page .fashion-band:has(.fashion-description) {
@@ -5862,7 +5824,8 @@ app-curriculum-vitae-page,
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
   grid-template-areas:
-    "form map";
+    "form map"
+    "info info";
   gap: clamp(34px, 5vw, 78px);
   width: min(1420px, calc(100% - clamp(32px, 8vw, 128px)));
   margin-inline: auto;
@@ -5898,6 +5861,69 @@ app-curriculum-vitae-page,
   height: 1px;
   margin: clamp(14px, 1.8vw, 24px) auto 0;
   background: linear-gradient(90deg, transparent, #F207CB, transparent);
+}
+
+.contact-page .contact-info-card {
+  grid-area: info;
+  display: grid;
+  gap: 0;
+  width: min(980px, 100%);
+  justify-self: center;
+  padding: clamp(18px, 2.6vw, 34px) clamp(22px, 3.8vw, 52px);
+  border: 1px solid rgba(242, 7, 203, 0.28);
+  background: #070707;
+  color: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 60px rgba(0, 0, 0, 0.24);
+}
+
+.contact-page .contact-info-card dl {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  font-family: "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.contact-page .contact-info-card div {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.42fr) minmax(0, 1fr);
+  gap: clamp(14px, 3vw, 44px);
+  align-items: center;
+  padding: clamp(14px, 2vw, 22px) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.contact-page .contact-info-card dt,
+.contact-page .contact-info-card dd {
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(16px, 1.55vw, 24px);
+  line-height: 1.25;
+}
+
+.contact-page .contact-info-card dt {
+  color: rgba(242, 7, 203, 0.82);
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+}
+
+.contact-page .contact-info-card dd {
+  color: rgba(255, 255, 255, 0.86);
+  overflow-wrap: anywhere;
+}
+
+.contact-page .contact-info-card a {
+  color: #fff;
+  text-decoration-color: rgba(242, 7, 203, 0.7);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.contact-page .contact-info-card a:hover,
+.contact-page .contact-info-card a:focus-visible {
+  color: #F207CB;
 }
 
 .contact-page .contact-form {
@@ -6013,7 +6039,7 @@ app-curriculum-vitae-page,
   width: 100%;
   min-height: 46px;
   border: 1px solid rgba(255, 255, 255, 0.24);
-  background: #000;
+  background: #070707;
   color: #fff;
   padding: 14px 42px 14px 16px;
   font-family: Arial, Helvetica, sans-serif;
@@ -6050,7 +6076,7 @@ app-curriculum-vitae-page,
   max-height: min(280px, 44svh);
   overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.24);
-  background: #000;
+  background: #070707;
   box-shadow: none;
 }
 
@@ -6058,13 +6084,12 @@ app-curriculum-vitae-page,
   width: 100%;
   min-height: 0;
   border: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-  background: #000;
+  background: #070707;
   color: #fff;
-  padding: 12px 14px;
+  padding: 8px 12px;
   font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(12px, 0.92vw, 14px);
-  line-height: 1.25;
+  line-height: 1.1;
   text-align: left;
   text-transform: none;
 }
@@ -6078,18 +6103,18 @@ app-curriculum-vitae-page,
 
 .contact-page .contact-form .contact-type-trigger,
 .contact-page .contact-form .contact-type-trigger.is-placeholder {
-  background: #000;
+  background: #070707;
   color: #fff;
 }
 
 .contact-page .contact-form .contact-type-options {
-  background: #000;
+  background: #070707;
   color: #fff;
 }
 
 .contact-page .contact-form .contact-type-options button {
-  border-color: rgba(255, 255, 255, 0.16);
-  background: #000;
+  border-color: transparent;
+  background: #070707;
   color: #fff;
 }
 
@@ -6221,8 +6246,8 @@ app-curriculum-vitae-page,
   grid-area: map;
   position: relative;
   align-self: stretch;
-  height: 100%;
-  min-height: 100%;
+  height: auto;
+  min-height: 0;
   border: 1px solid rgba(242, 7, 203, 0.28);
   background: #070707;
   overflow: hidden;
@@ -6242,10 +6267,12 @@ app-curriculum-vitae-page,
 }
 
 .contact-page .contact-map iframe {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 100%;
+  min-height: 0;
   border: 0;
   filter: invert(1) hue-rotate(235deg) saturate(2.35) contrast(1.2) brightness(0.5);
   opacity: 0.9;
@@ -6268,14 +6295,19 @@ app-curriculum-vitae-page,
     align-items: stretch;
   }
 
-  .contact-page .contact-form,
-  .contact-page .contact-map {
-    min-height: clamp(560px, 62svh, 760px);
+  .contact-page .contact-form {
     height: auto;
+    min-height: 0;
+  }
+
+  .contact-page .contact-map {
+    height: auto;
+    min-height: 0;
   }
 
   .contact-page .contact-map iframe {
-    min-height: clamp(560px, 62svh, 760px);
+    height: 100%;
+    min-height: 0;
   }
 }
 
@@ -6284,7 +6316,8 @@ app-curriculum-vitae-page,
     grid-template-columns: 1fr;
     grid-template-areas:
       "form"
-      "map";
+      "map"
+      "info";
     gap: 32px;
     width: min(100%, calc(100% - 32px));
     padding: 18px 0 54px;
@@ -6314,9 +6347,9 @@ app-curriculum-vitae-page,
   }
 
   .contact-page .contact-type-options button {
-    padding: 10px 12px;
+    padding: 8px 10px;
     font-size: clamp(11px, 3.2vw, 13px);
-    line-height: 1.22;
+    line-height: 1.1;
   }
 
   .contact-page .contact-form button {
@@ -6329,6 +6362,15 @@ app-curriculum-vitae-page,
 
   .contact-page .contact-map iframe {
     min-height: 0;
+  }
+
+  .contact-page .contact-info-card {
+    padding: 18px;
+  }
+
+  .contact-page .contact-info-card div {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }
 
@@ -6352,23 +6394,43 @@ app-curriculum-vitae-page,
   box-shadow: none;
 }
 
-.contact-page .page-back-link,
-.contact-page .contact-back-link {
+.contact-page .go-back-link-host {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(88px, 12vw, 140px);
+  margin: 0;
+  padding: 0 clamp(20px, 4vw, 34px);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  background: #000;
+}
+
+.contact-page .page-back-link {
   display: block;
   width: max-content;
-  min-width: 0;
-  min-height: 0;
   margin: 0 auto;
-  padding: 0;
-  border: 0;
   background: #000;
-  color: #593854;
-  font: inherit;
-  line-height: 1.1;
   text-align: center;
-  text-transform: uppercase;
-  text-decoration: none;
-  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .contact-page .go-back-link-host {
+    margin: 0;
+    min-height: clamp(88px, 18vw, 124px);
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .contact-page .go-back-link-host {
+    margin: 0;
+    min-height: 96px;
+    padding: 0 16px;
+  }
+
+  .contact-page .contact-form-section {
+    width: min(100%, calc(100% - 24px));
+  }
 }
 
 /* Services page */
@@ -6433,10 +6495,12 @@ app-curriculum-vitae-page,
   padding: clamp(26px, 4vw, 58px);
   border: 1px solid rgba(242, 7, 203, 0.28);
   background: #070707;
+  overflow: hidden;
 }
 
 .service-card-copy {
   grid-area: copy;
+  min-width: 0;
 }
 
 .service-eyebrow {
@@ -6450,12 +6514,14 @@ app-curriculum-vitae-page,
 
 .service-card h2 {
   width: min(920px, 100%);
+  max-width: 100%;
   margin: 0;
   color: #593854;
   font-weight: 400;
-  font-size: clamp(39px, 6.72vw, 104px);
-  line-height: 1.04;
+  font-size: clamp(29px, 2.28vw, 35px);
+  line-height: 1.25;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .service-summary {
@@ -6543,7 +6609,8 @@ app-page-title-hero {
 
 .services-page app-page-title-hero .services-hero,
 .about-page app-page-title-hero .services-hero,
-.curriculum-vitae-page app-page-title-hero .services-hero {
+.curriculum-vitae-page app-page-title-hero .services-hero,
+.contact-page app-page-title-hero .services-hero {
   background: #070707;
 }
 
@@ -6559,7 +6626,8 @@ app-page-title-hero {
   }
 
   .service-card h2 {
-    font-size: clamp(39px, 7.84vw, 81px);
+    font-size: clamp(26px, 2.7vw, 34px);
+    line-height: 1.26;
   }
 
   .service-media img {
@@ -6617,8 +6685,8 @@ app-page-title-hero {
 
   .service-card h2 {
     max-width: 100%;
-    font-size: clamp(31px, 10.1vw, 48px);
-    line-height: 1.12;
+    font-size: clamp(25px, 4.7vw, 30px);
+    line-height: 1.28;
     overflow-wrap: anywhere;
   }
 
@@ -6640,7 +6708,9 @@ app-page-title-hero {
   }
 
   .service-media img {
-    height: clamp(160px, 52vw, 280px);
+    height: auto;
+    aspect-ratio: 4 / 5;
+    max-height: 420px;
   }
 }
 
@@ -6667,12 +6737,13 @@ app-page-title-hero {
   }
 
   .service-card {
+    gap: 16px;
     padding: 14px;
   }
 
   .service-card h2 {
-    font-size: clamp(28px, 9.5vw, 42px);
-    line-height: 1.14;
+    font-size: clamp(24px, 6.7vw, 29px);
+    line-height: 1.3;
   }
 
   .service-summary {
@@ -6690,14 +6761,16 @@ app-page-title-hero {
   }
 
   .service-media img {
-    height: clamp(170px, 56vw, 260px);
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    max-height: 360px;
   }
 }
 
 .project-detail-page .costume-page .costume-title-band h1,
 .project-detail-page .fashion-page .fashion-entry-title-band h2,
-.project-detail-page .teachings-page .teaching-card-copy p:first-child,
-.services-page .service-card h2 {
+.project-detail-page .teachings-page .teaching-card-copy p:first-child {
   font-size: clamp(17px, 1.35vw, 21px);
   line-height: 1.25;
 }
@@ -6705,8 +6778,7 @@ app-page-title-hero {
 @media (max-width: 900px) {
   .project-detail-page .costume-page .costume-title-band h1,
   .project-detail-page .fashion-page .fashion-entry-title-band h2,
-  .project-detail-page .teachings-page .teaching-card-copy p:first-child,
-  .services-page .service-card h2 {
+  .project-detail-page .teachings-page .teaching-card-copy p:first-child {
     font-size: clamp(15px, 2.8vw, 18px);
     line-height: 1.28;
   }
@@ -6714,7 +6786,8 @@ app-page-title-hero {
 
 .services-page app-page-title-hero .services-hero h1,
 .about-page app-page-title-hero .services-hero h1,
-.curriculum-vitae-page app-page-title-hero .services-hero h1 {
+.curriculum-vitae-page app-page-title-hero .services-hero h1,
+.contact-page app-page-title-hero .services-hero h1 {
   font-size: clamp(46px, 7.2vw, 112px);
   line-height: 1.04;
 }
@@ -6722,7 +6795,8 @@ app-page-title-hero {
 @media (max-width: 900px) {
   .services-page app-page-title-hero .services-hero h1,
   .about-page app-page-title-hero .services-hero h1,
-  .curriculum-vitae-page app-page-title-hero .services-hero h1 {
+  .curriculum-vitae-page app-page-title-hero .services-hero h1,
+  .contact-page app-page-title-hero .services-hero h1 {
     font-size: clamp(20px, 7vw, 30px);
     line-height: 1.12;
   }

@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
+import { PageTitleHeroComponent } from '../components/page-title-hero.component';
 
 export interface ContactRequest {
   form: ContactFormData;
@@ -26,9 +27,11 @@ export interface ContactEmailContent {
 
 @Component({
   selector: 'app-contact-page',
-  imports: [GoBackLinkComponent],
+  imports: [GoBackLinkComponent, PageTitleHeroComponent],
   template: `
     <main class="detail-page contact-page">
+      <app-page-title-hero eyebrow="/ contact /" title="contact" />
+
       <section class="contact-form-section page-section">
         <form class="contact-form" #contactForm (submit)="handleSubmit($event, contactForm)">
           <label>
@@ -95,9 +98,30 @@ export interface ContactEmailContent {
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
+
+        <aside class="contact-info-card" aria-label="Informazioni di contatto">
+          <dl>
+            <div>
+              <dt>Nome</dt>
+              <dd>Maria Sole Montironi Lasca</dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd><a href="mailto:mariasole.freelancer@libero.it">mariasole.freelancer&#64;libero.it</a></dd>
+            </div>
+            <div>
+              <dt>Telefono</dt>
+              <dd><a href="tel:+393312827693">+39 3312827693</a></dd>
+            </div>
+            <div>
+              <dt>Luogo</dt>
+              <dd>Milano, Darsena</dd>
+            </div>
+          </dl>
+        </aside>
       </section>
 
-      <app-go-back-link variantClass="contact-back-link" [historyBack]="true" />
+      <app-go-back-link routerLink="/home" variantClass="contact-back-link" />
 
       @if (submitModalOpen) {
         <section class="contact-submit-modal" role="dialog" aria-modal="true" [attr.aria-label]="submitError ? 'Errore invio' : 'Invio confermato'">
