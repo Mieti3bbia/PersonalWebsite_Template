@@ -23,7 +23,8 @@ const string DefaultSmtpPort = "465";
 const string DefaultSmtpUser = "mariasole.freelancer@libero.it";
 const string DefaultSmtpFromEmail = "mariasole.freelancer@libero.it";
 const string DefaultPublicBaseUrl = "http://localhost:5109";
-const string DefaultCorsAllowedOrigins = "http://localhost:4200,https://localhost:4200";
+const string FrontendCorsPolicy = "FrontendPolicy";
+const string DefaultCorsAllowedOrigins = "http://localhost:4200,https://localhost:4200,https://zealous-mushroom-0f9aebc10.7.azurestaticapps.net";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,21 +82,10 @@ var corsAllowedOrigins = SplitSettingList(GetSetting("CORS_ALLOWED_ORIGINS", Def
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Frontend", policy =>
+    options.AddPolicy(FrontendCorsPolicy, policy =>
         policy.WithOrigins(corsAllowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod());
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("FrontendPolicy", policy =>
-    {
-        policy
-            .WithOrigins("https://zealous-mushroom-0f9aebc10.7.azurestaticapps.net")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
 });
 
 var app = builder.Build();
@@ -185,7 +175,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseCors("Frontend");
+app.UseCors(FrontendCorsPolicy);
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
