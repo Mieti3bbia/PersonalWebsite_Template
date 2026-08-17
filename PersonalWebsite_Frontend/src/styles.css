@@ -2354,18 +2354,31 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
 .about-page .about-portrait {
   display: grid;
   place-items: center;
-  padding: clamp(38px, 6vw, 82px) clamp(20px, 8vw, 120px);
+  padding: clamp(22px, 3.6vw, 48px) clamp(20px, 8vw, 120px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   background: #000;
+  opacity: 0;
+  transform: translateY(42px);
+  clip-path: inset(100% 0 0 0);
+  transition:
+    opacity 520ms ease,
+    transform 520ms cubic-bezier(0.19, 1, 0.22, 1),
+    clip-path 520ms cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .about-page .about-portrait img {
   display: block;
-  width: min(156px, 100%);
+  width: min(215px, 100%);
   aspect-ratio: 4 / 5;
   border: 1px solid rgba(242, 7, 203, 0.28);
   object-fit: cover;
   object-position: center top;
+}
+
+.about-page .about-portrait.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
 }
 
 .about-page .about-body p {
@@ -6546,6 +6559,7 @@ app-curriculum-vitae-page,
   min-width: min(220px, 100%);
   min-height: 48px;
   border: 1px solid #F207CB;
+  border-radius: 12px;
   background: rgba(242, 7, 203, 0.04);
   color: #F207CB;
   padding: 14px 22px;

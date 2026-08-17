@@ -42,7 +42,7 @@ import { PageTitleHeroComponent } from '../components/page-title-hero.component'
       </section>
 
       <section class="about-socials page-section" aria-label="Social links">
-        <a class="about-social-button" href="https://www.instagram.com/mariasole.montironilasca?igsh=OWNwajlodjI0eDdo" target="_blank" rel="noopener" aria-label="Instagram">
+        <a class="about-social-button" href="https://www.instagram.com/dichotomy.studio/?hl=en" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2.25a3.5 3.5 0 0 0-3.5 3.5v8.5a3.5 3.5 0 0 0 3.5 3.5h8.5a3.5 3.5 0 0 0 3.5-3.5v-8.5a3.5 3.5 0 0 0-3.5-3.5h-8.5ZM12 7.25A4.75 4.75 0 1 1 12 16.75 4.75 4.75 0 0 1 12 7.25Zm0 2.25A2.5 2.5 0 1 0 12 14.5 2.5 2.5 0 0 0 12 9.5Zm5.15-2.95a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0Z"/></svg>
         </a>
         <a class="about-social-button" href="https://www.linkedin.com/in/maria-sole-montironi-lasca-b8359b368" target="_blank" rel="noopener" aria-label="LinkedIn">
@@ -78,7 +78,7 @@ export class AboutPage implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.fadeElements = Array.from(
-      this.elementRef.nativeElement.querySelectorAll('.about-body p')
+      this.elementRef.nativeElement.querySelectorAll('.about-portrait, .about-body p')
     ) as HTMLElement[];
 
     window.addEventListener('scroll', this.updateVisibility, { passive: true });

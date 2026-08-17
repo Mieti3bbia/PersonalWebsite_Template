@@ -17,11 +17,11 @@ const long MaxUploadSize = 1024L * 1024L * 1024L;
 const string DashboardUsername = "admin";
 const string DashboardPassword = "terapiatapioca";
 const string ApiRateLimitPolicy = "api-five-seconds";
-const string ContactDestinationEmail = "test.012012@libero.it";
+const string ContactDestinationEmail = "mariasole.freelancer@libero.it";
 const string DefaultSmtpHost = "smtp.libero.it";
 const string DefaultSmtpPort = "465";
-const string DefaultSmtpUser = "test.012012@libero.it";
-const string DefaultSmtpFromEmail = "test.012012@libero.it";
+const string DefaultSmtpUser = "mariasole.freelancer@libero.it";
+const string DefaultSmtpFromEmail = "mariasole.freelancer@libero.it";
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -13,6 +13,7 @@ export interface ContactFormData {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   type: string;
   subject: string;
   message: string;
@@ -47,6 +48,11 @@ export interface ContactEmailContent {
           <label>
             <span>Email</span>
             <input name="email" type="email" autocomplete="email" required>
+          </label>
+
+          <label>
+            <span>Numero</span>
+            <input name="phone" type="tel" autocomplete="tel" required>
           </label>
 
           <label>
@@ -185,6 +191,7 @@ export class ContactPage {
       firstName: this.readFormValue(formData, 'firstName'),
       lastName: this.readFormValue(formData, 'lastName'),
       email: this.readFormValue(formData, 'email'),
+      phone: this.readFormValue(formData, 'phone'),
       type: this.readFormValue(formData, 'type'),
       subject: this.readFormValue(formData, 'subject'),
       message: this.readFormValue(formData, 'message')
@@ -234,6 +241,7 @@ export class ContactPage {
         text: [
           `Nome: ${fullName}`,
           `Email: ${formData.email}`,
+          `Numero: ${formData.phone}`,
           `Tipologia: ${formData.type}`,
           `Oggetto: ${formData.subject}`,
           '',
