@@ -3690,6 +3690,10 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
     overflow-x: hidden;
   }
 
+  .contact-page.detail-page {
+    padding-top: 72px;
+  }
+
   .splash-overlay h1,
   .about-page .about-layout h1,
   .contact-page .contact-form-section h1,
@@ -3705,7 +3709,11 @@ app-home-page.home-scroll-started .home-word:nth-child(8) { animation-delay: 490
   .splash-overlay {
     left: 20px;
     right: 20px;
-    bottom: 28px;
+    top: 50%;
+    bottom: auto;
+    display: grid;
+    justify-items: center;
+    transform: translateY(-50%);
   }
 
   .splash-overlay h1 {
@@ -6651,12 +6659,15 @@ app-page-title-hero {
 
 @media (max-width: 900px) {
   .services-page {
-    padding-top: 106px;
+    padding-top: 72px;
   }
 
-  .about-page.detail-page,
   .curriculum-vitae-page.detail-page {
-    padding-top: 106px;
+    padding-top: 72px;
+  }
+
+  .about-page.detail-page {
+    padding-top: 72px;
   }
 
   .services-hero {
