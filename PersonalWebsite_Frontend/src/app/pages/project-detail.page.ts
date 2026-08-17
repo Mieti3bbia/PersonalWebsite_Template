@@ -2,6 +2,7 @@
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AfterViewInit, ChangeDetectorRef, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
+import { apiUrl, resourceUrl } from '../app-environment';
 
 interface PortfolioProject {
   title: string;
@@ -382,14 +383,10 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     }
 
     try {
-      this.teachingCards = await this.fetchTeachingCards('/api/teachings');
-    } catch (proxyError) {
-      try {
-        this.teachingCards = await this.fetchTeachingCards('http://localhost:5109/api/teachings');
-      } catch (backendError) {
-        this.teachingCards = [];
-        console.warn('Unable to load teachings from server.', { proxyError, backendError });
-      }
+      this.teachingCards = await this.fetchTeachingCards(apiUrl('/api/teachings'));
+    } catch (error) {
+      this.teachingCards = [];
+      console.warn('Unable to load teachings from server.', error);
     } finally {
       this.teachingsLoaded = true;
       this.changeDetectorRef.detectChanges();
@@ -548,14 +545,10 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
   private async loadCostumeProjects(): Promise<void> {
     try {
-      this.costumeProjects = await this.fetchCostumeProjects('/api/costume-designs');
-    } catch (proxyError) {
-      try {
-        this.costumeProjects = await this.fetchCostumeProjects('http://localhost:5109/api/costume-designs');
-      } catch (backendError) {
-        this.costumeProjects = [];
-        console.warn('Unable to load costume design content from server.', { proxyError, backendError });
-      }
+      this.costumeProjects = await this.fetchCostumeProjects(apiUrl('/api/costume-designs'));
+    } catch (error) {
+      this.costumeProjects = [];
+      console.warn('Unable to load costume design content from server.', error);
     } finally {
       this.costumeLoaded = true;
       this.costumeGalleryIndex = 0;
@@ -566,14 +559,10 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
   private async loadFashionProject(): Promise<void> {
     try {
-      this.fashionProjects = await this.fetchFashionProjects('/api/fashion-designs');
-    } catch (proxyError) {
-      try {
-        this.fashionProjects = await this.fetchFashionProjects('http://localhost:5109/api/fashion-designs');
-      } catch (backendError) {
-        this.fashionProjects = [];
-        console.warn('Unable to load fashion design content from server.', { proxyError, backendError });
-      }
+      this.fashionProjects = await this.fetchFashionProjects(apiUrl('/api/fashion-designs'));
+    } catch (error) {
+      this.fashionProjects = [];
+      console.warn('Unable to load fashion design content from server.', error);
     } finally {
       this.fashionProject = this.fashionProjects[0] ?? FASHION_PROJECT;
       this.fashionLoaded = true;
@@ -659,7 +648,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
         author: this.readTeachingCardField(card, 'author'),
         school: this.readTeachingCardField(card, 'school'),
         previewImage: this.normalizeTeachingAssetUrl(this.readTeachingCardField(card, 'previewImage')),
-        pdfUrl: this.readTeachingCardField(card, 'pdfUrl')
+        pdfUrl: this.normalizeTeachingAssetUrl(this.readTeachingCardField(card, 'pdfUrl'))
       }))
       .filter((card) => (
         card.title ||
@@ -872,15 +861,15 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
       return '/assets/teachings/pezzi-di-vetro-preview.png';
     }
 
-    return url;
+    return this.normalizeAssetUrl(url);
   }
 
   private normalizeAssetUrl(url: string): string {
-    if (!url || url.startsWith('http') || url.startsWith('/')) {
+    if (!url || url.startsWith('http') || url.startsWith('/assets/')) {
       return url;
     }
 
-    return `/${url.replace(/^\/+/, '')}`;
+    return resourceUrl(url);
   }
 
   protected isImageUrl(url: string): boolean {

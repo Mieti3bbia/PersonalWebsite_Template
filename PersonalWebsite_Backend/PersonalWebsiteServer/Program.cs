@@ -14,14 +14,16 @@ using System.Text.RegularExpressions;
 using System.Threading.RateLimiting;
 
 const long MaxUploadSize = 1024L * 1024L * 1024L;
-const string DashboardUsername = "admin";
-const string DashboardPassword = "terapiatapioca";
+const string DefaultDashboardUsername = "admin";
+const string DefaultDashboardPassword = "terapiatapioca";
 const string ApiRateLimitPolicy = "api-five-seconds";
-const string ContactDestinationEmail = "mariasole.freelancer@libero.it";
+const string DefaultContactDestinationEmail = "mariasole.freelancer@libero.it";
 const string DefaultSmtpHost = "smtp.libero.it";
 const string DefaultSmtpPort = "465";
 const string DefaultSmtpUser = "mariasole.freelancer@libero.it";
 const string DefaultSmtpFromEmail = "mariasole.freelancer@libero.it";
+const string DefaultPublicBaseUrl = "http://localhost:5109";
+const string DefaultCorsAllowedOrigins = "http://localhost:4200,https://localhost:4200";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,10 +70,16 @@ builder.Services.AddAuthorization();
 builder.Services.AddDbContext<PersonalWebsiteDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("PersonalWebsite")));
 
+var dashboardUsername = GetSetting("DASHBOARD_USERNAME", DefaultDashboardUsername);
+var dashboardPassword = GetSetting("DASHBOARD_PASSWORD", DefaultDashboardPassword);
+var contactDestinationEmail = GetSetting("CONTACT_DESTINATION_EMAIL", DefaultContactDestinationEmail);
+var publicBaseUrl = GetSetting("PUBLIC_BASE_URL", DefaultPublicBaseUrl).TrimEnd('/');
+var corsAllowedOrigins = SplitSettingList(GetSetting("CORS_ALLOWED_ORIGINS", DefaultCorsAllowedOrigins));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+        policy.WithOrigins(corsAllowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -80,7 +88,6 @@ var app = builder.Build();
 var teachingUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "teachings");
 var fashionDesignUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "fashion-designs");
 var costumeDesignUploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads", "costume-designs");
-const string publicBaseUrl = "http://localhost:5109";
 
 Directory.CreateDirectory(teachingUploadsPath);
 Directory.CreateDirectory(fashionDesignUploadsPath);
@@ -129,8 +136,8 @@ using (var scope = app.Services.CreateScope())
             Title = "Pezzi di vetro",
             Author = "Nicoletta Atzeni",
             School = "IED Milano",
-            PreviewImage = "http://localhost:5109/uploads/teachings/pezzi-di-vetro-preview.png",
-            PdfUrl = "http://localhost:5109/uploads/teachings/pezzi-di-vetro.pdf",
+            PreviewImage = $"{publicBaseUrl}/uploads/teachings/pezzi-di-vetro-preview.png",
+            PdfUrl = $"{publicBaseUrl}/uploads/teachings/pezzi-di-vetro.pdf",
             DisplayOrder = 1
         });
 
@@ -140,12 +147,12 @@ using (var scope = app.Services.CreateScope())
     foreach (var teaching in db.Teachings.Where(teaching => teaching.PreviewImage.StartsWith("/assets/teachings/")))
     {
         teaching.PreviewImage = teaching.PreviewImage
-            .Replace("/assets/teachings/", "http://localhost:5109/uploads/teachings/");
+            .Replace("/assets/teachings/", $"{publicBaseUrl}/uploads/teachings/");
     }
 
     foreach (var teaching in db.Teachings.Where(teaching => teaching.PdfUrl.StartsWith("/assets/teachings/")))
     {
-        teaching.PdfUrl = teaching.PdfUrl.Replace("/assets/teachings/", "http://localhost:5109/uploads/teachings/");
+        teaching.PdfUrl = teaching.PdfUrl.Replace("/assets/teachings/", $"{publicBaseUrl}/uploads/teachings/");
     }
 
     foreach (var teaching in db.Teachings.Where(teaching => teaching.PreviewImage.EndsWith(".svg")))
@@ -185,7 +192,7 @@ app.MapPost("/login", async (HttpContext context) =>
     var username = ReadRequiredFormValue(form, "username");
     var password = ReadRequiredFormValue(form, "password");
 
-    if (username != DashboardUsername || password != DashboardPassword)
+    if (username != dashboardUsername || password != dashboardPassword)
     {
         return Results.Content(
             RenderLogin("Invalid username or password."),
@@ -193,7 +200,7 @@ app.MapPost("/login", async (HttpContext context) =>
             statusCode: StatusCodes.Status401Unauthorized);
     }
 
-    var claims = new[] { new Claim(ClaimTypes.Name, DashboardUsername) };
+    var claims = new[] { new Claim(ClaimTypes.Name, dashboardUsername) };
     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
     await context.SignInAsync(
         CookieAuthenticationDefaults.AuthenticationScheme,
@@ -285,7 +292,7 @@ app.MapPost("/api/contact", async (HttpContext context, ContactRequest? request)
     Console.WriteLine("Contact form has entered the inbox runway. Tiny SMTP hat: on.");
     Console.WriteLine(JsonSerializer.Serialize(request, new JsonSerializerOptions { WriteIndented = true }));
 
-    var validationErrors = ValidateContactRequest(request, ContactDestinationEmail);
+    var validationErrors = ValidateContactRequest(request, contactDestinationEmail);
 
     if (validationErrors.Count > 0)
     {
@@ -303,8 +310,8 @@ app.MapPost("/api/contact", async (HttpContext context, ContactRequest? request)
 
     try
     {
-        await SendContactEmail(request, ContactDestinationEmail);
-        Console.WriteLine($"Contact email sent to {ContactDestinationEmail}.");
+        await SendContactEmail(request, contactDestinationEmail);
+        Console.WriteLine($"Contact email sent to {contactDestinationEmail}.");
         return Results.Json(new { ok = true }, statusCode: StatusCodes.Status200OK);
     }
     catch (InvalidOperationException exception)
@@ -761,6 +768,14 @@ static string GetSetting(string name, string fallback)
 {
     var value = Environment.GetEnvironmentVariable(name);
     return string.IsNullOrWhiteSpace(value) ? fallback : value;
+}
+
+static string[] SplitSettingList(string value)
+{
+    return value
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Where(item => !string.IsNullOrWhiteSpace(item))
+        .ToArray();
 }
 
 static async Task SendContactEmail(ContactRequest request, string recipientEmail)

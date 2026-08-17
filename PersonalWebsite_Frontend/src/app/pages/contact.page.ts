@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
 import { PageTitleHeroComponent } from '../components/page-title-hero.component';
+import { apiUrl } from '../app-environment';
 
 export interface ContactRequest {
   form: ContactFormData;
@@ -278,28 +279,8 @@ export class ContactPage {
     };
 
     try {
-      const response = await fetch('/api/contact', requestInit);
+      const response = await fetch(apiUrl('/api/contact'), requestInit);
       await this.assertContactResponse(response);
-    } catch (proxyError) {
-      if (proxyError instanceof Error && !proxyError.message.includes('Failed to fetch')) {
-        throw proxyError;
-      }
-
-      const fallbackController = new AbortController();
-      const fallbackTimeout = window.setTimeout(() => fallbackController.abort(), 15000);
-
-      try {
-        const fallbackResponse = await fetch('http://localhost:5109/api/contact', {
-          ...requestInit,
-          signal: fallbackController.signal
-        });
-        await this.assertContactResponse(fallbackResponse);
-      } catch (fallbackError) {
-        console.error('Contact API proxy and fallback both failed.', { proxyError, fallbackError });
-        throw fallbackError instanceof Error ? fallbackError : proxyError;
-      } finally {
-        window.clearTimeout(fallbackTimeout);
-      }
     } finally {
       window.clearTimeout(timeout);
     }
