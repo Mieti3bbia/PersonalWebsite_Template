@@ -2,7 +2,7 @@
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AfterViewInit, ChangeDetectorRef, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
-import { apiUrl, resourceUrl } from '../app-environment';
+import { environment } from '../../environments/environment';
 
 interface PortfolioProject {
   title: string;
@@ -383,7 +383,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     }
 
     try {
-      this.teachingCards = await this.fetchTeachingCards(apiUrl('/api/teachings'));
+      this.teachingCards = await this.fetchTeachingCards(`${environment.apiUrl}/api/teachings`);
     } catch (error) {
       this.teachingCards = [];
       console.warn('Unable to load teachings from server.', error);
@@ -545,7 +545,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
   private async loadCostumeProjects(): Promise<void> {
     try {
-      this.costumeProjects = await this.fetchCostumeProjects(apiUrl('/api/costume-designs'));
+      this.costumeProjects = await this.fetchCostumeProjects(`${environment.apiUrl}/api/costume-designs`);
     } catch (error) {
       this.costumeProjects = [];
       console.warn('Unable to load costume design content from server.', error);
@@ -559,7 +559,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
   private async loadFashionProject(): Promise<void> {
     try {
-      this.fashionProjects = await this.fetchFashionProjects(apiUrl('/api/fashion-designs'));
+      this.fashionProjects = await this.fetchFashionProjects(`${environment.apiUrl}/api/fashion-designs`);
     } catch (error) {
       this.fashionProjects = [];
       console.warn('Unable to load fashion design content from server.', error);
@@ -869,7 +869,9 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
       return url;
     }
 
-    return resourceUrl(url);
+    const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+
+    return `${environment.apiUrl}${normalizedPath}`;
   }
 
   protected isImageUrl(url: string): boolean {

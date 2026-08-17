@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
 import { PageTitleHeroComponent } from '../components/page-title-hero.component';
-import { apiUrl } from '../app-environment';
+import { environment } from '../../environments/environment';
 
 export interface ContactRequest {
   form: ContactFormData;
@@ -279,7 +279,7 @@ export class ContactPage {
     };
 
     try {
-      const response = await fetch(apiUrl('/api/contact'), requestInit);
+      const response = await fetch(`${environment.apiUrl}/api/contact`, requestInit);
       await this.assertContactResponse(response);
     } finally {
       window.clearTimeout(timeout);
