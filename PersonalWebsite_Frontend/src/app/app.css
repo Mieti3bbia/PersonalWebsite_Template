@@ -48,6 +48,10 @@
   min-width: 0;
 }
 
+.logo-name span {
+  display: inline;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -325,16 +329,25 @@
   }
 
   .logo-mark {
-    width: 58px;
+    width: 46px;
   }
 
   .logo-name {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    max-width: 118px;
+    overflow: hidden;
+    font-size: 9px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .logo-name span {
     display: block;
-    max-width: clamp(92px, 30vw, 128px);
-    overflow-wrap: anywhere;
-    font-size: 10px;
-    line-height: 1.12;
-    white-space: normal;
+    overflow: hidden;
+    text-overflow: clip;
   }
 
   .book-now-nav-link {
