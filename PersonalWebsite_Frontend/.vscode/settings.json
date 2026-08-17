@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/6c221bdc-eb6c-4f59-8023-5d3967e2d41e/resourceGroups/Mariasole/providers/Microsoft.Web/sites/Mariasolewebsite",
+    "appService.deploySubpath": "."
+}
