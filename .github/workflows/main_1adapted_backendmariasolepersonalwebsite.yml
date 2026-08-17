@@ -1,0 +1,69 @@
+name: Build and deploy ASP.Net Core app to Azure Web App - BackendMariasolePersonalWebsite
+
+on:
+  push:
+    branches:
+      - main_1adapted
+    paths:
+      - 'PersonalWebsite_Backend/**'
+      - '.github/workflows/main_1adapted_backendmariasolepersonalwebsite.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PersonalWebsite_Backend/PersonalWebsiteServer/PersonalWebsiteServer.csproj
+
+      - name: Build
+        run: dotnet build PersonalWebsite_Backend/PersonalWebsiteServer/PersonalWebsiteServer.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish PersonalWebsite_Backend/PersonalWebsiteServer/PersonalWebsiteServer.csproj --configuration Release --no-build --output ${{ env.DOTNET_ROOT }}/myapp
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ${{ env.DOTNET_ROOT }}/myapp
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F29966399031459DB824263EC41C22AB }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E0435BD061D149689D90DF5FB48B2BD4 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_74549F81D8594BC9AA38FC5FC1D13927 }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'BackendMariasolePersonalWebsite'
+          slot-name: 'Production'
+          package: .
