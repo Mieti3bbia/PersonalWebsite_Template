@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
 import { PageTitleHeroComponent } from '../components/page-title-hero.component';
 
@@ -144,6 +145,7 @@ export interface ContactEmailContent {
   `
 })
 export class ContactPage {
+  private readonly route = inject(ActivatedRoute);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly referenceEmail = 'mariasole.freelancer@gmail.com';
   protected lastContactRequest: ContactRequest | null = null;
@@ -163,6 +165,14 @@ export class ContactPage {
     'Corso di Cucito',
     'Corso di Progettazione di Moda'
   ];
+
+  constructor() {
+    const requestedType = this.route.snapshot.queryParamMap.get('type') ?? '';
+
+    if (this.contactTypeOptions.includes(requestedType)) {
+      this.selectedType = requestedType;
+    }
+  }
 
   protected selectContactType(option: string): void {
     this.selectedType = option;

@@ -11,6 +11,7 @@ interface ServiceItem {
   image: string;
   imageAlt: string;
   portfolioRoute: string;
+  contactType: string;
 }
 
 @Component({
@@ -29,7 +30,7 @@ interface ServiceItem {
               <p class="service-summary">{{ service.summary }}</p>
 
               <div class="service-actions" aria-label="Service actions">
-                <a routerLink="/contact">Book now</a>
+                <a routerLink="/contact" [queryParams]="{ type: service.contactType }">Book now</a>
                 <a [routerLink]="service.portfolioRoute">Show more</a>
               </div>
             </div>
@@ -64,7 +65,8 @@ export class ServicesPage {
       ],
       image: '/assets/home/landing-red-horizontal.jpg',
       imageAlt: 'Costume design visual research',
-      portfolioRoute: '/portfolio/costume-design'
+      portfolioRoute: '/portfolio/costume-design',
+      contactType: 'Consulenza in Costume Design'
     },
     {
       eyebrow: 'Consulenza',
@@ -77,7 +79,8 @@ export class ServicesPage {
       ],
       image: '/assets/home/anteprima-imperfetto-divenire.png',
       imageAlt: 'Fashion design project preview',
-      portfolioRoute: '/portfolio/fashion-design'
+      portfolioRoute: '/portfolio/fashion-design',
+      contactType: 'Consulenza in Fashion Design'
     },
     {
       eyebrow: 'Tutoraggio',
@@ -90,7 +93,8 @@ export class ServicesPage {
       ],
       image: '/assets/teachings/pezzi-di-vetro-preview.png',
       imageAlt: 'Teaching project preview',
-      portfolioRoute: '/portfolio/teachings'
+      portfolioRoute: '/portfolio/teachings',
+      contactType: 'Lezione conoscitiva per il tutoraggio'
     }
   ];
 }
