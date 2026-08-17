@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
 
 export interface ContactRequest {
@@ -18,6 +18,7 @@ export interface ContactFormData {
 }
 
 export interface ContactEmailContent {
+  to: string;
   replyTo: string;
   subject: string;
   text: string;
@@ -81,12 +82,9 @@ export interface ContactEmailContent {
             <textarea name="message" rows="8" required></textarea>
           </label>
 
-          <button type="submit" [disabled]="isSubmitting">
-            Conferma
+          <button type="submit">
+            {{ submitButtonLabel }}
           </button>
-          @if (submitMessage) {
-            <p class="contact-submit-message" [class.is-error]="submitError">{{ submitMessage }}</p>
-          }
         </form>
 
         <div class="contact-map" aria-label="Google Maps location">
@@ -100,16 +98,32 @@ export interface ContactEmailContent {
       </section>
 
       <app-go-back-link variantClass="contact-back-link" [historyBack]="true" />
+
+      @if (submitModalOpen) {
+        <section class="contact-submit-modal" role="dialog" aria-modal="true" [attr.aria-label]="submitError ? 'Errore invio' : 'Invio confermato'">
+          <div class="contact-submit-modal-panel" [class.is-error]="submitError">
+            <p>{{ submitError ? 'errore' : 'invio confermato' }}</p>
+            @if (submitError && submitMessage) {
+              <span>{{ submitMessage }}</span>
+            }
+            <button type="button" (click)="closeSubmitModal()">OK</button>
+          </div>
+        </section>
+      }
     </main>
   `
 })
 export class ContactPage {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly referenceEmail = 'mariasole.freelancer@gmail.com';
   protected lastContactRequest: ContactRequest | null = null;
   protected selectedType = '';
   protected typeDropdownOpen = false;
-  protected isSubmitting = false;
+  protected submitButtonLabel = 'Conferma';
   protected submitMessage = '';
   protected submitError = false;
+  protected submitModalOpen = false;
+  private submitLabelTimeout = 0;
   protected readonly contactTypeOptions = [
     'Consulenza in Fashion Design',
     'Consulenza in Costume Design',
@@ -129,6 +143,8 @@ export class ContactPage {
     event.preventDefault();
     this.submitMessage = '';
     this.submitError = false;
+    this.submitModalOpen = false;
+    window.clearTimeout(this.submitLabelTimeout);
 
     if (!this.selectedType) {
       this.typeDropdownOpen = true;
@@ -153,20 +169,29 @@ export class ContactPage {
 
     this.lastContactRequest = contactRequest;
 
+    this.submitButtonLabel = 'Invio...';
+    this.submitLabelTimeout = window.setTimeout(() => {
+      this.submitButtonLabel = 'Conferma';
+      this.changeDetectorRef.detectChanges();
+    }, 4000);
+
     try {
-      this.isSubmitting = true;
       await this.sendContactRequest(contactRequest);
-      this.submitMessage = 'Richiesta inviata correttamente.';
+      this.submitMessage = 'invio confermato';
+      this.submitModalOpen = true;
       form.reset();
       this.selectedType = '';
       this.typeDropdownOpen = false;
     } catch (error) {
       this.submitError = true;
-      this.submitMessage = 'Invio non riuscito. Riprova piu tardi.';
+      this.submitMessage = error instanceof Error ? error.message : 'Invio non riuscito.';
+      this.submitModalOpen = true;
       console.error('Unable to send contact request.', error);
-    } finally {
-      this.isSubmitting = false;
     }
+  }
+
+  protected closeSubmitModal(): void {
+    this.submitModalOpen = false;
   }
 
   private readFormValue(formData: FormData, key: string): string {
@@ -179,6 +204,7 @@ export class ContactPage {
     return {
       form: formData,
       email: {
+        to: this.referenceEmail,
         replyTo: formData.email,
         subject: `[Maria Sole Website] ${formData.type} - ${formData.subject}`,
         text: [
@@ -200,29 +226,59 @@ export class ContactPage {
     const abortController = new AbortController();
     const timeout = window.setTimeout(() => abortController.abort(), 15000);
 
-    const response = await fetch('http://localhost:5109/api/contact', {
+    const requestInit: RequestInit = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(contactRequest),
       signal: abortController.signal
-    }).finally(() => window.clearTimeout(timeout));
+    };
+
+    try {
+      const response = await fetch('/api/contact', requestInit);
+      await this.assertContactResponse(response);
+    } catch (proxyError) {
+      if (proxyError instanceof Error && !proxyError.message.includes('Failed to fetch')) {
+        throw proxyError;
+      }
+
+      const fallbackController = new AbortController();
+      const fallbackTimeout = window.setTimeout(() => fallbackController.abort(), 15000);
+
+      try {
+        const fallbackResponse = await fetch('http://localhost:5109/api/contact', {
+          ...requestInit,
+          signal: fallbackController.signal
+        });
+        await this.assertContactResponse(fallbackResponse);
+      } catch (fallbackError) {
+        console.error('Contact API proxy and fallback both failed.', { proxyError, fallbackError });
+        throw fallbackError instanceof Error ? fallbackError : proxyError;
+      } finally {
+        window.clearTimeout(fallbackTimeout);
+      }
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  private async assertContactResponse(response: Response): Promise<void> {
+    const contentType = response.headers.get('content-type') ?? '';
+    const body = contentType.includes('application/json')
+      ? await response.json() as { ok?: boolean; error?: string }
+      : null;
 
     if (!response.ok) {
-      throw new Error(`Contact API failed with status ${response.status}`);
+      throw new Error(body?.error ?? `Contact API failed with status ${response.status}`);
     }
 
-    const contentType = response.headers.get('content-type') ?? '';
-
-    if (!contentType.includes('application/json')) {
+    if (!body) {
       return;
     }
 
-    const ack = await response.json() as { ok?: boolean };
-
-    if (ack.ok !== true) {
-      throw new Error('Contact API did not return a positive acknowledgement.');
+    if (body.ok !== true) {
+      throw new Error(body.error ?? 'Contact API did not return a positive acknowledgement.');
     }
   }
 }

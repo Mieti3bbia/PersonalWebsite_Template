@@ -1,26 +1,27 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.RateLimiting;
 
 const long MaxUploadSize = 1024L * 1024L * 1024L;
 const string DashboardUsername = "admin";
 const string DashboardPassword = "terapiatapioca";
-const string DefaultContactDestinationEmail = "test.012012@libero.it";
+const string ApiRateLimitPolicy = "api-five-seconds";
+const string ContactDestinationEmail = "test.012012@libero.it";
 const string DefaultSmtpHost = "smtp.libero.it";
 const string DefaultSmtpPort = "465";
 const string DefaultSmtpUser = "test.012012@libero.it";
 const string DefaultSmtpFromEmail = "test.012012@libero.it";
-var contactRateLimit = new ConcurrentDictionary<string, ContactRateLimitEntry>();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,25 @@ builder.WebHost.ConfigureKestrel(options =>
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = MaxUploadSize;
+});
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(ApiRateLimitPolicy, context =>
+    {
+        var clientKey = GetClientKey(context);
+        var endpointKey = context.Request.Path.Value ?? string.Empty;
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            $"{clientKey}:{endpointKey}",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 1,
+                Window = TimeSpan.FromSeconds(5),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            });
+    });
 });
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -77,7 +97,8 @@ using (var scope = app.Services.CreateScope())
             explaining_video TEXT NOT NULL,
             description TEXT NOT NULL,
             gallery TEXT NOT NULL,
-            pdf_url TEXT NOT NULL
+            pdf_url TEXT NOT NULL,
+            display_order INTEGER NOT NULL DEFAULT 0
         );
         """);
     db.Database.ExecuteSqlRaw("""
@@ -90,9 +111,16 @@ using (var scope = app.Services.CreateScope())
             gallery TEXT NOT NULL,
             description TEXT NOT NULL,
             credits TEXT NOT NULL,
-            visible INTEGER NOT NULL DEFAULT 1
+            visible INTEGER NOT NULL DEFAULT 1,
+            display_order INTEGER NOT NULL DEFAULT 0
         );
         """);
+    EnsureDisplayOrderColumn(db, "teachings");
+    EnsureDisplayOrderColumn(db, "fashion_designs");
+    EnsureDisplayOrderColumn(db, "costume_designs");
+    InitializeDisplayOrder(db, "teachings");
+    InitializeDisplayOrder(db, "fashion_designs");
+    InitializeDisplayOrder(db, "costume_designs");
 
     if (!db.Teachings.Any())
     {
@@ -102,7 +130,8 @@ using (var scope = app.Services.CreateScope())
             Author = "Nicoletta Atzeni",
             School = "IED Milano",
             PreviewImage = "http://localhost:5109/uploads/teachings/pezzi-di-vetro-preview.png",
-            PdfUrl = "http://localhost:5109/uploads/teachings/pezzi-di-vetro.pdf"
+            PdfUrl = "http://localhost:5109/uploads/teachings/pezzi-di-vetro.pdf",
+            DisplayOrder = 1
         });
 
         db.SaveChanges();
@@ -136,6 +165,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("Frontend");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -183,7 +213,8 @@ app.MapGet("/api/teachings", async (HttpRequest request, PersonalWebsiteDbContex
 {
     var teachings = await db.Teachings
         .AsNoTracking()
-        .OrderBy(teaching => teaching.Title)
+        .OrderBy(teaching => teaching.DisplayOrder)
+        .ThenBy(teaching => teaching.Id)
         .ToListAsync();
 
     var teachingCards = teachings
@@ -197,13 +228,15 @@ app.MapGet("/api/teachings", async (HttpRequest request, PersonalWebsiteDbContex
 
     return teachingCards;
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .WithName("GetTeachings");
 
 app.MapGet("/api/fashion-designs", async (PersonalWebsiteDbContext db) =>
 {
     var entries = await db.FashionDesigns
         .AsNoTracking()
-        .OrderBy(entry => entry.Title)
+        .OrderBy(entry => entry.DisplayOrder)
+        .ThenBy(entry => entry.Id)
         .ToListAsync();
 
     return entries
@@ -217,6 +250,7 @@ app.MapGet("/api/fashion-designs", async (PersonalWebsiteDbContext db) =>
             ToPublicUrl(entry.PdfUrl, fashionDesignUploadsPath, "fashion-design.pdf", "fashion-designs")))
         .ToList();
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .WithName("GetFashionDesigns");
 
 app.MapGet("/api/costume-designs", async (PersonalWebsiteDbContext db) =>
@@ -224,7 +258,8 @@ app.MapGet("/api/costume-designs", async (PersonalWebsiteDbContext db) =>
     var entries = await db.CostumeDesigns
         .AsNoTracking()
         .Where(entry => entry.Visible)
-        .OrderBy(entry => entry.Title)
+        .OrderBy(entry => entry.DisplayOrder)
+        .ThenBy(entry => entry.Id)
         .ToListAsync();
 
     return entries
@@ -242,6 +277,7 @@ app.MapGet("/api/costume-designs", async (PersonalWebsiteDbContext db) =>
             entry.Credits))
         .ToList();
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .WithName("GetCostumeDesigns");
 
 app.MapPost("/api/contact", async (HttpContext context, ContactRequest? request) =>
@@ -249,17 +285,7 @@ app.MapPost("/api/contact", async (HttpContext context, ContactRequest? request)
     Console.WriteLine("Contact form has entered the inbox runway. Tiny SMTP hat: on.");
     Console.WriteLine(JsonSerializer.Serialize(request, new JsonSerializerOptions { WriteIndented = true }));
 
-    var clientKey = GetClientKey(context);
-
-    if (IsRateLimited(contactRateLimit, clientKey))
-    {
-        return Results.Json(
-            new { ok = false, error = "Too many contact requests. Please try again later." },
-            statusCode: StatusCodes.Status400BadRequest);
-    }
-
-    var recipientEmail = GetSetting("CONTACT_DESTINATION_EMAIL", DefaultContactDestinationEmail);
-    var validationErrors = ValidateContactRequest(request, recipientEmail);
+    var validationErrors = ValidateContactRequest(request, ContactDestinationEmail);
 
     if (validationErrors.Count > 0)
     {
@@ -277,8 +303,8 @@ app.MapPost("/api/contact", async (HttpContext context, ContactRequest? request)
 
     try
     {
-        await SendContactEmail(request, recipientEmail!);
-        Console.WriteLine($"Contact email sent to {recipientEmail}.");
+        await SendContactEmail(request, ContactDestinationEmail);
+        Console.WriteLine($"Contact email sent to {ContactDestinationEmail}.");
         return Results.Json(new { ok = true }, statusCode: StatusCodes.Status200OK);
     }
     catch (InvalidOperationException exception)
@@ -317,19 +343,23 @@ app.MapGet("/dashboard", async (PersonalWebsiteDbContext db) =>
 {
     var teachings = await db.Teachings
         .AsNoTracking()
-        .OrderBy(teaching => teaching.Title)
+        .OrderBy(teaching => teaching.DisplayOrder)
+        .ThenBy(teaching => teaching.Id)
         .ToListAsync();
     var fashionDesigns = await db.FashionDesigns
         .AsNoTracking()
-        .OrderBy(entry => entry.Title)
+        .OrderBy(entry => entry.DisplayOrder)
+        .ThenBy(entry => entry.Id)
         .ToListAsync();
     var costumeDesigns = await db.CostumeDesigns
         .AsNoTracking()
-        .OrderBy(entry => entry.Title)
+        .OrderBy(entry => entry.DisplayOrder)
+        .ThenBy(entry => entry.Id)
         .ToListAsync();
 
     return Results.Content(RenderDashboard(teachings, fashionDesigns, costumeDesigns), "text/html; charset=utf-8");
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
 app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteDbContext db) =>
@@ -344,7 +374,8 @@ app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteD
         Author = ReadRequiredFormValue(form, "author"),
         School = ReadRequiredFormValue(form, "school"),
         PreviewImage = previewImage ?? ReadRequiredFormValue(form, "previewImage"),
-        PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl")
+        PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl"),
+        DisplayOrder = await GetNextDisplayOrder(db.Teachings)
     };
 
     db.Teachings.Add(teaching);
@@ -352,6 +383,7 @@ app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteD
 
     return Results.Redirect("/dashboard");
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
 app.MapPost("/dashboard/fashion-designs", async (HttpRequest request, PersonalWebsiteDbContext db) =>
@@ -367,7 +399,8 @@ app.MapPost("/dashboard/fashion-designs", async (HttpRequest request, PersonalWe
         ExplainingVideo = explainingVideo ?? ReadRequiredFormValue(form, "explainingVideo"),
         Description = ReadRequiredFormValue(form, "description"),
         Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery"),
-        PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl")
+        PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl"),
+        DisplayOrder = await GetNextDisplayOrder(db.FashionDesigns)
     };
 
     db.FashionDesigns.Add(entry);
@@ -375,6 +408,7 @@ app.MapPost("/dashboard/fashion-designs", async (HttpRequest request, PersonalWe
 
     return Results.Redirect("/dashboard");
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
 app.MapPost("/dashboard/costume-designs", async (HttpRequest request, PersonalWebsiteDbContext db) =>
@@ -392,7 +426,8 @@ app.MapPost("/dashboard/costume-designs", async (HttpRequest request, PersonalWe
         Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery"),
         Description = ReadRequiredFormValue(form, "description"),
         Credits = ReadRequiredFormValue(form, "credits"),
-        Visible = form.ContainsKey("visible")
+        Visible = form.ContainsKey("visible"),
+        DisplayOrder = await GetNextDisplayOrder(db.CostumeDesigns)
     };
 
     db.CostumeDesigns.Add(entry);
@@ -400,6 +435,7 @@ app.MapPost("/dashboard/costume-designs", async (HttpRequest request, PersonalWe
 
     return Results.Redirect("/dashboard");
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
 app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsiteDbContext db) =>
@@ -429,7 +465,8 @@ app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsite
         Author = author,
         School = school,
         PreviewImage = previewImage ?? string.Empty,
-        PdfUrl = pdfUrl ?? string.Empty
+        PdfUrl = pdfUrl ?? string.Empty,
+        DisplayOrder = await GetNextDisplayOrder(db.Teachings)
     };
 
     db.Teachings.Add(teaching);
@@ -442,6 +479,7 @@ app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsite
         ToPublicUrl(teaching.PreviewImage, teachingUploadsPath, "teaching-preview.png"),
         ToPublicUrl(teaching.PdfUrl, teachingUploadsPath, "teaching.pdf")));
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .DisableAntiforgery();
 
 app.MapPost("/api/fashion-designs/upload", async (HttpRequest request, PersonalWebsiteDbContext db) =>
@@ -469,7 +507,8 @@ app.MapPost("/api/fashion-designs/upload", async (HttpRequest request, PersonalW
         ExplainingVideo = explainingVideo ?? string.Empty,
         Description = description,
         Gallery = string.Join('|', gallery),
-        PdfUrl = pdfUrl ?? string.Empty
+        PdfUrl = pdfUrl ?? string.Empty,
+        DisplayOrder = await GetNextDisplayOrder(db.FashionDesigns)
     };
 
     db.FashionDesigns.Add(entry);
@@ -484,6 +523,7 @@ app.MapPost("/api/fashion-designs/upload", async (HttpRequest request, PersonalW
             .ToArray(),
         ToPublicUrl(entry.PdfUrl, fashionDesignUploadsPath, "fashion-design.pdf", "fashion-designs")));
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
 .DisableAntiforgery();
 
 app.MapPost("/dashboard/teachings/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
@@ -498,6 +538,27 @@ app.MapPost("/dashboard/teachings/{id:int}/delete", async (int id, PersonalWebsi
 
     return Results.Redirect("/dashboard");
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
+app.MapPost("/dashboard/teachings/{id:int}/move-up", async (int id, PersonalWebsiteDbContext db) =>
+{
+    await MoveEntry(db.Teachings, id, MoveDirection.Up);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
+app.MapPost("/dashboard/teachings/{id:int}/move-down", async (int id, PersonalWebsiteDbContext db) =>
+{
+    await MoveEntry(db.Teachings, id, MoveDirection.Down);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
 app.MapPost("/dashboard/fashion-designs/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
@@ -512,6 +573,27 @@ app.MapPost("/dashboard/fashion-designs/{id:int}/delete", async (int id, Persona
 
     return Results.Redirect("/dashboard");
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
+app.MapPost("/dashboard/fashion-designs/{id:int}/move-up", async (int id, PersonalWebsiteDbContext db) =>
+{
+    await MoveEntry(db.FashionDesigns, id, MoveDirection.Up);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
+app.MapPost("/dashboard/fashion-designs/{id:int}/move-down", async (int id, PersonalWebsiteDbContext db) =>
+{
+    await MoveEntry(db.FashionDesigns, id, MoveDirection.Down);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
 app.MapPost("/dashboard/costume-designs/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
@@ -526,9 +608,86 @@ app.MapPost("/dashboard/costume-designs/{id:int}/delete", async (int id, Persona
 
     return Results.Redirect("/dashboard");
 })
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
+app.MapPost("/dashboard/costume-designs/{id:int}/move-up", async (int id, PersonalWebsiteDbContext db) =>
+{
+    await MoveEntry(db.CostumeDesigns, id, MoveDirection.Up);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
+app.MapPost("/dashboard/costume-designs/{id:int}/move-down", async (int id, PersonalWebsiteDbContext db) =>
+{
+    await MoveEntry(db.CostumeDesigns, id, MoveDirection.Down);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
 app.Run();
+
+static void EnsureDisplayOrderColumn(PersonalWebsiteDbContext db, string tableName)
+{
+    try
+    {
+        db.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0;");
+    }
+    catch (Exception exception) when (exception.Message.Contains("duplicate column name", StringComparison.OrdinalIgnoreCase))
+    {
+    }
+}
+
+static void InitializeDisplayOrder(PersonalWebsiteDbContext db, string tableName)
+{
+    db.Database.ExecuteSqlRaw($"UPDATE {tableName} SET display_order = id WHERE display_order = 0;");
+}
+
+static async Task<int> GetNextDisplayOrder<TEntry>(DbSet<TEntry> entries)
+    where TEntry : class, IOrderedDashboardEntry
+{
+    var maxOrder = await entries.MaxAsync(entry => (int?)entry.DisplayOrder);
+
+    return (maxOrder ?? 0) + 1;
+}
+
+static async Task MoveEntry<TEntry>(DbSet<TEntry> entries, int id, MoveDirection direction)
+    where TEntry : class, IOrderedDashboardEntry
+{
+    var orderedEntries = await entries
+        .OrderBy(entry => entry.DisplayOrder)
+        .ThenBy(entry => entry.Id)
+        .ToListAsync();
+    var currentIndex = orderedEntries.FindIndex(entry => entry.Id == id);
+
+    if (currentIndex < 0)
+    {
+        return;
+    }
+
+    for (var index = 0; index < orderedEntries.Count; index++)
+    {
+        orderedEntries[index].DisplayOrder = index + 1;
+    }
+
+    var targetIndex = direction == MoveDirection.Up
+        ? currentIndex - 1
+        : currentIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= orderedEntries.Count)
+    {
+        return;
+    }
+
+    (orderedEntries[currentIndex].DisplayOrder, orderedEntries[targetIndex].DisplayOrder) =
+        (orderedEntries[targetIndex].DisplayOrder, orderedEntries[currentIndex].DisplayOrder);
+}
 
 static string ReadRequiredFormValue(IFormCollection form, string key)
 {
@@ -589,7 +748,6 @@ static bool LooksLikeSpam(ContactForm form)
     var urlCount = Regex.Matches(combinedText, @"https?://|www\.", RegexOptions.IgnoreCase).Count;
 
     return urlCount > 3 ||
-        form.Message.Length < 10 ||
         form.Message.Length > 5000 ||
         form.Subject.Length > 200;
 }
@@ -603,19 +761,6 @@ static string GetSetting(string name, string fallback)
 {
     var value = Environment.GetEnvironmentVariable(name);
     return string.IsNullOrWhiteSpace(value) ? fallback : value;
-}
-
-static bool IsRateLimited(ConcurrentDictionary<string, ContactRateLimitEntry> rateLimits, string key)
-{
-    var now = DateTimeOffset.UtcNow;
-    var entry = rateLimits.AddOrUpdate(
-        key,
-        _ => new ContactRateLimitEntry(now, 1),
-        (_, current) => now - current.WindowStartedAt > TimeSpan.FromMinutes(15)
-            ? new ContactRateLimitEntry(now, 1)
-            : current with { Count = current.Count + 1 });
-
-    return entry.Count > 5;
 }
 
 static async Task SendContactEmail(ContactRequest request, string recipientEmail)
@@ -662,7 +807,8 @@ static async Task SendContactEmail(ContactRequest request, string recipientEmail
     await client.ConnectAsync(host, port, secureSocketOptions);
     client.AuthenticationMechanisms.Remove("XOAUTH2");
     await client.AuthenticateAsync(username, password);
-    await client.SendAsync(message);
+    var smtpResponse = await client.SendAsync(message);
+    Console.WriteLine($"SMTP send response: {smtpResponse}");
     await client.DisconnectAsync(true);
 }
 
@@ -905,20 +1051,20 @@ static string RenderDashboard(
     IReadOnlyCollection<CostumeDesign> costumeDesigns)
 {
     var teachingRows = new StringBuilder();
+    var teachingList = teachings.ToList();
 
-    foreach (var teaching in teachings)
+    for (var index = 0; index < teachingList.Count; index++)
     {
+        var teaching = teachingList[index];
         teachingRows.Append($"""
-            <tr>
+            <tr data-order-row>
                 <td>{Html(teaching.Title)}</td>
                 <td>{Html(teaching.Author)}</td>
                 <td>{Html(teaching.School)}</td>
                 <td><code>{Html(teaching.PreviewImage)}</code></td>
                 <td><code>{Html(teaching.PdfUrl)}</code></td>
                 <td>
-                    <form method="post" action="/dashboard/teachings/{teaching.Id}/delete">
-                        <button class="danger" type="submit">Delete</button>
-                    </form>
+                    {RenderRowActions("teachings", teaching.Id, index == 0, index == teachingList.Count - 1)}
                 </td>
             </tr>
             """);
@@ -928,22 +1074,22 @@ static string RenderDashboard(
         ? """<tr><td colspan="6" class="empty">No teachings in the database yet.</td></tr>"""
         : string.Empty;
     var fashionDesignRows = new StringBuilder();
+    var fashionDesignList = fashionDesigns.ToList();
 
-    foreach (var entry in fashionDesigns)
+    for (var index = 0; index < fashionDesignList.Count; index++)
     {
+        var entry = fashionDesignList[index];
         var galleryItems = string.Join("<br>", SplitGallery(entry.Gallery).Select(item => $"<code>{Html(item)}</code>"));
 
         fashionDesignRows.Append($"""
-            <tr>
+            <tr data-order-row>
                 <td>{Html(entry.Title)}</td>
                 <td><code>{Html(entry.ExplainingVideo)}</code></td>
                 <td>{Html(entry.Description)}</td>
                 <td>{galleryItems}</td>
                 <td><code>{Html(entry.PdfUrl)}</code></td>
                 <td>
-                    <form method="post" action="/dashboard/fashion-designs/{entry.Id}/delete">
-                        <button class="danger" type="submit">Delete</button>
-                    </form>
+                    {RenderRowActions("fashion-designs", entry.Id, index == 0, index == fashionDesignList.Count - 1)}
                 </td>
             </tr>
             """);
@@ -953,14 +1099,16 @@ static string RenderDashboard(
         ? """<tr><td colspan="6" class="empty">No fashion design entries in the database yet.</td></tr>"""
         : string.Empty;
     var costumeDesignRows = new StringBuilder();
+    var costumeDesignList = costumeDesigns.ToList();
 
-    foreach (var entry in costumeDesigns)
+    for (var index = 0; index < costumeDesignList.Count; index++)
     {
+        var entry = costumeDesignList[index];
         var galleryItems = string.Join("<br>", SplitGallery(entry.Gallery).Select(item => $"<code>{Html(item)}</code>"));
         var visibility = entry.Visible ? "Visible" : "Hidden";
 
         costumeDesignRows.Append($"""
-            <tr>
+            <tr data-order-row>
                 <td>{Html(entry.Title)}</td>
                 <td>{Html(entry.Season)}</td>
                 <td>{Html(entry.Role)}</td>
@@ -970,9 +1118,7 @@ static string RenderDashboard(
                 <td>{Html(entry.Credits).Replace("\n", "<br>")}</td>
                 <td>{visibility}</td>
                 <td>
-                    <form method="post" action="/dashboard/costume-designs/{entry.Id}/delete">
-                        <button class="danger" type="submit">Delete</button>
-                    </form>
+                    {RenderRowActions("costume-designs", entry.Id, index == 0, index == costumeDesignList.Count - 1)}
                 </td>
             </tr>
             """);
@@ -1152,6 +1298,22 @@ static string RenderDashboard(
                     background: var(--danger-hover);
                 }
 
+                button:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.45;
+                }
+
+                button.move {
+                    background: #394b59;
+                    padding: 7px 10px;
+                    font-size: 13px;
+                    white-space: nowrap;
+                }
+
+                button.move:hover:not(:disabled) {
+                    background: #2c3a45;
+                }
+
                 button.secondary {
                     background: #394b59;
                     white-space: nowrap;
@@ -1173,6 +1335,17 @@ static string RenderDashboard(
 
                 .table-wrap {
                     overflow-x: auto;
+                }
+
+                .actions {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    min-width: 236px;
+                }
+
+                .actions form {
+                    margin: 0;
                 }
 
                 table {
@@ -1284,7 +1457,7 @@ static string RenderDashboard(
                                     <th>School</th>
                                     <th>Preview image</th>
                                     <th>PDF URL</th>
-                                    <th></th>
+                                    <th>Azioni</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1352,7 +1525,7 @@ static string RenderDashboard(
                                     <th>Description</th>
                                     <th>Gallery</th>
                                     <th>PDF URL</th>
-                                    <th></th>
+                                    <th>Azioni</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1373,7 +1546,7 @@ static string RenderDashboard(
                             <input name="title" required maxlength="200" autocomplete="off">
                         </label>
                         <label>
-                            Season
+                            Theater company
                             <span class="field-type">Text</span>
                             <input name="season" required maxlength="200" autocomplete="off">
                         </label>
@@ -1428,14 +1601,14 @@ static string RenderDashboard(
                             <thead>
                                 <tr>
                                     <th>Title</th>
-                                    <th>Season</th>
+                                    <th>Theater company</th>
                                     <th>Role</th>
                                     <th>Video</th>
                                     <th>Gallery</th>
                                     <th>Description</th>
                                     <th>Credits</th>
                                     <th>Portfolio</th>
-                                    <th></th>
+                                    <th>Azioni</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1466,6 +1639,69 @@ static string RenderDashboard(
                         document.getElementById(fileInput.dataset.target).value = fileNames.join("|");
                     });
                 });
+
+                document.querySelectorAll("form[data-move-form]").forEach((form) => {
+                    form.addEventListener("submit", async (event) => {
+                        event.preventDefault();
+
+                        const button = form.querySelector("button");
+
+                        if (!button || button.disabled) {
+                            return;
+                        }
+
+                        const row = form.closest("[data-order-row]");
+                        const tbody = row && row.parentElement;
+                        const direction = form.dataset.moveForm;
+
+                        if (!row || !tbody) {
+                            form.submit();
+                            return;
+                        }
+
+                        button.disabled = true;
+
+                        try {
+                            const response = await fetch(form.action, {
+                                method: "POST",
+                                credentials: "same-origin"
+                            });
+
+                            if (!response.ok) {
+                                throw new Error("Move request failed.");
+                            }
+
+                            if (direction === "up" && row.previousElementSibling) {
+                                tbody.insertBefore(row, row.previousElementSibling);
+                            }
+
+                            if (direction === "down" && row.nextElementSibling) {
+                                tbody.insertBefore(row.nextElementSibling, row);
+                            }
+
+                            updateMoveButtons(tbody);
+                        } catch {
+                            form.submit();
+                        }
+                    });
+                });
+
+                function updateMoveButtons(tbody) {
+                    const rows = Array.from(tbody.querySelectorAll("[data-order-row]"));
+
+                    rows.forEach((row, index) => {
+                        const upButton = row.querySelector("form[data-move-form='up'] button");
+                        const downButton = row.querySelector("form[data-move-form='down'] button");
+
+                        if (upButton) {
+                            upButton.disabled = index === 0;
+                        }
+
+                        if (downButton) {
+                            downButton.disabled = index === rows.length - 1;
+                        }
+                    });
+                }
             </script>
         </body>
         </html>
@@ -1475,6 +1711,26 @@ static string RenderDashboard(
 static string Html(string value)
 {
     return WebUtility.HtmlEncode(value);
+}
+
+static string RenderRowActions(string resource, int id, bool isFirst, bool isLast)
+{
+    var upDisabled = isFirst ? " disabled" : string.Empty;
+    var downDisabled = isLast ? " disabled" : string.Empty;
+
+    return $"""
+        <div class="actions">
+            <form method="post" action="/dashboard/{resource}/{id}/move-up" data-move-form="up">
+                <button class="move" type="submit"{upDisabled}>Metti sopra</button>
+            </form>
+            <form method="post" action="/dashboard/{resource}/{id}/move-down" data-move-form="down">
+                <button class="move" type="submit"{downDisabled}>Metti sotto</button>
+            </form>
+            <form method="post" action="/dashboard/{resource}/{id}/delete">
+                <button class="danger" type="submit">Delete</button>
+            </form>
+        </div>
+        """;
 }
 
 sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext> options) : DbContext(options)
@@ -1514,6 +1770,11 @@ sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext>
                 .HasColumnName("pdf_url")
                 .HasMaxLength(500)
                 .IsRequired();
+
+            entity.Property(teaching => teaching.DisplayOrder)
+                .HasColumnName("display_order")
+                .HasDefaultValue(0)
+                .IsRequired();
         });
 
         modelBuilder.Entity<FashionDesign>(entity =>
@@ -1544,6 +1805,11 @@ sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext>
             entity.Property(entry => entry.PdfUrl)
                 .HasColumnName("pdf_url")
                 .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(entry => entry.DisplayOrder)
+                .HasColumnName("display_order")
+                .HasDefaultValue(0)
                 .IsRequired();
         });
 
@@ -1592,11 +1858,29 @@ sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext>
                 .HasColumnName("visible")
                 .HasDefaultValue(true)
                 .IsRequired();
+
+            entity.Property(entry => entry.DisplayOrder)
+                .HasColumnName("display_order")
+                .HasDefaultValue(0)
+                .IsRequired();
         });
     }
 }
 
-sealed class Teaching
+interface IOrderedDashboardEntry
+{
+    int Id { get; }
+
+    int DisplayOrder { get; set; }
+}
+
+enum MoveDirection
+{
+    Up,
+    Down
+}
+
+sealed class Teaching : IOrderedDashboardEntry
 {
     public int Id { get; set; }
 
@@ -1609,6 +1893,8 @@ sealed class Teaching
     public required string PreviewImage { get; set; }
 
     public required string PdfUrl { get; set; }
+
+    public int DisplayOrder { get; set; }
 }
 
 sealed record TeachingCardDto(
@@ -1618,7 +1904,7 @@ sealed record TeachingCardDto(
     string PreviewImage,
     string PdfUrl);
 
-sealed class FashionDesign
+sealed class FashionDesign : IOrderedDashboardEntry
 {
     public int Id { get; set; }
 
@@ -1631,6 +1917,8 @@ sealed class FashionDesign
     public required string Gallery { get; set; }
 
     public required string PdfUrl { get; set; }
+
+    public int DisplayOrder { get; set; }
 }
 
 sealed record FashionDesignDto(
@@ -1640,7 +1928,7 @@ sealed record FashionDesignDto(
     string[] Gallery,
     string PdfUrl);
 
-sealed class CostumeDesign
+sealed class CostumeDesign : IOrderedDashboardEntry
 {
     public int Id { get; set; }
 
@@ -1659,6 +1947,8 @@ sealed class CostumeDesign
     public required string Credits { get; set; }
 
     public bool Visible { get; set; } = true;
+
+    public int DisplayOrder { get; set; }
 }
 
 sealed record CostumeDesignDto(
@@ -1690,6 +1980,3 @@ sealed record ContactEmail(
     string? Subject,
     string? Text);
 
-sealed record ContactRateLimitEntry(
-    DateTimeOffset WindowStartedAt,
-    int Count);

@@ -22,8 +22,10 @@
 .logo {
   display: inline-flex;
   align-items: center;
+  gap: 13px;
   text-decoration: none;
   height: 36px;
+  min-width: 0;
 }
 
 .logo-mark {
@@ -34,6 +36,14 @@
   background: #D91259;
   -webkit-mask: url("/assets/logo/logonew-Photoroom.png") left center / contain no-repeat;
   mask: url("/assets/logo/logonew-Photoroom.png") left center / contain no-repeat;
+}
+
+.logo-name {
+  color: #D91259;
+  font-size: clamp(13px, 1.25vw, 17px);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .header-actions {
@@ -50,6 +60,10 @@
   align-items: center;
   justify-content: flex-end;
   gap: 14px;
+}
+
+.nav-links {
+  order: 1;
 }
 
 .nav-links a,
@@ -83,22 +97,48 @@
 .nav-links a:focus-visible:after,
 .nav-links a.is-active:after { transform: scaleX(1); }
 
-.nav-links .book-now-nav-link {
+.book-now-nav-link {
+  order: 2;
   min-height: 34px;
   border: 1px solid #F207CB;
-  border-radius: 999px;
+  border-radius: 12px;
   padding: 9px 16px;
   background: rgba(242, 7, 203, 0.04);
+  color: #ff2fdb;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-.nav-links .book-now-nav-link:after {
-  display: none;
-}
-
-.nav-links .book-now-nav-link:hover,
-.nav-links .book-now-nav-link:focus-visible {
+.book-now-nav-link:hover,
+.book-now-nav-link:focus-visible {
   background: #F207CB;
   color: #070707;
+}
+
+.mobile-menu-toggle {
+  order: 3;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #F207CB;
+  border-radius: 50%;
+  background: rgba(7, 7, 7, 0.86);
+  color: #F207CB;
+  cursor: pointer;
+}
+
+.mobile-menu-toggle span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
 }
 
 .icon-link {
@@ -185,37 +225,33 @@
 .floating-contact-link:hover,
 .floating-contact-link:focus-visible,
 .floating-contact-link.is-active,
-.floating-go-back-link:hover,
-.floating-go-back-link:focus-visible {
+.floating-go-back-link:active {
   background: #F207CB;
   color: #070707;
   transform: translateY(-2px);
 }
 
-.floating-go-back-link:hover,
-.floating-go-back-link:focus-visible {
+.floating-go-back-link:active {
   transform: translateY(-2px);
 }
 
 @media (max-width: 760px) {
   .site-header {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
     padding: 16px 20px;
   }
 
   .header-actions,
-  .nav-links,
   .social-links {
-    justify-content: flex-start;
+    justify-content: flex-end;
   }
 
   .header-actions {
+    position: relative;
     gap: 12px;
-    overflow-x: auto;
   }
 
-  .nav-links,
   .social-links { gap: 10px; }
   .site-footer { padding-inline: 20px; }
 
@@ -277,27 +313,66 @@
 
 @media (max-width: 760px) {
   .site-header {
-    min-height: auto;
+    min-height: 72px;
   }
 
   .logo {
     height: 32px;
   }
 
-  .header-actions {
-    width: 100%;
-    scrollbar-width: none;
+  .logo-mark {
+    width: 58px;
   }
 
-  .header-actions::-webkit-scrollbar {
+  .logo-name {
+    font-size: 11px;
+    line-height: 1.1;
+    white-space: normal;
+    max-width: min(38vw, 156px);
+  }
+
+  .header-actions {
+    width: auto;
+  }
+
+  .mobile-menu-toggle {
+    display: inline-flex;
+    flex: 0 0 42px;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: calc(100% + 14px);
+    right: 0;
     display: none;
+    min-width: 164px;
+    padding: 10px;
+    border: 1px solid rgba(242, 7, 203, 0.5);
+    background: rgba(7, 7, 7, 0.96);
+    backdrop-filter: blur(14px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .nav-links.is-open {
+    display: flex;
   }
 
   .nav-links a,
   .nav-links a.is-active {
+    justify-content: flex-start;
     min-height: 30px;
+    padding: 8px 9px;
     font-size: 12px;
     line-height: 1;
+  }
+
+  .nav-links a:after,
+  .nav-links a:hover:after,
+  .nav-links a:focus-visible:after,
+  .nav-links a.is-active:after {
+    transform: scaleX(0);
   }
 
   .icon-link {

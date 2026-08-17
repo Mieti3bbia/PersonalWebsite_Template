@@ -11,8 +11,19 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 export class App {
   private readonly location = inject(Location);
   private readonly router = inject(Router);
+  protected mobileMenuOpen = false;
 
-  protected goBack(): void {
+  protected toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  protected closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
+  }
+
+  protected goBack(event?: Event): void {
+    (event?.currentTarget as HTMLElement | null)?.blur();
+
     if (window.history.length > 1) {
       this.location.back();
       return;

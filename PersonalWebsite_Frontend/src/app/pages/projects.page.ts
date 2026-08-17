@@ -164,7 +164,8 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
   private sun?: THREE.Group;
   private lavaJets?: THREE.Group;
   private surface?: THREE.Mesh;
-  private sunMaterial?: THREE.MeshBasicMaterial;
+  private corona?: THREE.Group;
+  private sunMaterial?: THREE.ShaderMaterial;
   private readonly clock = new THREE.Clock();
   private targetRotation = new THREE.Euler(0.12, 0, 0.06);
   private readonly resizeSun = (): void => this.resizeSunRenderer();
@@ -219,9 +220,10 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
     const sunMaterial = this.createSunMaterial(realSunTexture);
     this.sunMaterial = sunMaterial;
     this.surface = new THREE.Mesh(new THREE.SphereGeometry(1.58, 320, 320), sunMaterial);
+    this.corona = this.createCorona();
     this.lavaJets = this.createLavaJets();
 
-    this.sun.add(this.surface, this.lavaJets);
+    this.sun.add(this.corona, this.surface, this.lavaJets);
     this.scene.add(this.sun);
 
     const coreLight = new THREE.PointLight(0xffb347, 5.5, 10);
@@ -248,6 +250,17 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
     }
 
     const elapsed = this.clock.getElapsedTime();
+    if (this.sunMaterial) {
+      this.sunMaterial.uniforms['uTime'].value = elapsed;
+    }
+
+    if (this.corona) {
+      this.corona.rotation.z = Math.sin(elapsed * 0.11) * 0.035;
+      this.corona.children.forEach((layer, index) => {
+        const pulse = 1 + Math.sin(elapsed * (0.42 + index * 0.11)) * 0.012;
+        layer.scale.setScalar(pulse);
+      });
+    }
 
     if (this.lavaJets) {
       this.lavaJets.children.forEach((jet, index) => {
@@ -260,11 +273,94 @@ export class ProjectsPage implements AfterViewInit, OnDestroy {
     this.sunFrame = requestAnimationFrame(() => this.animateSun());
   }
 
-  private createSunMaterial(realSunTexture: THREE.Texture): THREE.MeshBasicMaterial {
-    return new THREE.MeshBasicMaterial({
-      color: 0xfff2cf,
-      map: realSunTexture
+  private createSunMaterial(realSunTexture: THREE.Texture): THREE.ShaderMaterial {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTexture: { value: realSunTexture },
+        uTime: { value: 0 }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+
+        void main() {
+          vUv = uv;
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vViewPosition = -mvPosition.xyz;
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D uTexture;
+        uniform float uTime;
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(
+            mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+            mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+            u.y
+          );
+        }
+
+        void main() {
+          vec3 textureColor = texture2D(uTexture, vUv).rgb;
+          vec3 viewDir = normalize(vViewPosition);
+          float facing = clamp(dot(normalize(vNormal), viewDir), 0.0, 1.0);
+          float limb = pow(1.0 - facing, 2.15);
+          vec2 flowUv = vec2(vUv.x + uTime * 0.006, vUv.y + sin(vUv.x * 16.0 + uTime * 0.18) * 0.006);
+          float cells = noise(flowUv * 54.0) * 0.55 + noise(flowUv * 126.0 + uTime * 0.04) * 0.45;
+          float filaments = smoothstep(0.36, 0.88, sin((vUv.x * 21.0 + vUv.y * 8.0 + cells * 3.2 + uTime * 0.08)) * 0.5 + 0.5);
+          float heat = clamp(cells * 0.55 + filaments * 0.45, 0.0, 1.0);
+          vec3 ember = mix(vec3(0.95, 0.21, 0.02), vec3(1.0, 0.86, 0.38), heat);
+          vec3 color = mix(textureColor * vec3(1.28, 0.82, 0.52), ember, 0.32);
+          color *= 1.16 + heat * 0.38;
+          color = mix(color, vec3(0.9, 0.18, 0.02), limb * 0.48);
+          color += vec3(1.0, 0.46, 0.08) * pow(1.0 - facing, 5.0) * 1.35;
+          color = pow(color, vec3(0.82));
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `
     });
+  }
+
+  private createCorona(): THREE.Group {
+    const corona = new THREE.Group();
+    const softCorona = this.createCoronaTexture();
+    const hotCorona = this.createCoronaTexture(true);
+    const layers = [
+      { texture: softCorona, color: 0xff7a18, opacity: 0.42, scale: 3.75, rotation: 0 },
+      { texture: hotCorona, color: 0xffe7a0, opacity: 0.26, scale: 3.18, rotation: Math.PI / 8 },
+      { texture: softCorona, color: 0xff3b00, opacity: 0.16, scale: 4.35, rotation: Math.PI / 5 }
+    ];
+
+    layers.forEach((layer) => {
+      const material = new THREE.SpriteMaterial({
+        map: layer.texture,
+        color: layer.color,
+        transparent: true,
+        opacity: layer.opacity,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      const sprite = new THREE.Sprite(material);
+      sprite.scale.setScalar(layer.scale);
+      sprite.material.rotation = layer.rotation;
+      corona.add(sprite);
+    });
+
+    return corona;
   }
 
   private resizeSunRenderer(): void {

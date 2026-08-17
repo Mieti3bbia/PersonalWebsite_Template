@@ -5029,20 +5029,20 @@ app-curriculum-vitae-page,
 }
 
 .costume-page .costume-video-band {
-  width: min(360px, 100%);
+  width: min(980px, 100%);
 }
 
 .costume-page .costume-video-band .fashion-video {
   width: 100%;
   min-height: 0;
-  height: clamp(120px, 11vw, 190px);
+  height: clamp(260px, 42vw, 560px);
   border-color: rgba(242, 7, 203, 0.36);
   object-fit: contain;
   background: #050505;
 }
 
 .costume-page .costume-gallery-band {
-  width: min(420px, 100%);
+  width: min(1180px, 100%);
 }
 
 .costume-page .costume-gallery-band .fashion-gallery-row {
@@ -5252,6 +5252,21 @@ app-curriculum-vitae-page,
 }
 
 .fashion-page .fashion-gallery-shell {
+<<<<<<< HEAD
+  width: min(1180px, 100%);
+  max-width: 100%;
+  gap: clamp(14px, 2vw, 22px);
+  justify-items: stretch;
+}
+
+.exploded-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(132px, 12vw, 190px), 1fr));
+  grid-auto-rows: clamp(132px, 12vw, 190px);
+  grid-auto-flow: dense;
+  gap: clamp(8px, 1.15vw, 16px);
+  width: 100%;
+=======
   width: min(420px, 100%);
   gap: clamp(14px, 2vw, 22px);
 }
@@ -5284,17 +5299,89 @@ app-curriculum-vitae-page,
     linear-gradient(180deg, rgba(242, 7, 203, 0.08), rgba(242, 7, 203, 0.02)),
     #070707;
   font-size: clamp(18px, 2vw, 28px);
+>>>>>>> parent of 4f08af4 (Live UI update)
 }
 
-.fashion-page .fashion-gallery-row > button:hover,
-.fashion-page .fashion-gallery-row > button:focus-visible {
-  background: rgba(242, 7, 203, 0.12);
-  color: #F207CB;
+.exploded-gallery-tile {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid rgba(242, 7, 203, 0.34);
+  border-radius: 0;
+  background: #050505;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+  filter: blur(10px) saturate(0.82);
+  transform: translateY(18px) scale(0.94);
+}
+
+.exploded-gallery-tile.is-loaded {
+  animation: exploded-gallery-fade-in 920ms cubic-bezier(0.19, 1, 0.22, 1) var(--gallery-fade-delay, 0ms) both;
+}
+
+.exploded-gallery-tile.is-primary-tile {
+  transform: translateY(24px) scale(0.9);
+}
+
+.exploded-gallery-tile.is-primary-tile.is-loaded {
+  animation-duration: 1080ms;
+}
+
+@keyframes exploded-gallery-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(10px) saturate(0.82);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform: translateY(0) scale(1);
+  }
+}
+
+.exploded-gallery-tile:nth-child(9n + 1),
+.exploded-gallery-tile:nth-child(9n + 6) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.exploded-gallery-grid:has(.exploded-gallery-tile:nth-child(13)) .exploded-gallery-tile {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.exploded-gallery-grid:has(.exploded-gallery-tile:nth-child(13)) .exploded-gallery-tile:nth-child(12n + 1) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.exploded-gallery-grid:has(.exploded-gallery-tile:nth-child(21)) .exploded-gallery-tile {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.exploded-gallery-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease, filter 220ms ease;
+}
+
+.exploded-gallery-tile:hover img,
+.exploded-gallery-tile:focus-visible img {
+  filter: saturate(1.08) contrast(1.04);
+  transform: scale(1.035);
 }
 
 .fashion-page .fashion-pdf-panel {
   min-height: 0;
-  border-radius: 0;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -5337,12 +5424,22 @@ app-curriculum-vitae-page,
     font-size: clamp(26px, 10vw, 42px);
   }
 
+<<<<<<< HEAD
+  .exploded-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(128px, 42vw), 1fr));
+    grid-auto-rows: clamp(128px, 42vw, 180px);
+=======
   .fashion-page .fashion-gallery-row {
     grid-template-columns: 34px minmax(0, 220px) 34px;
+>>>>>>> parent of 4f08af4 (Live UI update)
     gap: 8px;
-    justify-content: center;
   }
 
+<<<<<<< HEAD
+  .exploded-gallery-tile:nth-child(n) {
+    grid-column: span 1;
+    grid-row: span 1;
+=======
   .fashion-page .fashion-gallery-panel {
     height: clamp(130px, 48vw, 220px);
   }
@@ -5351,6 +5448,7 @@ app-curriculum-vitae-page,
     width: 34px;
     height: clamp(130px, 48vw, 220px);
     font-size: 18px;
+>>>>>>> parent of 4f08af4 (Live UI update)
   }
 
   .fashion-page .fashion-band:has(.fashion-description) {
@@ -6024,11 +6122,6 @@ app-curriculum-vitae-page,
   color: #070707;
 }
 
-.contact-page .contact-form button:disabled {
-  opacity: 0.52;
-  cursor: wait;
-}
-
 .contact-page .contact-submit-message {
   grid-column: 1 / -1;
   margin: 0;
@@ -6041,6 +6134,87 @@ app-curriculum-vitae-page,
 
 .contact-page .contact-submit-message.is-error {
   color: #F207CB;
+}
+
+.contact-page .contact-submit-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.contact-page .contact-submit-modal-panel {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  width: min(440px, 100%);
+  min-width: 0;
+  padding: clamp(24px, 5vw, 42px);
+  border: 1px solid rgba(51, 214, 122, 0.72);
+  background: #070707;
+  color: #33d67a;
+  text-align: center;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+
+.contact-page .contact-submit-modal-panel.is-error {
+  border-color: rgba(217, 18, 89, 0.72);
+  color: #D91259;
+}
+
+.contact-page .contact-submit-modal-panel p {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(20px, 4.4vw, 34px);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.contact-page .contact-submit-modal-panel span {
+  width: 100%;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1.35;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+.contact-page .contact-submit-modal-panel button {
+  width: min(160px, 100%);
+  min-height: 46px;
+  border: 1px solid currentColor;
+  border-radius: 12px;
+  background: transparent;
+  color: currentColor;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.contact-page .contact-submit-modal-panel button:hover,
+.contact-page .contact-submit-modal-panel button:focus-visible {
+  background: currentColor;
+  color: #070707;
+}
+
+@media (max-width: 420px) {
+  .contact-page .contact-submit-modal {
+    padding: 16px;
+  }
+
+  .contact-page .contact-submit-modal-panel {
+    padding: 24px 18px;
+  }
 }
 
 .contact-page .contact-map {
@@ -6567,6 +6741,57 @@ app-page-title-hero {
 .costume-page .fashion-gallery-row > button:focus-visible {
   background: transparent;
   color: #F207CB;
+}
+
+.costume-page .costume-gallery-band > .exploded-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(132px, 12vw, 190px), 1fr));
+  grid-auto-rows: clamp(132px, 12vw, 190px);
+  grid-auto-flow: dense;
+  gap: clamp(8px, 1.15vw, 16px);
+  width: 100%;
+  min-height: 0;
+}
+
+.costume-page .costume-gallery-band .exploded-gallery-tile {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.costume-page .costume-gallery-band .exploded-gallery-tile:nth-child(9n + 1),
+.costume-page .costume-gallery-band .exploded-gallery-tile:nth-child(9n + 6) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.costume-page .costume-gallery-band .exploded-gallery-grid:has(.exploded-gallery-tile:nth-child(13)) .exploded-gallery-tile {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.costume-page .costume-gallery-band .exploded-gallery-grid:has(.exploded-gallery-tile:nth-child(13)) .exploded-gallery-tile:nth-child(12n + 1) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.costume-page .costume-gallery-band .exploded-gallery-grid:has(.exploded-gallery-tile:nth-child(21)) .exploded-gallery-tile {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+@media (max-width: 700px) {
+  .costume-page .costume-gallery-band > .exploded-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(128px, 42vw), 1fr));
+    grid-auto-rows: clamp(128px, 42vw, 180px);
+    gap: 8px;
+  }
+
+  .costume-page .costume-gallery-band .exploded-gallery-tile:nth-child(n) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
 }
 
 @media (max-width: 900px) {

@@ -173,17 +173,20 @@ const PROJECTS: Record<string, PortfolioProject> = {
                   <section class="fashion-band">
                     <div class="fashion-gallery-shell">
                       @if (entry.gallery.length > 0) {
-                        <div class="fashion-gallery-row" aria-label="Fashion gallery">
-                          <button type="button" aria-label="Previous gallery item" (click)="showPreviousFashionImage()">→</button>
-                          <div class="gallery-frame">
-                            <img #fashionGalleryImage class="fashion-gallery-panel" [src]="currentFashionImageFor(entry)" alt="Fashion design gallery image">
-                            <button type="button" class="gallery-fullscreen-button" aria-label="Open fashion gallery image fullscreen" (click)="openGalleryViewer(entry.gallery, fashionGalleryIndex % entry.gallery.length)">
-                              <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M5 9V5h4v2H7v2H5Zm10-4h4v4h-2V7h-2V5ZM7 15v2h2v2H5v-4h2Zm10 2v-2h2v4h-4v-2h2Z"/>
-                              </svg>
+                        <div class="exploded-gallery-grid" aria-label="Fashion gallery">
+                          @for (image of entry.gallery; track imageIndex; let imageIndex = $index) {
+                            <button
+                              type="button"
+                              class="exploded-gallery-tile"
+                              [class.is-primary-tile]="isPrimaryGalleryTile(imageIndex, entry.gallery.length)"
+                              [class.is-loaded]="isGalleryImageLoaded(image)"
+                              [style.--gallery-fade-delay]="galleryImageFadeDelay(imageIndex, entry.gallery.length) + 'ms'"
+                              aria-label="Open fashion gallery image fullscreen"
+                              (click)="openGalleryViewer(entry.gallery, imageIndex)"
+                            >
+                              <img [src]="image" alt="Fashion design gallery image" (load)="markGalleryImageLoaded(image)">
                             </button>
-                          </div>
-                          <button type="button" aria-label="Next gallery item" (click)="showNextFashionImage()">→</button>
+                          }
                         </div>
                       }
 
@@ -237,21 +240,20 @@ const PROJECTS: Record<string, PortfolioProject> = {
 
                 @if (entry.gallery.length > 0) {
                   <section class="costume-gallery-band">
-                    <div class="fashion-gallery-row" aria-label="Costume gallery">
-                      <button type="button" aria-label="Previous gallery item" (click)="showPreviousCostumeImage()">→</button>
-                      @if (currentCostumeGalleryItemFor(entry).isImage) {
-                        <div class="gallery-frame">
-                          <img #costumeGalleryImage class="fashion-gallery-panel" [src]="currentCostumeGalleryItemFor(entry).value" alt="Costume gallery image">
-                          <button type="button" class="gallery-fullscreen-button" aria-label="Open costume gallery image fullscreen" (click)="openGalleryViewer(entry.gallery, costumeGalleryIndex % entry.gallery.length)">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                              <path d="M5 9V5h4v2H7v2H5Zm10-4h4v4h-2V7h-2V5ZM7 15v2h2v2H5v-4h2Zm10 2v-2h2v4h-4v-2h2Z"/>
-                            </svg>
-                          </button>
-                        </div>
-                      } @else {
-                        <div class="fashion-gallery-panel costume-gallery-placeholder">{{ currentCostumeGalleryItemFor(entry).value }}</div>
+                    <div class="exploded-gallery-grid" aria-label="Costume gallery">
+                      @for (image of entry.gallery; track imageIndex; let imageIndex = $index) {
+                        <button
+                          type="button"
+                          class="exploded-gallery-tile"
+                          [class.is-primary-tile]="isPrimaryGalleryTile(imageIndex, entry.gallery.length)"
+                          [class.is-loaded]="isGalleryImageLoaded(image)"
+                          [style.--gallery-fade-delay]="galleryImageFadeDelay(imageIndex, entry.gallery.length) + 'ms'"
+                          aria-label="Open costume gallery image fullscreen"
+                          (click)="openGalleryViewer(entry.gallery, imageIndex)"
+                        >
+                          <img [src]="image" alt="Costume gallery image" (load)="markGalleryImageLoaded(image)">
+                        </button>
                       }
-                      <button type="button" aria-label="Next gallery item" (click)="showNextCostumeImage()">→</button>
                     </div>
                   </section>
                 }
@@ -345,6 +347,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   protected teachingsLoaded = false;
   protected fullscreenGalleryItems: string[] = [];
   protected fullscreenGalleryIndex = 0;
+  private readonly loadedGalleryImages = new Set<string>();
   private galleryTouchStartX = 0;
   private fadeElements: HTMLElement[] = [];
   private animationFrame = 0;
@@ -880,8 +883,39 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     return `/${url.replace(/^\/+/, '')}`;
   }
 
-  private isImageUrl(url: string): boolean {
+  protected isImageUrl(url: string): boolean {
     return /\.(jpe?g|png|webp|gif|avif)(\?.*)?$/i.test(url);
+  }
+
+  protected isGalleryImageLoaded(image: string): boolean {
+    return this.loadedGalleryImages.has(image);
+  }
+
+  protected markGalleryImageLoaded(image: string): void {
+    this.loadedGalleryImages.add(image);
+    this.changeDetectorRef.detectChanges();
+  }
+
+  protected isPrimaryGalleryTile(index: number, total: number): boolean {
+    if (total >= 21) {
+      return false;
+    }
+
+    if (total >= 13) {
+      return index % 12 === 0;
+    }
+
+    return index % 9 === 0 || index % 9 === 5;
+  }
+
+  protected galleryImageFadeDelay(index: number, total: number): number {
+    if (this.isPrimaryGalleryTile(index, total)) {
+      return Math.min(index, 2) * 90;
+    }
+
+    const compactDelay = total >= 21 ? 75 : 115;
+
+    return 220 + (index % 12) * compactDelay;
   }
 
   private readonly isTeachingCardRecord = (value: unknown): value is Record<string, unknown> => (

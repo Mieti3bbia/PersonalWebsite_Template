@@ -247,30 +247,12 @@ export class CurriculumVitaePage implements AfterViewInit, OnDestroy {
 
   protected readonly trainingTimeline: TimelineItem[] = [
     {
-      period: 'Formazione accademica',
+      period: 'Dicembre 2023',
       title: 'Fashion Design',
-      place: 'IED Milano',
+      place: 'IED Istituto Europeo di Milano',
       details: [
-        'Specializzazione in womenswear, menswear, product development e costume design.',
-        'Percorso orientato a ricerca, concept, modellistica, prototipazione e confezione.'
-      ]
-    },
-    {
-      period: 'Metodo progettuale',
-      title: 'Ricerca, tecnica e fattibilita',
-      place: 'Fashion & Costume Design',
-      details: [
-        'Traduzione della ricerca in prodotti e costumi realizzabili.',
-        'Integrazione di visione estetica, competenze tecniche e identita progettuale.'
-      ]
-    },
-    {
-      period: 'Tutoraggio continuativo',
-      title: 'Supporto a tesi e collezioni',
-      place: 'IED, NABA, Marangoni, Politecnico, Ferrari Fashion School',
-      details: [
-        'Accompagnamento degli studenti nello sviluppo creativo e tecnico.',
-        'Costruzione di collezioni, shooting, fashion film e presentazione finale.'
+        'Specializzazione in Modellistica Donna.',
+        'Laureata con Borsa di Studio ottenuta per merito.'
       ]
     }
   ];

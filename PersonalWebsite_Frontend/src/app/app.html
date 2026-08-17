@@ -1,22 +1,37 @@
-﻿<header class="site-header" aria-label="Primary navigation">
+<header class="site-header" aria-label="Primary navigation">
   <a class="logo" routerLink="/home" aria-label="Vai alla home">
     <span class="logo-mark" aria-hidden="true"></span>
+    <span class="logo-name">maria sole montironi lasca</span>
   </a>
 
   <div class="header-actions">
-    <nav class="nav-links" aria-label="Menu principale">
-      <a routerLink="/portfolio" routerLinkActive="is-active">portfolio</a>
-      <a routerLink="/servizi" routerLinkActive="is-active">servizi</a>
-      <a routerLink="/aboutme" routerLinkActive="is-active">About me</a>
-      <a routerLink="/curriculumvitae" routerLinkActive="is-active">CV</a>
-      <a class="book-now-nav-link" routerLink="/contacts">Book now</a>
+    <a class="book-now-nav-link" routerLink="/contacts">Book now</a>
+
+    <button
+      class="mobile-menu-toggle"
+      type="button"
+      aria-label="Apri menu"
+      aria-controls="primary-nav-links"
+      [attr.aria-expanded]="mobileMenuOpen"
+      (click)="toggleMobileMenu()"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+
+    <nav id="primary-nav-links" class="nav-links" [class.is-open]="mobileMenuOpen" aria-label="Menu principale">
+      <a routerLink="/portfolio" routerLinkActive="is-active" (click)="closeMobileMenu()">portfolio</a>
+      <a routerLink="/servizi" routerLinkActive="is-active" (click)="closeMobileMenu()">servizi</a>
+      <a routerLink="/aboutme" routerLinkActive="is-active" (click)="closeMobileMenu()">About me</a>
+      <a routerLink="/curriculumvitae" routerLinkActive="is-active" (click)="closeMobileMenu()">CV</a>
     </nav>
   </div>
 </header>
 
 <router-outlet />
 
-<button class="floating-go-back-link" type="button" (click)="goBack()" aria-label="Go back">
+<button class="floating-go-back-link" type="button" (click)="goBack($event)" aria-label="Go back">
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M14.7 5.3 8 12l6.7 6.7-1.4 1.4L5.2 12l8.1-8.1 1.4 1.4Z"/>
   </svg>
