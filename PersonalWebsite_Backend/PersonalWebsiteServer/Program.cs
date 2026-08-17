@@ -642,18 +642,50 @@ app.Run();
 
 static void EnsureDisplayOrderColumn(PersonalWebsiteDbContext db, string tableName)
 {
-    try
+    if (!IsKnownDashboardTable(tableName) || ColumnExists(db, tableName, "display_order"))
     {
-        db.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0;");
+        return;
     }
-    catch (Exception exception) when (exception.Message.Contains("duplicate column name", StringComparison.OrdinalIgnoreCase))
+
+    db.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0;");
+}
+
+static bool ColumnExists(PersonalWebsiteDbContext db, string tableName, string columnName)
+{
+    using var command = db.Database.GetDbConnection().CreateCommand();
+    command.CommandText = $"PRAGMA table_info({tableName});";
+
+    if (command.Connection?.State != System.Data.ConnectionState.Open)
     {
+        command.Connection?.Open();
     }
+
+    using var reader = command.ExecuteReader();
+
+    while (reader.Read())
+    {
+        if (string.Equals(reader["name"]?.ToString(), columnName, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 static void InitializeDisplayOrder(PersonalWebsiteDbContext db, string tableName)
 {
+    if (!IsKnownDashboardTable(tableName))
+    {
+        return;
+    }
+
     db.Database.ExecuteSqlRaw($"UPDATE {tableName} SET display_order = id WHERE display_order = 0;");
+}
+
+static bool IsKnownDashboardTable(string tableName)
+{
+    return tableName is "teachings" or "fashion_designs" or "costume_designs";
 }
 
 static async Task<int> GetNextDisplayOrder<TEntry>(DbSet<TEntry> entries)
