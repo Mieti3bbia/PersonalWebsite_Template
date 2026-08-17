@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main_1adapted
+    paths:
+      - 'PersonalWebsite_Backend/**'
+      - '.github/workflows/main_1adapted_backendmariasolepersonalwebsite.yml'
   workflow_dispatch:
 
 jobs:
@@ -31,7 +34,7 @@ jobs:
       - name: Publish
         run: dotnet publish PersonalWebsite_Backend/PersonalWebsiteServer/PersonalWebsiteServer.csproj --configuration Release --no-build --output ${{ env.DOTNET_ROOT }}/myapp
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
@@ -46,7 +49,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: .net-app
@@ -56,7 +59,7 @@ jobs:
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F29966399031459DB824263EC41C22AB }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E0435BD061D149689D90DF5FB48B2BD4 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_74549F81D8594BC9AA38FC5EC1D13927 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_74549F81D8594BC9AA38FC5FC1D13927 }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
