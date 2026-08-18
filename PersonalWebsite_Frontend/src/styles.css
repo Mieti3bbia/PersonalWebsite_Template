@@ -7258,16 +7258,69 @@ app-page-title-hero {
 @media (max-width: 900px) {
   .project-detail-page .teachings-page .teaching-card-body {
     grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(18px, 6vw, 28px);
+    padding: clamp(24px, 7vw, 34px) clamp(16px, 5vw, 24px);
+  }
+
+  .project-detail-page .teachings-page .teaching-card-copy,
+  .project-detail-page .teachings-page .gallery-frame {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .project-detail-page .teachings-page .teaching-card-copy p:first-child {
-    font-size: clamp(24px, 8vw, 42px);
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(28px, 9vw, 40px);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
   }
 
-  .project-detail-page .teachings-page .gallery-frame,
-  .project-detail-page .teachings-page .teaching-preview {
-    justify-self: stretch;
+  .project-detail-page .teachings-page .teaching-card-copy p:not(:first-child) {
     width: 100%;
+  }
+
+  .project-detail-page .teachings-page .gallery-frame {
+    display: flex;
+    justify-content: center;
+    justify-self: stretch;
+    margin: 0;
+  }
+
+  .project-detail-page .teachings-page .teaching-preview {
+    width: 100%;
+    max-width: min(100%, 340px);
+    margin-inline: auto;
+  }
+
+  .project-detail-page .teachings-page .teaching-preview img {
+    max-height: clamp(150px, 56vw, 240px);
+  }
+}
+
+@media (max-width: 430px) {
+  .project-detail-page .teachings-page .teachings-card-list {
+    width: min(100%, calc(100% - 18px));
+  }
+
+  .project-detail-page .teachings-page .teaching-card {
+    min-height: 0;
+    align-content: start;
+  }
+
+  .project-detail-page .teachings-page .teaching-card-body {
+    padding: 22px 14px 24px;
+  }
+
+  .project-detail-page .teachings-page .teaching-card-copy p:first-child {
+    font-size: clamp(25px, 8.3vw, 34px);
+  }
+
+  .project-detail-page .teachings-page .teaching-preview {
+    max-width: 100%;
   }
 }
 

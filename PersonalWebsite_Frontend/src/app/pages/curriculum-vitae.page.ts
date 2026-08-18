@@ -96,7 +96,7 @@ interface TimelineItem {
       <section class="cv-timeline-section cv-training-section page-section">
         <header>
           <p class="eyebrow">/ Formazione /</p>
-          <h2>Formazione e tutoraggio</h2>
+          <h2>Formazione</h2>
         </header>
 
         <div class="cv-timeline">
@@ -129,9 +129,9 @@ export class CurriculumVitaePage implements AfterViewInit, OnDestroy {
   protected readonly profile = [
     'Fashion & Costume Designer, Product Developer e Tutor con oltre due anni di esperienza nella progettazione e nello sviluppo di collezioni per il settore delle arti performative e della moda.',
     'Laureata in Fashion Design presso lo IED di Milano, con specializzazione in womenswear, menswear, product development e costume design.',
-    'Accompagno ogni progetto dall analisi iniziale fino alla realizzazione finale, integrando ricerca creativa, sviluppo concettuale, modellistica, prototipazione e confezione.',
-    'Collaboro con realta come RAI Italia, Ariella Vidach AIEP e Kataklo Athletic Dance Theatre, oltre a contribuire allo sviluppo creativo e tecnico di brand emergenti.',
-    'Parallelamente svolgo attivita di tutoraggio per studenti di IED, NABA, Marangoni, Politecnico di Milano e Ferrari Fashion School.'
+    'Accompagno ogni progetto dall\'analisi iniziale fino alla realizzazione finale, integrando ricerca creativa, sviluppo concettuale, modellistica, prototipazione e confezione.',
+    'Collaboro con realtà come RAI Italia, Ariella Vidach AIEP e Kataklo Athletic Dance Theatre, oltre a contribuire allo sviluppo creativo e tecnico di brand emergenti.',
+    'Parallelamente svolgo attività di tutoraggio per studenti di IED, NABA, Marangoni, Politecnico di Milano e Ferrari Fashion School.'
   ];
 
   protected readonly hardSkills = [
@@ -207,7 +207,7 @@ export class CurriculumVitaePage implements AfterViewInit, OnDestroy {
       details: [
         'Consulenze per streetwear maschile e lusso femminile.',
         'Analisi del mercato italiano e dei trend.',
-        'Supporto all identita stilistica e al concept di collezione.',
+        'Supporto all\'identità stilistica e al concept di collezione.',
         'Ricerca fornitori, tessuti, materiali e canali produttivi.',
         'Sviluppo di capsule e tech pack per il campionario.'
       ]
@@ -230,7 +230,7 @@ export class CurriculumVitaePage implements AfterViewInit, OnDestroy {
       details: [
         'Concept visivo dei costumi di scena per il corpo di ballo dei Coma Cose.',
         'Bozzetti e confezione sartoriale su misura.',
-        'Costumi funzionali alla performance televisiva, con comfort e liberta di movimento.'
+        'Costumi funzionali alla performance televisiva, con comfort e libertà di movimento.'
       ]
     },
     {
