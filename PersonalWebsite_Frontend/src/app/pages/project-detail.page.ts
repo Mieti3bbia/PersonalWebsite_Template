@@ -99,7 +99,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
                 <article class="teaching-card">
                   <div class="teaching-card-body">
                     <div class="teaching-card-copy">
-                      <p>"{{ card.title || 'Untitled' }}"</p>
+                      <p>{{ card.title || 'Untitled' }}</p>
                       <p class="teaching-author">{{ card.author || 'Author not provided' }}</p>
                       <p class="teaching-school">{{ card.school || 'School not provided' }}</p>
                     </div>
@@ -224,6 +224,12 @@ const PROJECTS: Record<string, PortfolioProject> = {
                   <h1>{{ entry.title }}</h1>
                 </header>
 
+                @if (entry.description) {
+                  <section class="costume-description">
+                    <p>{{ entry.description }}</p>
+                  </section>
+                }
+
                 <section class="costume-meta">
                   @if (entry.season) {
                     <p>{{ entry.season }}</p>
@@ -256,12 +262,6 @@ const PROJECTS: Record<string, PortfolioProject> = {
                         </button>
                       }
                     </div>
-                  </section>
-                }
-
-                @if (entry.description) {
-                  <section class="costume-description">
-                    <p>{{ entry.description }}</p>
                   </section>
                 }
 
@@ -390,6 +390,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
     } finally {
       this.teachingsLoaded = true;
       this.changeDetectorRef.detectChanges();
+      this.refreshFadeElements();
     }
   }
 
@@ -574,7 +575,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
   private refreshFadeElements(): void {
     this.fadeElements = Array.from(
-      this.elementRef.nativeElement.querySelectorAll('.fashion-entry-title-band, .fashion-band, .costume-title-band, .costume-meta, .costume-video-placeholder, .costume-video-band, .costume-gallery-band, .costume-description, .costume-credits')
+      this.elementRef.nativeElement.querySelectorAll('.fashion-entry-title-band, .fashion-band, .costume-title-band, .costume-meta, .costume-video-placeholder, .costume-video-band, .costume-gallery-band, .costume-description, .costume-credits, .teaching-card-copy, .gallery-frame')
     ) as HTMLElement[];
 
     this.updateVisibility();

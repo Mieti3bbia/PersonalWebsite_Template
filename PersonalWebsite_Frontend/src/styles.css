@@ -6949,6 +6949,337 @@ app-page-title-hero {
   font-weight: 500;
 }
 
+/* Portfolio detail card polish: preserve layout, improve content rhythm */
+.project-detail-page .fashion-page .fashion-entry-title-band,
+.project-detail-page .costume-page .costume-title-band {
+  justify-items: start;
+  text-align: left;
+}
+
+.project-detail-page .fashion-page .fashion-entry-title-band h2,
+.project-detail-page .costume-page .costume-title-band h1 {
+  width: min(980px, 100%);
+  margin-inline: 0;
+  color: #F207CB;
+  font-size: clamp(24px, 4.2vw, 58px);
+  line-height: 1.08;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.project-detail-page .fashion-page .fashion-entry-title-band h2::after {
+  margin-inline: 0;
+}
+
+.project-detail-page .fashion-page .fashion-description,
+.project-detail-page .costume-page .costume-description p,
+.project-detail-page .costume-page .costume-credits p,
+.project-detail-page .costume-page .costume-meta p {
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.project-detail-page .costume-page .costume-meta {
+  justify-self: start;
+}
+
+@media (max-width: 900px) {
+  .project-detail-page .fashion-page .fashion-entry-title-band h2,
+  .project-detail-page .costume-page .costume-title-band h1 {
+    font-size: clamp(24px, 8vw, 42px);
+    line-height: 1.12;
+  }
+}
+
+/* Portfolio detail left-aligned card content */
+.project-detail-page .fashion-page .fashion-entry,
+.project-detail-page .costume-page .costume-entry,
+.project-detail-page .teachings-page .teaching-card,
+.project-detail-page .teachings-page .teaching-card-body,
+.project-detail-page .fashion-page .fashion-gallery-shell,
+.project-detail-page .costume-page .costume-gallery-band,
+.project-detail-page .gallery-frame {
+  justify-items: start;
+  text-align: left;
+}
+
+.project-detail-page .fashion-page .fashion-band,
+.project-detail-page .costume-page .costume-title-band,
+.project-detail-page .costume-page .costume-meta,
+.project-detail-page .costume-page .costume-video-band,
+.project-detail-page .costume-page .costume-gallery-band,
+.project-detail-page .costume-page .costume-description,
+.project-detail-page .costume-page .costume-credits,
+.project-detail-page .teachings-page .teaching-card-copy,
+.project-detail-page .teachings-page .gallery-frame {
+  justify-self: start;
+}
+
+.project-detail-page .fashion-page .fashion-band,
+.project-detail-page .fashion-page .fashion-gallery-shell,
+.project-detail-page .costume-page .costume-video-band,
+.project-detail-page .costume-page .costume-gallery-band,
+.project-detail-page .costume-page .costume-description,
+.project-detail-page .costume-page .costume-credits {
+  justify-self: stretch;
+}
+
+.project-detail-page .fashion-page .fashion-band,
+.project-detail-page .fashion-page .fashion-band:has(.fashion-video),
+.project-detail-page .fashion-page .fashion-band:has(.fashion-description),
+.project-detail-page .fashion-page .fashion-gallery-shell,
+.project-detail-page .costume-page .costume-video-band,
+.project-detail-page .costume-page .costume-gallery-band,
+.project-detail-page .costume-page .costume-description,
+.project-detail-page .costume-page .costume-credits {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+}
+
+.project-detail-page .fashion-page .fashion-video,
+.project-detail-page .costume-page .fashion-video,
+.project-detail-page .fashion-page .exploded-gallery-grid,
+.project-detail-page .costume-page .costume-gallery-band > .exploded-gallery-grid {
+  width: 100%;
+  max-width: none;
+}
+
+.project-detail-page .fashion-page .fashion-description,
+.project-detail-page .costume-page .costume-description p,
+.project-detail-page .costume-page .costume-credits p {
+  width: 100%;
+  max-width: none;
+}
+
+.project-detail-page .costume-page .costume-entry {
+  justify-items: start;
+  grid-template-areas:
+    "title"
+    "copy"
+    "meta"
+    "media"
+    "gallery"
+    "credits";
+}
+
+.project-detail-page .costume-page .costume-entry::before {
+  width: 4px;
+  height: auto;
+  inset: clamp(22px, 3vw, 42px) auto clamp(22px, 3vw, 42px) 0;
+  background: linear-gradient(180deg, #F207CB, rgba(89, 56, 84, 0.08));
+}
+
+.project-detail-page .costume-page .costume-title-band {
+  place-items: start;
+}
+
+.project-detail-page .costume-page .costume-title-band h1 {
+  padding-bottom: 0;
+  color: #F207CB;
+  text-align: left;
+}
+
+.project-detail-page .costume-page .costume-title-band h1::after {
+  content: none;
+}
+
+.project-detail-page .costume-page .costume-meta {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.project-detail-page .costume-page .costume-description,
+.project-detail-page .costume-page .costume-credits {
+  text-align: left;
+}
+
+.project-detail-page .costume-page .costume-description::before,
+.project-detail-page .costume-page .costume-credits::before {
+  display: block;
+  margin-bottom: 10px;
+  color: #F207CB;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(10px, 0.9vw, 13px);
+  line-height: 1;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.project-detail-page .costume-page .costume-description::before {
+  content: "/ overview /";
+}
+
+.project-detail-page .costume-page .costume-credits::before {
+  content: "/ credits /";
+}
+
+.project-detail-page .fashion-page .fashion-band:has(.fashion-video)::before,
+.project-detail-page .fashion-page .fashion-gallery-shell::before,
+.project-detail-page .costume-page .costume-video-band::before,
+.project-detail-page .costume-page .costume-gallery-band::before {
+  text-align: left;
+}
+
+.project-detail-page .fashion-page .fashion-entry-title-band h2::after,
+.project-detail-page .teachings-page .teaching-card-copy p:first-child::after {
+  margin-inline: 0 auto;
+}
+
+.project-detail-page .teachings-page .teaching-preview {
+  justify-self: start;
+}
+
+.clients-section p.clients-fade {
+  color: #fff;
+}
+
+/* Final portfolio alignment overrides */
+.project-detail-page .costume-page .costume-entry {
+  border-color: rgba(242, 7, 203, 0.28);
+}
+
+.project-detail-page .costume-page .costume-entry::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  width: auto;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #F207CB 18%, rgba(89, 56, 84, 0.8) 50%, #F207CB 82%, transparent);
+  opacity: 0.72;
+}
+
+@media (min-width: 901px) {
+  .project-detail-page .teachings-page .teaching-card-body {
+    width: 100%;
+    grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+    column-gap: clamp(48px, 7vw, 132px);
+  }
+
+  .project-detail-page .teachings-page .teaching-card-copy {
+    grid-column: 1;
+    justify-self: start;
+    width: 100%;
+  }
+
+  .project-detail-page .teachings-page .gallery-frame {
+    grid-column: 2;
+    justify-self: stretch;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .project-detail-page .teachings-page .teaching-preview {
+    flex: 0 1 min(680px, 100%);
+    width: min(680px, 100%);
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+/* Teachings detail alignment */
+.project-detail-page .teachings-page .teaching-card-copy,
+.project-detail-page .teachings-page .gallery-frame {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 520ms ease,
+    transform 520ms ease;
+}
+
+.project-detail-page .teachings-page .teaching-card-copy.is-visible,
+.project-detail-page .teachings-page .gallery-frame.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-detail-page .teachings-page .teaching-card-copy p:first-child::after {
+  content: none;
+}
+
+.project-detail-page .fashion-page .fashion-entry-title-band h2::after {
+  content: none;
+}
+
+.project-detail-page .teachings-page .teaching-card-body {
+  justify-self: stretch;
+  width: 100%;
+  grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+  align-items: center;
+}
+
+.project-detail-page .teachings-page .teaching-card-copy p:first-child {
+  color: #F207CB;
+  font-size: clamp(24px, 4.2vw, 58px);
+  line-height: 1.08;
+}
+
+.project-detail-page .teachings-page .teaching-card-copy p:not(:first-child) {
+  box-sizing: border-box;
+  width: min(520px, 100%);
+  max-width: 100%;
+  padding: clamp(14px, 1.5vw, 18px) clamp(18px, 2vw, 28px);
+}
+
+.project-detail-page .teachings-page .teaching-author::before,
+.project-detail-page .teachings-page .teaching-school::before {
+  margin-bottom: 10px;
+}
+
+.project-detail-page .teachings-page .gallery-frame {
+  grid-column: 2;
+  justify-self: stretch;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: none;
+  margin-left: auto;
+}
+
+.project-detail-page .teachings-page .teaching-preview {
+  flex: 0 1 min(360px, 100%);
+  width: min(360px, 100%);
+  aspect-ratio: auto;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.project-detail-page .teachings-page .teaching-preview img {
+  width: 100%;
+  height: auto;
+  max-height: clamp(150px, 22vw, 260px);
+  object-fit: contain;
+}
+
+@media (max-width: 900px) {
+  .project-detail-page .teachings-page .teaching-card-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .project-detail-page .teachings-page .teaching-card-copy p:first-child {
+    font-size: clamp(24px, 8vw, 42px);
+  }
+
+  .project-detail-page .teachings-page .gallery-frame,
+  .project-detail-page .teachings-page .teaching-preview {
+    justify-self: stretch;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-detail-page .teachings-page .teaching-card-copy,
+  .project-detail-page .teachings-page .gallery-frame {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
 .about-page .about-body strong {
   font-family: "Roboto Condensed Bold", "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
   font-weight: 700;
