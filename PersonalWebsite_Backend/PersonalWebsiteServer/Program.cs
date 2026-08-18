@@ -74,11 +74,12 @@ EnsureSqliteDatabaseDirectoryExists(personalWebsiteConnectionString);
 builder.Services.AddDbContext<PersonalWebsiteDbContext>(options =>
     options.UseSqlite(personalWebsiteConnectionString));
 
-var dashboardUsername = GetSetting("DASHBOARD_USERNAME", DefaultDashboardUsername);
-var dashboardPassword = GetSetting("DASHBOARD_PASSWORD", DefaultDashboardPassword);
-var contactDestinationEmail = GetSetting("CONTACT_DESTINATION_EMAIL", DefaultContactDestinationEmail);
-var publicBaseUrl = GetSetting("PUBLIC_BASE_URL", DefaultPublicBaseUrl).TrimEnd('/');
-var corsAllowedOrigins = SplitSettingList(GetSetting("CORS_ALLOWED_ORIGINS", DefaultCorsAllowedOrigins));
+var configuration = builder.Configuration;
+var dashboardUsername = GetSetting(configuration, "DASHBOARD_USERNAME", DefaultDashboardUsername);
+var dashboardPassword = GetSetting(configuration, "DASHBOARD_PASSWORD", DefaultDashboardPassword);
+var contactDestinationEmail = GetSetting(configuration, "CONTACT_DESTINATION_EMAIL", DefaultContactDestinationEmail);
+var publicBaseUrl = GetSetting(configuration, "PUBLIC_BASE_URL", DefaultPublicBaseUrl).TrimEnd('/');
+var corsAllowedOrigins = SplitSettingList(GetSetting(configuration, "CORS_ALLOWED_ORIGINS", DefaultCorsAllowedOrigins));
 
 builder.Services.AddCors(options =>
 {
@@ -314,7 +315,7 @@ app.MapPost("/api/contact", async (HttpContext context, ContactRequest? request)
 
     try
     {
-        await SendContactEmail(request, contactDestinationEmail);
+        await SendContactEmail(configuration, request, contactDestinationEmail);
         Console.WriteLine($"Contact email sent to {contactDestinationEmail}.");
         return Results.Json(new { ok = true }, statusCode: StatusCodes.Status200OK);
     }
@@ -840,9 +841,9 @@ static string GetClientKey(HttpContext context)
     return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 }
 
-static string GetSetting(string name, string fallback)
+static string GetSetting(IConfiguration configuration, string name, string fallback)
 {
-    var value = Environment.GetEnvironmentVariable(name);
+    var value = configuration[name];
     return string.IsNullOrWhiteSpace(value) ? fallback : value;
 }
 
@@ -854,28 +855,41 @@ static string[] SplitSettingList(string value)
         .ToArray();
 }
 
-static async Task SendContactEmail(ContactRequest request, string recipientEmail)
+static async Task SendContactEmail(IConfiguration configuration, ContactRequest request, string recipientEmail)
 {
-    var host = GetSetting("SMTP_HOST", DefaultSmtpHost);
-    var portValue = GetSetting("SMTP_PORT", DefaultSmtpPort);
-    var username = GetSetting("SMTP_USER", DefaultSmtpUser);
-    var password = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
-    var fromEmail = GetSetting("SMTP_FROM_EMAIL", DefaultSmtpFromEmail);
+    var host = GetSetting(configuration, "SMTP_HOST", DefaultSmtpHost);
+    var portValue = GetSetting(configuration, "SMTP_PORT", DefaultSmtpPort);
+    var username = GetSetting(configuration, "SMTP_USER", DefaultSmtpUser);
+    var password = GetSetting(configuration, "SMTP_PASSWORD", string.Empty);
+    var fromEmail = GetSetting(configuration, "SMTP_FROM_EMAIL", DefaultSmtpFromEmail);
 
     Console.WriteLine($"SMTP config: host={host ?? "<missing>"}, port={portValue ?? "<missing>"}, user={username ?? "<missing>"}, from={fromEmail ?? "<missing>"}, passwordSet={!string.IsNullOrWhiteSpace(password)}");
 
-    if (string.IsNullOrWhiteSpace(host) ||
-        string.IsNullOrWhiteSpace(portValue) ||
-        string.IsNullOrWhiteSpace(username) ||
-        string.IsNullOrWhiteSpace(password) ||
-        string.IsNullOrWhiteSpace(fromEmail) ||
-        !int.TryParse(portValue, out var port))
+    var missingSettings = new List<string>();
+
+    AddMissingSetting(missingSettings, host, "SMTP_HOST");
+    AddMissingSetting(missingSettings, portValue, "SMTP_PORT");
+    AddMissingSetting(missingSettings, username, "SMTP_USER");
+    AddMissingSetting(missingSettings, password, "SMTP_PASSWORD");
+    AddMissingSetting(missingSettings, fromEmail, "SMTP_FROM_EMAIL");
+
+    if (missingSettings.Count > 0)
     {
-        throw new InvalidOperationException("SMTP configuration is incomplete.");
+        throw new InvalidOperationException($"SMTP configuration is incomplete. Missing: {string.Join(", ", missingSettings)}.");
     }
 
+    if (!int.TryParse(portValue, out var port))
+    {
+        throw new InvalidOperationException("SMTP configuration is incomplete. SMTP_PORT must be a number.");
+    }
+
+    var smtpHost = host!;
+    var smtpUsername = username!;
+    var smtpPassword = password!;
+    var smtpFromEmail = fromEmail!;
+
     var message = new MimeMessage();
-    message.From.Add(MailboxAddress.Parse(fromEmail));
+    message.From.Add(MailboxAddress.Parse(smtpFromEmail));
     message.To.Add(MailboxAddress.Parse(recipientEmail));
     message.ReplyTo.Add(MailboxAddress.Parse(string.IsNullOrWhiteSpace(request.Email?.ReplyTo)
         ? request.Form.Email
@@ -895,12 +909,20 @@ static async Task SendContactEmail(ContactRequest request, string recipientEmail
         ? SecureSocketOptions.SslOnConnect
         : SecureSocketOptions.StartTls;
 
-    await client.ConnectAsync(host, port, secureSocketOptions);
+    await client.ConnectAsync(smtpHost, port, secureSocketOptions);
     client.AuthenticationMechanisms.Remove("XOAUTH2");
-    await client.AuthenticateAsync(username, password);
+    await client.AuthenticateAsync(smtpUsername, smtpPassword);
     var smtpResponse = await client.SendAsync(message);
     Console.WriteLine($"SMTP send response: {smtpResponse}");
     await client.DisconnectAsync(true);
+}
+
+static void AddMissingSetting(List<string> missingSettings, string? value, string name)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        missingSettings.Add(name);
+    }
 }
 
 static string BuildContactEmailBody(ContactForm form)
