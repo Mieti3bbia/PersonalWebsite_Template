@@ -2,6 +2,7 @@
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AfterViewInit, ChangeDetectorRef, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { GoBackLinkComponent } from '../components/go-back-link.component';
+import { resolveBackendAssetUrl } from '../backend-url';
 import { environment } from '../../environments/environment';
 
 interface PortfolioProject {
@@ -866,13 +867,11 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private normalizeAssetUrl(url: string): string {
-    if (!url || url.startsWith('http') || url.startsWith('/assets/')) {
+    if (!url || url.startsWith('/assets/')) {
       return url;
     }
 
-    const normalizedPath = url.startsWith('/') ? url : `/${url}`;
-
-    return `${environment.apiUrl}${normalizedPath}`;
+    return resolveBackendAssetUrl(url);
   }
 
   protected isImageUrl(url: string): boolean {
