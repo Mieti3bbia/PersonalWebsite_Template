@@ -52,6 +52,10 @@
   display: inline;
 }
 
+.logo-name span + span::before {
+  content: " ";
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -354,6 +358,10 @@
     display: block;
     overflow: hidden;
     text-overflow: clip;
+  }
+
+  .logo-name span + span::before {
+    content: none;
   }
 
   .book-now-nav-link {

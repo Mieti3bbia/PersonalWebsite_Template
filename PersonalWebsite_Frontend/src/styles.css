@@ -7108,7 +7108,8 @@ app-page-title-hero {
 }
 
 .project-detail-page .costume-page .costume-description::before {
-  content: "/ overview /";
+  content: none;
+  display: none;
 }
 
 .project-detail-page .costume-page .costume-credits::before {
