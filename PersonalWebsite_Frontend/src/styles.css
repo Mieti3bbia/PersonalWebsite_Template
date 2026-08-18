@@ -7150,6 +7150,196 @@ app-page-title-hero {
   opacity: 0.72;
 }
 
+@media (max-width: 900px) {
+  .project-detail-page .fashion-page .fashion-shell {
+    width: min(100%, calc(100% - 24px));
+    gap: clamp(24px, 7vw, 36px);
+  }
+
+  .project-detail-page .fashion-page .fashion-entry {
+    align-content: start;
+    justify-items: stretch;
+    gap: clamp(18px, 6vw, 28px);
+    min-height: 0;
+    padding: clamp(24px, 7vw, 34px) clamp(16px, 5vw, 24px);
+    overflow: hidden;
+  }
+
+  .project-detail-page .fashion-page .fashion-entry-title-band,
+  .project-detail-page .fashion-page .fashion-band,
+  .project-detail-page .fashion-page .fashion-band:has(.fashion-video),
+  .project-detail-page .fashion-page .fashion-band:has(.fashion-description),
+  .project-detail-page .fashion-page .fashion-gallery-shell {
+    justify-self: stretch;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .project-detail-page .fashion-page .fashion-entry-title-band h2 {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(28px, 9vw, 40px);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  .project-detail-page .fashion-page .fashion-band:has(.fashion-description) {
+    padding: clamp(14px, 4.4vw, 18px);
+  }
+
+  .project-detail-page .fashion-page .fashion-description {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .project-detail-page .fashion-page .fashion-video {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: clamp(190px, 58vw, 320px);
+  }
+
+  .project-detail-page .fashion-page .exploded-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(132px, 42vw), 1fr));
+    grid-auto-rows: clamp(132px, 42vw, 180px);
+    width: 100%;
+    gap: 8px;
+  }
+
+  .project-detail-page .fashion-page .exploded-gallery-tile:nth-child(n) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .project-detail-page .fashion-page .fashion-pdf-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .project-detail-page .fashion-page .fashion-shell {
+    width: min(100%, calc(100% - 18px));
+  }
+
+  .project-detail-page .fashion-page .fashion-entry {
+    padding: 22px 14px 24px;
+  }
+
+  .project-detail-page .fashion-page .fashion-entry-title-band h2 {
+    font-size: clamp(25px, 8.3vw, 34px);
+  }
+
+  .project-detail-page .fashion-page .exploded-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(116px, 41vw), 1fr));
+    grid-auto-rows: clamp(116px, 41vw, 160px);
+  }
+}
+
+@media (max-width: 900px) {
+  .project-detail-page .costume-page .costume-shell {
+    width: min(100%, calc(100% - 24px));
+    gap: clamp(24px, 7vw, 36px);
+  }
+
+  .project-detail-page .costume-page .costume-entry {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "title"
+      "copy"
+      "meta"
+      "media"
+      "gallery"
+      "credits";
+    align-content: start;
+    justify-items: stretch;
+    gap: clamp(18px, 6vw, 28px);
+    min-height: 0;
+    padding: clamp(24px, 7vw, 34px) clamp(16px, 5vw, 24px);
+    overflow: hidden;
+  }
+
+  .project-detail-page .costume-page .costume-title-band,
+  .project-detail-page .costume-page .costume-description,
+  .project-detail-page .costume-page .costume-meta,
+  .project-detail-page .costume-page .costume-video-band,
+  .project-detail-page .costume-page .costume-gallery-band,
+  .project-detail-page .costume-page .costume-credits {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .project-detail-page .costume-page .costume-title-band h1 {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(28px, 9vw, 40px);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  .project-detail-page .costume-page .costume-description,
+  .project-detail-page .costume-page .costume-credits {
+    padding: clamp(14px, 4.4vw, 18px);
+  }
+
+  .project-detail-page .costume-page .costume-description p,
+  .project-detail-page .costume-page .costume-credits p,
+  .project-detail-page .costume-page .costume-meta p {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .project-detail-page .costume-page .costume-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .project-detail-page .costume-page .costume-meta p {
+    width: 100%;
+  }
+
+  .project-detail-page .costume-page .costume-video-band .fashion-video {
+    width: 100%;
+    height: auto;
+    max-height: clamp(190px, 58vw, 320px);
+  }
+
+  .project-detail-page .costume-page .costume-gallery-band > .exploded-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(132px, 42vw), 1fr));
+    grid-auto-rows: clamp(132px, 42vw, 180px);
+    width: 100%;
+    gap: 8px;
+  }
+
+  .project-detail-page .costume-page .costume-gallery-band .exploded-gallery-tile:nth-child(n) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
+@media (max-width: 430px) {
+  .project-detail-page .costume-page .costume-shell {
+    width: min(100%, calc(100% - 18px));
+  }
+
+  .project-detail-page .costume-page .costume-entry {
+    padding: 22px 14px 24px;
+  }
+
+  .project-detail-page .costume-page .costume-title-band h1 {
+    font-size: clamp(25px, 8.3vw, 34px);
+  }
+
+  .project-detail-page .costume-page .costume-gallery-band > .exploded-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(116px, 41vw), 1fr));
+    grid-auto-rows: clamp(116px, 41vw, 160px);
+  }
+}
+
 @media (min-width: 901px) {
   .project-detail-page .teachings-page .teaching-card-body {
     width: 100%;
