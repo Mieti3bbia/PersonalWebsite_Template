@@ -177,6 +177,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.XContentTypeOptions = "nosniff";
+    context.Response.Headers.XFrameOptions = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "same-origin";
+
+    await next();
+});
 app.UseStaticFiles();
 app.UseCors(FrontendCorsPolicy);
 app.UseRateLimiter();
@@ -196,8 +204,8 @@ app.MapGet("/login", (HttpContext context) =>
 app.MapPost("/login", async (HttpContext context) =>
 {
     var form = await context.Request.ReadFormAsync();
-    var username = ReadRequiredFormValue(form, "username");
-    var password = ReadRequiredFormValue(form, "password");
+    var username = ReadRequiredBoundedFormValue(form, "username", 200);
+    var password = ReadRequiredBoundedFormValue(form, "password", 200);
 
     if (username != dashboardUsername || password != dashboardPassword)
     {
@@ -214,7 +222,7 @@ app.MapPost("/login", async (HttpContext context) =>
         new ClaimsPrincipal(identity));
 
     var returnUrl = context.Request.Query["ReturnUrl"].ToString();
-    return Results.Redirect(string.IsNullOrWhiteSpace(returnUrl) ? "/dashboard" : returnUrl);
+    return Results.Redirect(IsLocalRedirectPath(returnUrl) ? returnUrl : "/dashboard");
 });
 
 app.MapPost("/logout", async (HttpContext context) =>
@@ -385,11 +393,11 @@ app.MapPost("/dashboard/teachings", async (HttpRequest request, PersonalWebsiteD
 
     var teaching = new Teaching
     {
-        Title = ReadRequiredFormValue(form, "title"),
-        Author = ReadRequiredFormValue(form, "author"),
-        School = ReadRequiredFormValue(form, "school"),
-        PreviewImage = previewImage ?? ReadRequiredFormValue(form, "previewImage"),
-        PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl"),
+        Title = ReadRequiredBoundedFormValue(form, "title", 200),
+        Author = ReadRequiredBoundedFormValue(form, "author", 200),
+        School = ReadRequiredBoundedFormValue(form, "school", 200),
+        PreviewImage = previewImage ?? ReadRequiredResourceFormValue(form, "previewImage", 500),
+        PdfUrl = pdfUrl ?? ReadRequiredResourceFormValue(form, "pdfUrl", 500),
         DisplayOrder = await GetNextDisplayOrder(db.Teachings)
     };
 
@@ -410,11 +418,11 @@ app.MapPost("/dashboard/fashion-designs", async (HttpRequest request, PersonalWe
 
     var entry = new FashionDesign
     {
-        Title = ReadRequiredFormValue(form, "title"),
-        ExplainingVideo = explainingVideo ?? ReadRequiredFormValue(form, "explainingVideo"),
-        Description = ReadRequiredFormValue(form, "description"),
-        Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery"),
-        PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl"),
+        Title = ReadRequiredBoundedFormValue(form, "title", 200),
+        ExplainingVideo = explainingVideo ?? ReadRequiredResourceFormValue(form, "explainingVideo", 500),
+        Description = ReadRequiredBoundedFormValue(form, "description", 2000),
+        Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredResourceFormValue(form, "gallery", 4000, allowMultiple: true),
+        PdfUrl = pdfUrl ?? ReadRequiredResourceFormValue(form, "pdfUrl", 500),
         DisplayOrder = await GetNextDisplayOrder(db.FashionDesigns)
     };
 
@@ -435,14 +443,14 @@ app.MapPost("/dashboard/costume-designs", async (HttpRequest request, PersonalWe
 
     var entry = new CostumeDesign
     {
-        Title = ReadRequiredFormValue(form, "title"),
-        Season = ReadRequiredFormValue(form, "season"),
-        Role = ReadRequiredFormValue(form, "role"),
-        Video = video ?? ReadRequiredFormValue(form, "video"),
-        Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery"),
-        Description = ReadRequiredFormValue(form, "description"),
-        Credits = ReadRequiredFormValue(form, "credits"),
-        PdfUrl = pdfUrl ?? ReadOptionalFormValue(form, "pdfUrl"),
+        Title = ReadRequiredBoundedFormValue(form, "title", 200),
+        Season = ReadRequiredBoundedFormValue(form, "season", 200),
+        Role = ReadRequiredBoundedFormValue(form, "role", 200),
+        Video = video ?? ReadOptionalResourceFormValue(form, "video", 500) ?? string.Empty,
+        Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredResourceFormValue(form, "gallery", 4000, allowMultiple: true),
+        Description = ReadRequiredBoundedFormValue(form, "description", 2000),
+        Credits = ReadRequiredBoundedFormValue(form, "credits", 4000),
+        PdfUrl = pdfUrl ?? ReadOptionalResourceFormValue(form, "pdfUrl", 500),
         Visible = form.ContainsKey("visible"),
         DisplayOrder = await GetNextDisplayOrder(db.CostumeDesigns)
     };
@@ -463,9 +471,9 @@ app.MapPost("/api/teachings/upload", async (HttpRequest request, PersonalWebsite
     }
 
     var form = await request.ReadFormAsync();
-    var title = ReadRequiredFormValue(form, "title");
-    var author = ReadRequiredFormValue(form, "author");
-    var school = ReadRequiredFormValue(form, "school");
+    var title = ReadRequiredBoundedFormValue(form, "title", 200);
+    var author = ReadRequiredBoundedFormValue(form, "author", 200);
+    var school = ReadRequiredBoundedFormValue(form, "school", 200);
     var previewImage = await SaveUploadedFile(form.Files["previewImage"], teachingUploadsPath, "teachings", "image");
     var pdfUrl = await SaveUploadedFile(form.Files["pdf"], teachingUploadsPath, "teachings", "pdf");
 
@@ -507,8 +515,8 @@ app.MapPost("/api/fashion-designs/upload", async (HttpRequest request, PersonalW
     }
 
     var form = await request.ReadFormAsync();
-    var title = ReadRequiredFormValue(form, "title");
-    var description = ReadRequiredFormValue(form, "description");
+    var title = ReadRequiredBoundedFormValue(form, "title", 200);
+    var description = ReadRequiredBoundedFormValue(form, "description", 2000);
     var explainingVideo = await SaveUploadedFile(form.Files["explainingVideo"], fashionDesignUploadsPath, "fashion-designs", "video");
     var gallery = await SaveUploadedFiles(form.Files.GetFiles("gallery"), fashionDesignUploadsPath, "fashion-designs", "image");
     var pdfUrl = await SaveUploadedFile(form.Files["pdf"], fashionDesignUploadsPath, "fashion-designs", "pdf");
@@ -556,11 +564,11 @@ app.MapPost("/dashboard/teachings/{id:int}", async (int id, HttpRequest request,
     var previewImage = await SaveUploadedFile(form.Files["previewImageFile"], teachingUploadsPath, "teachings", "image");
     var pdfUrl = await SaveUploadedFile(form.Files["pdfFile"], teachingUploadsPath, "teachings", "pdf");
 
-    teaching.Title = ReadRequiredFormValue(form, "title");
-    teaching.Author = ReadRequiredFormValue(form, "author");
-    teaching.School = ReadRequiredFormValue(form, "school");
-    teaching.PreviewImage = previewImage ?? ReadRequiredFormValue(form, "previewImage");
-    teaching.PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl");
+    teaching.Title = ReadRequiredBoundedFormValue(form, "title", 200);
+    teaching.Author = ReadRequiredBoundedFormValue(form, "author", 200);
+    teaching.School = ReadRequiredBoundedFormValue(form, "school", 200);
+    teaching.PreviewImage = previewImage ?? ReadRequiredResourceFormValue(form, "previewImage", 500);
+    teaching.PdfUrl = pdfUrl ?? ReadRequiredResourceFormValue(form, "pdfUrl", 500);
 
     await db.SaveChangesAsync();
 
@@ -618,11 +626,11 @@ app.MapPost("/dashboard/fashion-designs/{id:int}", async (int id, HttpRequest re
     var gallery = await SaveUploadedFiles(form.Files.GetFiles("galleryFiles"), fashionDesignUploadsPath, "fashion-designs", "image");
     var pdfUrl = await SaveUploadedFile(form.Files["fashionPdfFile"], fashionDesignUploadsPath, "fashion-designs", "pdf");
 
-    entry.Title = ReadRequiredFormValue(form, "title");
-    entry.ExplainingVideo = explainingVideo ?? ReadRequiredFormValue(form, "explainingVideo");
-    entry.Description = ReadRequiredFormValue(form, "description");
-    entry.Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery");
-    entry.PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl");
+    entry.Title = ReadRequiredBoundedFormValue(form, "title", 200);
+    entry.ExplainingVideo = explainingVideo ?? ReadRequiredResourceFormValue(form, "explainingVideo", 500);
+    entry.Description = ReadRequiredBoundedFormValue(form, "description", 2000);
+    entry.Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredResourceFormValue(form, "gallery", 4000, allowMultiple: true);
+    entry.PdfUrl = pdfUrl ?? ReadRequiredResourceFormValue(form, "pdfUrl", 500);
 
     await db.SaveChangesAsync();
 
@@ -680,14 +688,14 @@ app.MapPost("/dashboard/costume-designs/{id:int}", async (int id, HttpRequest re
     var gallery = await SaveUploadedFiles(form.Files.GetFiles("costumeGalleryFiles"), costumeDesignUploadsPath, "costume-designs", "image");
     var pdfUrl = await SaveUploadedFile(form.Files["costumePdfFile"], costumeDesignUploadsPath, "costume-designs", "pdf");
 
-    entry.Title = ReadRequiredFormValue(form, "title");
-    entry.Season = ReadRequiredFormValue(form, "season");
-    entry.Role = ReadRequiredFormValue(form, "role");
-    entry.Video = video ?? ReadRequiredFormValue(form, "video");
-    entry.Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery");
-    entry.Description = ReadRequiredFormValue(form, "description");
-    entry.Credits = ReadRequiredFormValue(form, "credits");
-    entry.PdfUrl = pdfUrl ?? ReadOptionalFormValue(form, "pdfUrl");
+    entry.Title = ReadRequiredBoundedFormValue(form, "title", 200);
+    entry.Season = ReadRequiredBoundedFormValue(form, "season", 200);
+    entry.Role = ReadRequiredBoundedFormValue(form, "role", 200);
+    entry.Video = video ?? ReadOptionalResourceFormValue(form, "video", 500) ?? string.Empty;
+    entry.Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredResourceFormValue(form, "gallery", 4000, allowMultiple: true);
+    entry.Description = ReadRequiredBoundedFormValue(form, "description", 2000);
+    entry.Credits = ReadRequiredBoundedFormValue(form, "credits", 4000);
+    entry.PdfUrl = pdfUrl ?? ReadOptionalResourceFormValue(form, "pdfUrl", 500);
     entry.Visible = form.ContainsKey("visible");
 
     await db.SaveChangesAsync();
@@ -741,7 +749,8 @@ static void EnsureDisplayOrderColumn(PersonalWebsiteDbContext db, string tableNa
         return;
     }
 
-    db.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0;");
+    var sql = $"ALTER TABLE {SqlIdentifier(tableName)} ADD COLUMN {SqlColumnIdentifier(tableName, "display_order")} INTEGER NOT NULL DEFAULT 0;";
+    db.Database.ExecuteSqlRaw(sql);
 }
 
 static void EnsureOptionalTextColumn(PersonalWebsiteDbContext db, string tableName, string columnName)
@@ -751,13 +760,15 @@ static void EnsureOptionalTextColumn(PersonalWebsiteDbContext db, string tableNa
         return;
     }
 
-    db.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} ADD COLUMN {columnName} TEXT NULL;");
+    var sql = $"ALTER TABLE {SqlIdentifier(tableName)} ADD COLUMN {SqlColumnIdentifier(tableName, columnName)} TEXT NULL;";
+    db.Database.ExecuteSqlRaw(sql);
 }
 
 static bool ColumnExists(PersonalWebsiteDbContext db, string tableName, string columnName)
 {
+    _ = SqlColumnIdentifier(tableName, columnName);
     using var command = db.Database.GetDbConnection().CreateCommand();
-    command.CommandText = $"PRAGMA table_info({tableName});";
+    command.CommandText = $"PRAGMA table_info({SqlIdentifier(tableName)});";
 
     if (command.Connection?.State != System.Data.ConnectionState.Open)
     {
@@ -784,12 +795,42 @@ static void InitializeDisplayOrder(PersonalWebsiteDbContext db, string tableName
         return;
     }
 
-    db.Database.ExecuteSqlRaw($"UPDATE {tableName} SET display_order = id WHERE display_order = 0;");
+    var sql = $"UPDATE {SqlIdentifier(tableName)} SET {SqlColumnIdentifier(tableName, "display_order")} = {SqlColumnIdentifier(tableName, "id")} WHERE {SqlColumnIdentifier(tableName, "display_order")} = 0;";
+    db.Database.ExecuteSqlRaw(sql);
 }
 
 static bool IsKnownDashboardTable(string tableName)
 {
     return tableName is "teachings" or "fashion_designs" or "costume_designs";
+}
+
+static string SqlIdentifier(string tableName)
+{
+    return tableName switch
+    {
+        "teachings" => "\"teachings\"",
+        "fashion_designs" => "\"fashion_designs\"",
+        "costume_designs" => "\"costume_designs\"",
+        _ => throw new InvalidOperationException("Unknown SQL table identifier.")
+    };
+}
+
+static string SqlColumnIdentifier(string tableName, string columnName)
+{
+    var knownColumn = tableName switch
+    {
+        "teachings" => columnName is "id" or "title" or "author" or "school" or "preview_image" or "pdf_url" or "display_order",
+        "fashion_designs" => columnName is "id" or "title" or "explaining_video" or "description" or "gallery" or "pdf_url" or "display_order",
+        "costume_designs" => columnName is "id" or "title" or "season" or "role" or "video" or "gallery" or "description" or "credits" or "pdf_url" or "visible" or "display_order",
+        _ => false
+    };
+
+    if (!knownColumn)
+    {
+        throw new InvalidOperationException("Unknown SQL column identifier.");
+    }
+
+    return $"\"{columnName}\"";
 }
 
 static void EnsureSqliteDatabaseDirectoryExists(string connectionString)
@@ -872,16 +913,120 @@ static async Task MoveEntry<TEntry>(DbSet<TEntry> entries, int id, MoveDirection
         (orderedEntries[targetIndex].DisplayOrder, orderedEntries[currentIndex].DisplayOrder);
 }
 
-static string ReadRequiredFormValue(IFormCollection form, string key)
+static string ReadRequiredBoundedFormValue(IFormCollection form, string key, int maxLength)
 {
-    return form[key].ToString().Trim();
+    var value = NormalizeUserInput(form[key].ToString());
+
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        throw new BadHttpRequestException($"{key} is required.");
+    }
+
+    if (value.Length > maxLength)
+    {
+        throw new BadHttpRequestException($"{key} must be {maxLength} characters or fewer.");
+    }
+
+    return value;
 }
 
 static string? ReadOptionalFormValue(IFormCollection form, string key)
 {
-    var value = form[key].ToString().Trim();
+    var value = NormalizeUserInput(form[key].ToString());
 
     return string.IsNullOrWhiteSpace(value) ? null : value;
+}
+
+static string ReadRequiredResourceFormValue(IFormCollection form, string key, int maxLength, bool allowMultiple = false)
+{
+    var value = ReadRequiredBoundedFormValue(form, key, maxLength);
+    ValidateResourceReference(value, key, allowMultiple);
+
+    return value;
+}
+
+static string? ReadOptionalResourceFormValue(IFormCollection form, string key, int maxLength, bool allowMultiple = false)
+{
+    var value = ReadOptionalFormValue(form, key);
+
+    if (value is null)
+    {
+        return null;
+    }
+
+    if (value.Length > maxLength)
+    {
+        throw new BadHttpRequestException($"{key} must be {maxLength} characters or fewer.");
+    }
+
+    ValidateResourceReference(value, key, allowMultiple);
+
+    return value;
+}
+
+static string NormalizeUserInput(string value)
+{
+    return value
+        .Replace("\0", string.Empty)
+        .Trim();
+}
+
+static void ValidateResourceReference(string value, string key, bool allowMultiple)
+{
+    var items = allowMultiple
+        ? value.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        : [value];
+
+    if (items.Length == 0)
+    {
+        throw new BadHttpRequestException($"{key} is required.");
+    }
+
+    foreach (var item in items)
+    {
+        if (!IsSafeResourceReference(item))
+        {
+            throw new BadHttpRequestException($"{key} contains an invalid URL or path.");
+        }
+    }
+}
+
+static bool IsSafeResourceReference(string value)
+{
+    if (string.IsNullOrWhiteSpace(value) ||
+        value.Any(character => char.IsControl(character)) ||
+        ContainsSqlControlToken(value))
+    {
+        return false;
+    }
+
+    if (Uri.TryCreate(value, UriKind.Absolute, out var uri))
+    {
+        return uri.Scheme is "http" or "https" &&
+            string.IsNullOrEmpty(uri.UserInfo) &&
+            !value.Contains('\\');
+    }
+
+    if (value.StartsWith('/'))
+    {
+        return value.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase) &&
+            !value.Contains("..", StringComparison.Ordinal) &&
+            !value.Contains('\\');
+    }
+
+    return !value.Contains("..", StringComparison.Ordinal) &&
+        !value.Contains('/') &&
+        !value.Contains('\\');
+}
+
+static bool ContainsSqlControlToken(string value)
+{
+    return value.Contains(';') ||
+        value.Contains('\'') ||
+        value.Contains('"') ||
+        value.Contains("--", StringComparison.Ordinal) ||
+        value.Contains("/*", StringComparison.Ordinal) ||
+        value.Contains("*/", StringComparison.Ordinal);
 }
 
 static IReadOnlyList<string> ValidateContactRequest(ContactRequest? request, string? recipientEmail)
@@ -945,6 +1090,14 @@ static bool LooksLikeSpam(ContactForm form)
 static string GetClientKey(HttpContext context)
 {
     return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+}
+
+static bool IsLocalRedirectPath(string? value)
+{
+    return !string.IsNullOrWhiteSpace(value) &&
+        value.StartsWith('/') &&
+        !value.StartsWith("//", StringComparison.Ordinal) &&
+        !value.Contains('\\');
 }
 
 static string GetSetting(IConfiguration configuration, string name, string fallback)

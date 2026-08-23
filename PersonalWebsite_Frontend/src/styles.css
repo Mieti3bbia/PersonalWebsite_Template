@@ -7693,12 +7693,14 @@ app-page-title-hero {
 }
 
 .services-page app-page-title-hero .services-hero,
+.about-page app-page-title-hero .services-hero,
 .curriculum-vitae-page app-page-title-hero .services-hero {
   min-height: 260px;
   padding: 64px 32px;
 }
 
 .services-page app-page-title-hero .services-hero h1,
+.about-page app-page-title-hero .services-hero h1,
 .curriculum-vitae-page app-page-title-hero .services-hero h1 {
   font-size: 4.25rem;
   line-height: 1.04;
@@ -7862,12 +7864,14 @@ app-page-title-hero {
   }
 
   .services-page app-page-title-hero .services-hero,
+  .about-page app-page-title-hero .services-hero,
   .curriculum-vitae-page app-page-title-hero .services-hero {
     min-height: 190px;
     padding: 40px 20px;
   }
 
   .services-page app-page-title-hero .services-hero h1,
+  .about-page app-page-title-hero .services-hero h1,
   .curriculum-vitae-page app-page-title-hero .services-hero h1 {
     font-size: 2.25rem;
     line-height: 1.08;
@@ -7927,12 +7931,14 @@ app-page-title-hero {
   }
 
   .services-page app-page-title-hero .services-hero,
+  .about-page app-page-title-hero .services-hero,
   .curriculum-vitae-page app-page-title-hero .services-hero {
     min-height: 160px;
     padding: 32px 14px;
   }
 
   .services-page app-page-title-hero .services-hero h1,
+  .about-page app-page-title-hero .services-hero h1,
   .curriculum-vitae-page app-page-title-hero .services-hero h1 {
     font-size: 1.75rem;
   }
@@ -7962,6 +7968,7 @@ body {
   max-width: 100%;
 }
 
+.about-page app-page-title-hero .services-hero h1,
 .curriculum-vitae-page app-page-title-hero .services-hero h1,
 .curriculum-vitae-page .cv-profile h2,
 .curriculum-vitae-page .cv-skills h2,
@@ -7995,6 +8002,7 @@ body {
 }
 
 @media (max-width: 760px) {
+  .about-page app-page-title-hero .services-hero h1,
   .curriculum-vitae-page app-page-title-hero .services-hero h1,
   .services-page app-page-title-hero .services-hero h1 {
     font-size: 1.8rem;
@@ -8007,6 +8015,7 @@ body {
 }
 
 @media (max-width: 420px) {
+  .about-page app-page-title-hero .services-hero h1,
   .curriculum-vitae-page app-page-title-hero .services-hero h1,
   .services-page app-page-title-hero .services-hero h1 {
     font-size: 1.45rem;
@@ -8058,5 +8067,52 @@ body {
   .project-detail-page .teachings-page .teaching-card-copy p:first-child {
     font-size: clamp(16px, 5.3vw, 22px);
     line-height: 1.2;
+  }
+}
+
+/* Shared title hero sizing for top-level pages */
+.about-page app-page-title-hero .services-hero,
+.curriculum-vitae-page app-page-title-hero .services-hero,
+.services-page app-page-title-hero .services-hero {
+  min-height: 0;
+  height: clamp(340px, 36svh, 390px);
+  padding: 64px 32px;
+}
+
+.about-page app-page-title-hero .services-hero h1,
+.curriculum-vitae-page app-page-title-hero .services-hero h1,
+.services-page app-page-title-hero .services-hero h1 {
+  font-size: clamp(46px, 5vw, 76px);
+  line-height: 1.04;
+}
+
+@media (max-width: 760px) {
+  .about-page app-page-title-hero .services-hero,
+  .curriculum-vitae-page app-page-title-hero .services-hero,
+  .services-page app-page-title-hero .services-hero {
+    height: 190px;
+    padding: 40px 20px;
+  }
+
+  .about-page app-page-title-hero .services-hero h1,
+  .curriculum-vitae-page app-page-title-hero .services-hero h1,
+  .services-page app-page-title-hero .services-hero h1 {
+    font-size: 1.8rem;
+    line-height: 1.08;
+  }
+}
+
+@media (max-width: 420px) {
+  .about-page app-page-title-hero .services-hero,
+  .curriculum-vitae-page app-page-title-hero .services-hero,
+  .services-page app-page-title-hero .services-hero {
+    height: 160px;
+    padding: 32px 14px;
+  }
+
+  .about-page app-page-title-hero .services-hero h1,
+  .curriculum-vitae-page app-page-title-hero .services-hero h1,
+  .services-page app-page-title-hero .services-hero h1 {
+    font-size: 1.45rem;
   }
 }
