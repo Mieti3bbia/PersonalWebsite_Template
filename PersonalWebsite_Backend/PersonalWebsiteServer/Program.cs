@@ -123,10 +123,12 @@ using (var scope = app.Services.CreateScope())
             gallery TEXT NOT NULL,
             description TEXT NOT NULL,
             credits TEXT NOT NULL,
+            pdf_url TEXT NULL,
             visible INTEGER NOT NULL DEFAULT 1,
             display_order INTEGER NOT NULL DEFAULT 0
         );
         """);
+    EnsureOptionalTextColumn(db, "costume_designs", "pdf_url");
     EnsureDisplayOrderColumn(db, "teachings");
     EnsureDisplayOrderColumn(db, "fashion_designs");
     EnsureDisplayOrderColumn(db, "costume_designs");
@@ -286,7 +288,8 @@ app.MapGet("/api/costume-designs", async (PersonalWebsiteDbContext db) =>
                 .Select(path => ToPublicUrl(path, costumeDesignUploadsPath, "costume-gallery.png", "costume-designs"))
                 .ToArray(),
             entry.Description,
-            entry.Credits))
+            entry.Credits,
+            ToOptionalPublicUrl(entry.PdfUrl, costumeDesignUploadsPath, "costume-design.pdf", "costume-designs")))
         .ToList();
 })
 .RequireRateLimiting(ApiRateLimitPolicy)
@@ -428,6 +431,7 @@ app.MapPost("/dashboard/costume-designs", async (HttpRequest request, PersonalWe
     var form = await request.ReadFormAsync();
     var video = await SaveUploadedFile(form.Files["costumeVideoFile"], costumeDesignUploadsPath, "costume-designs", "video");
     var gallery = await SaveUploadedFiles(form.Files.GetFiles("costumeGalleryFiles"), costumeDesignUploadsPath, "costume-designs", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["costumePdfFile"], costumeDesignUploadsPath, "costume-designs", "pdf");
 
     var entry = new CostumeDesign
     {
@@ -438,6 +442,7 @@ app.MapPost("/dashboard/costume-designs", async (HttpRequest request, PersonalWe
         Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery"),
         Description = ReadRequiredFormValue(form, "description"),
         Credits = ReadRequiredFormValue(form, "credits"),
+        PdfUrl = pdfUrl ?? ReadOptionalFormValue(form, "pdfUrl"),
         Visible = form.ContainsKey("visible"),
         DisplayOrder = await GetNextDisplayOrder(db.CostumeDesigns)
     };
@@ -608,6 +613,37 @@ app.MapPost("/dashboard/fashion-designs/{id:int}/move-down", async (int id, Pers
 .RequireRateLimiting(ApiRateLimitPolicy)
 .RequireAuthorization();
 
+app.MapPost("/dashboard/costume-designs/{id:int}", async (int id, HttpRequest request, PersonalWebsiteDbContext db) =>
+{
+    var entry = await db.CostumeDesigns.FindAsync(id);
+
+    if (entry is null)
+    {
+        return Results.Redirect("/dashboard");
+    }
+
+    var form = await request.ReadFormAsync();
+    var video = await SaveUploadedFile(form.Files["costumeVideoFile"], costumeDesignUploadsPath, "costume-designs", "video");
+    var gallery = await SaveUploadedFiles(form.Files.GetFiles("costumeGalleryFiles"), costumeDesignUploadsPath, "costume-designs", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["costumePdfFile"], costumeDesignUploadsPath, "costume-designs", "pdf");
+
+    entry.Title = ReadRequiredFormValue(form, "title");
+    entry.Season = ReadRequiredFormValue(form, "season");
+    entry.Role = ReadRequiredFormValue(form, "role");
+    entry.Video = video ?? ReadRequiredFormValue(form, "video");
+    entry.Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery");
+    entry.Description = ReadRequiredFormValue(form, "description");
+    entry.Credits = ReadRequiredFormValue(form, "credits");
+    entry.PdfUrl = pdfUrl ?? ReadOptionalFormValue(form, "pdfUrl");
+    entry.Visible = form.ContainsKey("visible");
+
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
 app.MapPost("/dashboard/costume-designs/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
 {
     var entry = await db.CostumeDesigns.FindAsync(id);
@@ -653,6 +689,16 @@ static void EnsureDisplayOrderColumn(PersonalWebsiteDbContext db, string tableNa
     }
 
     db.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0;");
+}
+
+static void EnsureOptionalTextColumn(PersonalWebsiteDbContext db, string tableName, string columnName)
+{
+    if (!IsKnownDashboardTable(tableName) || ColumnExists(db, tableName, columnName))
+    {
+        return;
+    }
+
+    db.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} ADD COLUMN {columnName} TEXT NULL;");
 }
 
 static bool ColumnExists(PersonalWebsiteDbContext db, string tableName, string columnName)
@@ -776,6 +822,13 @@ static async Task MoveEntry<TEntry>(DbSet<TEntry> entries, int id, MoveDirection
 static string ReadRequiredFormValue(IFormCollection form, string key)
 {
     return form[key].ToString().Trim();
+}
+
+static string? ReadOptionalFormValue(IFormCollection form, string key)
+{
+    var value = form[key].ToString().Trim();
+
+    return string.IsNullOrWhiteSpace(value) ? null : value;
 }
 
 static IReadOnlyList<string> ValidateContactRequest(ContactRequest? request, string? recipientEmail)
@@ -1028,6 +1081,13 @@ string ToPublicUrl(string value, string uploadsPath, string fallbackFileName, st
     return $"{publicBaseUrl}{path}";
 }
 
+string? ToOptionalPublicUrl(string? value, string uploadsPath, string fallbackFileName, string resourceFolder)
+{
+    return string.IsNullOrWhiteSpace(value)
+        ? null
+        : ToPublicUrl(value, uploadsPath, fallbackFileName, resourceFolder);
+}
+
 static string[] SplitGallery(string value)
 {
     return value
@@ -1217,28 +1277,52 @@ static string RenderDashboard(
     for (var index = 0; index < costumeDesignList.Count; index++)
     {
         var entry = costumeDesignList[index];
-        var galleryItems = string.Join("<br>", SplitGallery(entry.Gallery).Select(item => $"<code>{Html(item)}</code>"));
         var visibility = entry.Visible ? "Visible" : "Hidden";
+        var checkedAttribute = entry.Visible ? " checked" : string.Empty;
+        var updateFormId = $"costume-design-{entry.Id}-update";
 
         costumeDesignRows.Append($"""
             <tr data-order-row>
-                <td>{Html(entry.Title)}</td>
-                <td>{Html(entry.Season)}</td>
-                <td>{Html(entry.Role)}</td>
-                <td><code>{Html(entry.Video)}</code></td>
-                <td>{galleryItems}</td>
-                <td>{Html(entry.Description)}</td>
-                <td>{Html(entry.Credits).Replace("\n", "<br>")}</td>
-                <td>{visibility}</td>
+                <td><input form="{updateFormId}" name="title" required maxlength="200" value="{Html(entry.Title)}" autocomplete="off"></td>
+                <td><input form="{updateFormId}" name="season" required maxlength="200" value="{Html(entry.Season)}" autocomplete="off"></td>
+                <td><input form="{updateFormId}" name="role" required maxlength="200" value="{Html(entry.Role)}" autocomplete="off"></td>
                 <td>
-                    {RenderRowActions("costume-designs", entry.Id, index == 0, index == costumeDesignList.Count - 1)}
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="costumeVideo{entry.Id}" name="video" maxlength="500" value="{Html(entry.Video)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="costumeVideoFile{entry.Id}">Browse</button>
+                        <input form="{updateFormId}" id="costumeVideoFile{entry.Id}" name="costumeVideoFile" type="file" accept="video/mp4,.mp4" data-target="costumeVideo{entry.Id}" data-upload-folder="/uploads/costume-designs/">
+                    </span>
+                </td>
+                <td>
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="costumeGallery{entry.Id}" name="gallery" maxlength="4000" value="{Html(entry.Gallery)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="costumeGalleryFiles{entry.Id}">Browse</button>
+                        <input form="{updateFormId}" id="costumeGalleryFiles{entry.Id}" name="costumeGalleryFiles" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple data-target="costumeGallery{entry.Id}" data-upload-folder="/uploads/costume-designs/">
+                    </span>
+                </td>
+                <td><input form="{updateFormId}" name="description" required maxlength="2000" value="{Html(entry.Description)}" autocomplete="off"></td>
+                <td><textarea form="{updateFormId}" name="credits" required maxlength="4000">{Html(entry.Credits)}</textarea></td>
+                <td>
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="costumePdfUrl{entry.Id}" name="pdfUrl" maxlength="500" value="{Html(entry.PdfUrl ?? string.Empty)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="costumePdfFile{entry.Id}">Browse</button>
+                        <input form="{updateFormId}" id="costumePdfFile{entry.Id}" name="costumePdfFile" type="file" accept="application/pdf,.pdf" data-target="costumePdfUrl{entry.Id}" data-upload-folder="/uploads/costume-designs/">
+                    </span>
+                </td>
+                <td>
+                    <span class="sr-only">{visibility}</span>
+                    <input form="{updateFormId}" name="visible" type="checkbox"{checkedAttribute}>
+                </td>
+                <td>
+                    <form id="{updateFormId}" method="post" action="/dashboard/costume-designs/{entry.Id}" enctype="multipart/form-data"></form>
+                    {RenderCostumeDesignRowActions(entry.Id, index == 0, index == costumeDesignList.Count - 1, updateFormId)}
                 </td>
             </tr>
             """);
     }
 
     var costumeDesignEmptyState = costumeDesigns.Count == 0
-        ? """<tr><td colspan="9" class="empty">No costume design entries in the database yet.</td></tr>"""
+        ? """<tr><td colspan="10" class="empty">No costume design entries in the database yet.</td></tr>"""
         : string.Empty;
 
     return $$"""
@@ -1374,6 +1458,10 @@ static string RenderDashboard(
                     align-items: center;
                 }
 
+                .file-picker.compact {
+                    min-width: 260px;
+                }
+
                 .file-picker input[type="file"] {
                     position: absolute;
                     inline-size: 1px;
@@ -1384,6 +1472,18 @@ static string RenderDashboard(
 
                 .wide {
                     grid-column: 1 / -1;
+                }
+
+                .sr-only {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    padding: 0;
+                    margin: -1px;
+                    overflow: hidden;
+                    clip: rect(0, 0, 0, 0);
+                    white-space: nowrap;
+                    border: 0;
                 }
 
                 button {
@@ -1696,6 +1796,15 @@ static string RenderDashboard(
                             <span class="field-type">Text, supports multiple lines</span>
                             <textarea name="credits" required maxlength="4000"></textarea>
                         </label>
+                        <label class="wide">
+                            PDF URL
+                            <span class="field-type">Optional PDF file</span>
+                            <span class="file-picker">
+                                <input id="costumePdfUrl" name="pdfUrl" maxlength="500" value="" autocomplete="off">
+                                <button class="secondary" type="button" data-file-button="costumePdfFile">Browse</button>
+                                <input id="costumePdfFile" name="costumePdfFile" type="file" accept="application/pdf,.pdf" data-target="costumePdfUrl" data-upload-folder="/uploads/costume-designs/">
+                            </span>
+                        </label>
                         <label>
                             Visible on portfolio
                             <span class="field-type">Checkbox</span>
@@ -1720,6 +1829,7 @@ static string RenderDashboard(
                                     <th>Gallery</th>
                                     <th>Description</th>
                                     <th>Credits</th>
+                                    <th>PDF URL</th>
                                     <th>Portfolio</th>
                                     <th>Azioni</th>
                                 </tr>
@@ -1840,6 +1950,27 @@ static string RenderRowActions(string resource, int id, bool isFirst, bool isLas
                 <button class="move" type="submit"{downDisabled}>Metti sotto</button>
             </form>
             <form method="post" action="/dashboard/{resource}/{id}/delete">
+                <button class="danger" type="submit">Delete</button>
+            </form>
+        </div>
+        """;
+}
+
+static string RenderCostumeDesignRowActions(int id, bool isFirst, bool isLast, string updateFormId)
+{
+    var upDisabled = isFirst ? " disabled" : string.Empty;
+    var downDisabled = isLast ? " disabled" : string.Empty;
+
+    return $"""
+        <div class="actions">
+            <button type="submit" form="{updateFormId}">Save</button>
+            <form method="post" action="/dashboard/costume-designs/{id}/move-up" data-move-form="up">
+                <button class="move" type="submit"{upDisabled}>Metti sopra</button>
+            </form>
+            <form method="post" action="/dashboard/costume-designs/{id}/move-down" data-move-form="down">
+                <button class="move" type="submit"{downDisabled}>Metti sotto</button>
+            </form>
+            <form method="post" action="/dashboard/costume-designs/{id}/delete">
                 <button class="danger" type="submit">Delete</button>
             </form>
         </div>
@@ -1967,6 +2098,10 @@ sealed class PersonalWebsiteDbContext(DbContextOptions<PersonalWebsiteDbContext>
                 .HasMaxLength(4000)
                 .IsRequired();
 
+            entity.Property(entry => entry.PdfUrl)
+                .HasColumnName("pdf_url")
+                .HasMaxLength(500);
+
             entity.Property(entry => entry.Visible)
                 .HasColumnName("visible")
                 .HasDefaultValue(true)
@@ -2059,6 +2194,8 @@ sealed class CostumeDesign : IOrderedDashboardEntry
 
     public required string Credits { get; set; }
 
+    public string? PdfUrl { get; set; }
+
     public bool Visible { get; set; } = true;
 
     public int DisplayOrder { get; set; }
@@ -2071,7 +2208,8 @@ sealed record CostumeDesignDto(
     string Video,
     string[] Gallery,
     string Description,
-    string Credits);
+    string Credits,
+    string? PdfUrl);
 
 sealed record ContactRequest(
     string? RecipientEmail,

@@ -4843,7 +4843,8 @@ app-curriculum-vitae-page,
 .costume-page .costume-video-band,
 .costume-page .costume-gallery-band,
 .costume-page .costume-description,
-.costume-page .costume-credits {
+.costume-page .costume-credits,
+.costume-page .costume-pdf {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -4938,6 +4939,10 @@ app-curriculum-vitae-page,
   line-height: 1.5;
 }
 
+.costume-page .costume-pdf {
+  grid-area: pdf;
+}
+
 .costume-page a,
 .costume-page button {
   color: #F207CB;
@@ -4974,7 +4979,8 @@ app-curriculum-vitae-page,
       "media"
       "gallery"
       "copy"
-      "credits";
+      "credits"
+      "pdf";
     padding: 18px;
   }
 
@@ -5003,7 +5009,8 @@ app-curriculum-vitae-page,
     "media"
     "gallery"
     "copy"
-    "credits";
+    "credits"
+    "pdf";
   justify-items: center;
   row-gap: clamp(16px, 2.2vw, 28px);
   padding-top: clamp(34px, 4vw, 58px);
@@ -5097,7 +5104,8 @@ app-curriculum-vitae-page,
 .costume-page .costume-video-band::before,
 .costume-page .costume-gallery-band::before,
 .costume-page .costume-description::before,
-.costume-page .costume-credits::before {
+.costume-page .costume-credits::before,
+.costume-page .costume-pdf::before {
   display: block;
   margin-bottom: 8px;
   color: rgba(242, 7, 203, 0.78);
@@ -5126,6 +5134,11 @@ app-curriculum-vitae-page,
   text-align: left;
 }
 
+.costume-page .costume-pdf::before {
+  content: "/ pdf /";
+  text-align: left;
+}
+
 .costume-page .fashion-gallery-row > button {
   width: 100%;
   min-width: 0;
@@ -5147,7 +5160,8 @@ app-curriculum-vitae-page,
 }
 
 .costume-page .costume-description,
-.costume-page .costume-credits {
+.costume-page .costume-credits,
+.costume-page .costume-pdf {
   width: min(980px, 100%);
   padding: clamp(16px, 2vw, 24px);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -5160,6 +5174,34 @@ app-curriculum-vitae-page,
 
 .costume-page .costume-credits {
   color: rgba(255, 255, 255, 0.62);
+}
+
+.costume-page .costume-pdf {
+  display: grid;
+  gap: 10px;
+}
+
+.costume-page .costume-pdf .fashion-pdf-panel {
+  display: grid;
+  place-items: center;
+  width: min(320px, 100%);
+  min-height: 58px;
+  border: 1px solid #F207CB;
+  border-radius: 12px;
+  background: rgba(242, 7, 203, 0.04);
+  color: #F207CB;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.costume-page .costume-pdf .fashion-pdf-panel:hover,
+.costume-page .costume-pdf .fashion-pdf-panel:focus-visible {
+  background: #F207CB;
+  color: #070707;
 }
 
 @media (max-width: 700px) {
@@ -5181,8 +5223,13 @@ app-curriculum-vitae-page,
   }
 
   .costume-page .costume-description,
-  .costume-page .costume-credits {
+  .costume-page .costume-credits,
+  .costume-page .costume-pdf {
     padding: 14px;
+  }
+
+  .costume-page .costume-pdf .fashion-pdf-panel {
+    width: 100%;
   }
 }
 
@@ -7011,6 +7058,7 @@ app-page-title-hero {
 .project-detail-page .costume-page .costume-gallery-band,
 .project-detail-page .costume-page .costume-description,
 .project-detail-page .costume-page .costume-credits,
+.project-detail-page .costume-page .costume-pdf,
 .project-detail-page .teachings-page .teaching-card-copy,
 .project-detail-page .teachings-page .gallery-frame {
   justify-self: start;
@@ -7021,7 +7069,8 @@ app-page-title-hero {
 .project-detail-page .costume-page .costume-video-band,
 .project-detail-page .costume-page .costume-gallery-band,
 .project-detail-page .costume-page .costume-description,
-.project-detail-page .costume-page .costume-credits {
+.project-detail-page .costume-page .costume-credits,
+.project-detail-page .costume-page .costume-pdf {
   justify-self: stretch;
 }
 
@@ -7032,7 +7081,8 @@ app-page-title-hero {
 .project-detail-page .costume-page .costume-video-band,
 .project-detail-page .costume-page .costume-gallery-band,
 .project-detail-page .costume-page .costume-description,
-.project-detail-page .costume-page .costume-credits {
+.project-detail-page .costume-page .costume-credits,
+.project-detail-page .costume-page .costume-pdf {
   box-sizing: border-box;
   width: 100%;
   max-width: none;
@@ -7061,7 +7111,8 @@ app-page-title-hero {
     "meta"
     "media"
     "gallery"
-    "credits";
+    "credits"
+    "pdf";
 }
 
 .project-detail-page .costume-page .costume-entry::before {
@@ -7091,12 +7142,14 @@ app-page-title-hero {
 }
 
 .project-detail-page .costume-page .costume-description,
-.project-detail-page .costume-page .costume-credits {
+.project-detail-page .costume-page .costume-credits,
+.project-detail-page .costume-page .costume-pdf {
   text-align: left;
 }
 
 .project-detail-page .costume-page .costume-description::before,
-.project-detail-page .costume-page .costume-credits::before {
+.project-detail-page .costume-page .costume-credits::before,
+.project-detail-page .costume-page .costume-pdf::before {
   display: block;
   margin-bottom: 10px;
   color: #F207CB;
@@ -7114,6 +7167,10 @@ app-page-title-hero {
 
 .project-detail-page .costume-page .costume-credits::before {
   content: "/ credits /";
+}
+
+.project-detail-page .costume-page .costume-pdf::before {
+  content: "/ pdf /";
 }
 
 .project-detail-page .fashion-page .fashion-band:has(.fashion-video)::before,
@@ -7251,7 +7308,8 @@ app-page-title-hero {
       "meta"
       "media"
       "gallery"
-      "credits";
+      "credits"
+      "pdf";
     align-content: start;
     justify-items: stretch;
     gap: clamp(18px, 6vw, 28px);
@@ -7265,7 +7323,8 @@ app-page-title-hero {
   .project-detail-page .costume-page .costume-meta,
   .project-detail-page .costume-page .costume-video-band,
   .project-detail-page .costume-page .costume-gallery-band,
-  .project-detail-page .costume-page .costume-credits {
+  .project-detail-page .costume-page .costume-credits,
+  .project-detail-page .costume-page .costume-pdf {
     grid-column: 1 / -1;
     justify-self: stretch;
     width: 100%;
@@ -7282,7 +7341,8 @@ app-page-title-hero {
   }
 
   .project-detail-page .costume-page .costume-description,
-  .project-detail-page .costume-page .costume-credits {
+  .project-detail-page .costume-page .costume-credits,
+  .project-detail-page .costume-page .costume-pdf {
     padding: clamp(14px, 4.4vw, 18px);
   }
 

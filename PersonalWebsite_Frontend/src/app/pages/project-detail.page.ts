@@ -39,6 +39,7 @@ interface CostumeProjectContent {
   description: string;
   gallery: string[];
   credits: string;
+  pdfUrl: string;
 }
 
 const FASHION_PROJECT: FashionProjectContent = {
@@ -57,7 +58,8 @@ const COSTUME_PROJECT: CostumeProjectContent = {
   videoUrl: '',
   description: 'Aliquam at tristique mi. Nunc vel una ligula scelerisque dignissim. Aenean pulvinar, neque eget facilisis convallis, orci eros tincidunt arcu, vel pulvinar quam erat sed lectus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Curabitur non dolor vitae quam dictum fermentum. Integer vitae augue non justo viverra blandit. Donec consequat, erat non consequat mattis, dui massa luctus magna, sed tempor elit mauris vitae neque.',
   gallery: ['Gallery 1', 'Gallery 2', 'Gallery 3'],
-  credits: 'Credit\nDirezione Artistica: Giulia Staccioli\nAssistente alla scenografia: Sara Salustri\n\nCostumi\nFabio Passerini\n\nMake-up\nGianni Bertini\n\nPerformers\nMarco Battista\nCarolina Cruciani\nElisa Iacone\nFederica Roveda\nAnita Gallo\nCristian Longhi'
+  credits: 'Credit\nDirezione Artistica: Giulia Staccioli\nAssistente alla scenografia: Sara Salustri\n\nCostumi\nFabio Passerini\n\nMake-up\nGianni Bertini\n\nPerformers\nMarco Battista\nCarolina Cruciani\nElisa Iacone\nFederica Roveda\nAnita Gallo\nCristian Longhi',
+  pdfUrl: ''
 };
 
 const PROJECTS: Record<string, PortfolioProject> = {
@@ -269,6 +271,14 @@ const PROJECTS: Record<string, PortfolioProject> = {
                 @if (entry.credits) {
                   <section class="costume-credits">
                     <p>{{ entry.credits }}</p>
+                  </section>
+                }
+
+                @if (entry.pdfUrl) {
+                  <section class="costume-pdf">
+                    <a class="fashion-pdf-panel" [href]="entry.pdfUrl" target="_blank" rel="noopener" aria-label="Open costume project PDF">
+                      pdf
+                    </a>
                   </section>
                 }
               </article>
@@ -576,7 +586,7 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
 
   private refreshFadeElements(): void {
     this.fadeElements = Array.from(
-      this.elementRef.nativeElement.querySelectorAll('.fashion-entry-title-band, .fashion-band, .costume-title-band, .costume-meta, .costume-video-placeholder, .costume-video-band, .costume-gallery-band, .costume-description, .costume-credits, .teaching-card-copy, .gallery-frame')
+      this.elementRef.nativeElement.querySelectorAll('.fashion-entry-title-band, .fashion-band, .costume-title-band, .costume-meta, .costume-video-placeholder, .costume-video-band, .costume-gallery-band, .costume-description, .costume-credits, .costume-pdf, .teaching-card-copy, .gallery-frame')
     ) as HTMLElement[];
 
     this.updateVisibility();
@@ -702,7 +712,8 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
         videoUrl: this.normalizeAssetUrl(this.readFashionField(record, ['video', 'Video', 'videoUrl', 'VideoUrl', 'videoURL', 'VideoURL'])),
         gallery: this.readStringArray(record, ['gallery', 'Gallery', 'images', 'Images', 'imageUrls', 'ImageUrls']).map((url) => this.normalizeAssetUrl(url)),
         description: this.readFashionField(record, ['description', 'Description', 'body', 'Body', 'text', 'Text']),
-        credits: this.readFashionField(record, ['credits', 'Credits'])
+        credits: this.readFashionField(record, ['credits', 'Credits']),
+        pdfUrl: this.normalizeAssetUrl(this.readFashionField(record, ['pdf', 'Pdf', 'pdfUrl', 'PdfUrl', 'PDFUrl', 'pdfURL', 'PdfURL']))
       }))
       .filter((project) => (
         project.title ||
@@ -711,7 +722,8 @@ export class ProjectDetailPage implements AfterViewInit, OnDestroy, OnInit {
         project.videoUrl ||
         project.gallery.length > 0 ||
         project.description ||
-        project.credits
+        project.credits ||
+        project.pdfUrl
       ));
 
     return projects;
