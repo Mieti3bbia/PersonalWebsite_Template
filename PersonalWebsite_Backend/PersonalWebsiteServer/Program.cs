@@ -543,6 +543,32 @@ app.MapPost("/api/fashion-designs/upload", async (HttpRequest request, PersonalW
 .RequireRateLimiting(ApiRateLimitPolicy)
 .DisableAntiforgery();
 
+app.MapPost("/dashboard/teachings/{id:int}", async (int id, HttpRequest request, PersonalWebsiteDbContext db) =>
+{
+    var teaching = await db.Teachings.FindAsync(id);
+
+    if (teaching is null)
+    {
+        return Results.Redirect("/dashboard");
+    }
+
+    var form = await request.ReadFormAsync();
+    var previewImage = await SaveUploadedFile(form.Files["previewImageFile"], teachingUploadsPath, "teachings", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["pdfFile"], teachingUploadsPath, "teachings", "pdf");
+
+    teaching.Title = ReadRequiredFormValue(form, "title");
+    teaching.Author = ReadRequiredFormValue(form, "author");
+    teaching.School = ReadRequiredFormValue(form, "school");
+    teaching.PreviewImage = previewImage ?? ReadRequiredFormValue(form, "previewImage");
+    teaching.PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl");
+
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
 app.MapPost("/dashboard/teachings/{id:int}/delete", async (int id, PersonalWebsiteDbContext db) =>
 {
     var teaching = await db.Teachings.FindAsync(id);
@@ -571,6 +597,33 @@ app.MapPost("/dashboard/teachings/{id:int}/move-up", async (int id, PersonalWebs
 app.MapPost("/dashboard/teachings/{id:int}/move-down", async (int id, PersonalWebsiteDbContext db) =>
 {
     await MoveEntry(db.Teachings, id, MoveDirection.Down);
+    await db.SaveChangesAsync();
+
+    return Results.Redirect("/dashboard");
+})
+.RequireRateLimiting(ApiRateLimitPolicy)
+.RequireAuthorization();
+
+app.MapPost("/dashboard/fashion-designs/{id:int}", async (int id, HttpRequest request, PersonalWebsiteDbContext db) =>
+{
+    var entry = await db.FashionDesigns.FindAsync(id);
+
+    if (entry is null)
+    {
+        return Results.Redirect("/dashboard");
+    }
+
+    var form = await request.ReadFormAsync();
+    var explainingVideo = await SaveUploadedFile(form.Files["explainingVideoFile"], fashionDesignUploadsPath, "fashion-designs", "video");
+    var gallery = await SaveUploadedFiles(form.Files.GetFiles("galleryFiles"), fashionDesignUploadsPath, "fashion-designs", "image");
+    var pdfUrl = await SaveUploadedFile(form.Files["fashionPdfFile"], fashionDesignUploadsPath, "fashion-designs", "pdf");
+
+    entry.Title = ReadRequiredFormValue(form, "title");
+    entry.ExplainingVideo = explainingVideo ?? ReadRequiredFormValue(form, "explainingVideo");
+    entry.Description = ReadRequiredFormValue(form, "description");
+    entry.Gallery = gallery.Count > 0 ? string.Join('|', gallery) : ReadRequiredFormValue(form, "gallery");
+    entry.PdfUrl = pdfUrl ?? ReadRequiredFormValue(form, "pdfUrl");
+
     await db.SaveChangesAsync();
 
     return Results.Redirect("/dashboard");
@@ -1229,15 +1282,30 @@ static string RenderDashboard(
     for (var index = 0; index < teachingList.Count; index++)
     {
         var teaching = teachingList[index];
+        var updateFormId = $"teaching-{teaching.Id}-update";
+
         teachingRows.Append($"""
             <tr data-order-row>
-                <td>{Html(teaching.Title)}</td>
-                <td>{Html(teaching.Author)}</td>
-                <td>{Html(teaching.School)}</td>
-                <td><code>{Html(teaching.PreviewImage)}</code></td>
-                <td><code>{Html(teaching.PdfUrl)}</code></td>
-                <td>
-                    {RenderRowActions("teachings", teaching.Id, index == 0, index == teachingList.Count - 1)}
+                <td data-label="Title"><input form="{updateFormId}" name="title" required maxlength="200" value="{Html(teaching.Title)}" autocomplete="off"></td>
+                <td data-label="Author"><input form="{updateFormId}" name="author" required maxlength="200" value="{Html(teaching.Author)}" autocomplete="off"></td>
+                <td data-label="School"><input form="{updateFormId}" name="school" required maxlength="200" value="{Html(teaching.School)}" autocomplete="off"></td>
+                <td data-label="Preview image">
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="previewImage{teaching.Id}" name="previewImage" maxlength="500" value="{Html(teaching.PreviewImage)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="previewImageFile{teaching.Id}">Browse</button>
+                        <input form="{updateFormId}" id="previewImageFile{teaching.Id}" name="previewImageFile" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" data-target="previewImage{teaching.Id}" data-upload-folder="/uploads/teachings/">
+                    </span>
+                </td>
+                <td data-label="PDF URL">
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="pdfUrl{teaching.Id}" name="pdfUrl" maxlength="500" value="{Html(teaching.PdfUrl)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="pdfFile{teaching.Id}">Browse</button>
+                        <input form="{updateFormId}" id="pdfFile{teaching.Id}" name="pdfFile" type="file" accept="application/pdf,.pdf" data-target="pdfUrl{teaching.Id}" data-upload-folder="/uploads/teachings/">
+                    </span>
+                </td>
+                <td data-label="Azioni">
+                    <form id="{updateFormId}" method="post" action="/dashboard/teachings/{teaching.Id}" enctype="multipart/form-data"></form>
+                    {RenderEditableRowActions("teachings", teaching.Id, index == 0, index == teachingList.Count - 1, updateFormId)}
                 </td>
             </tr>
             """);
@@ -1252,17 +1320,36 @@ static string RenderDashboard(
     for (var index = 0; index < fashionDesignList.Count; index++)
     {
         var entry = fashionDesignList[index];
-        var galleryItems = string.Join("<br>", SplitGallery(entry.Gallery).Select(item => $"<code>{Html(item)}</code>"));
+        var updateFormId = $"fashion-design-{entry.Id}-update";
 
         fashionDesignRows.Append($"""
             <tr data-order-row>
-                <td>{Html(entry.Title)}</td>
-                <td><code>{Html(entry.ExplainingVideo)}</code></td>
-                <td>{Html(entry.Description)}</td>
-                <td>{galleryItems}</td>
-                <td><code>{Html(entry.PdfUrl)}</code></td>
-                <td>
-                    {RenderRowActions("fashion-designs", entry.Id, index == 0, index == fashionDesignList.Count - 1)}
+                <td data-label="Title"><input form="{updateFormId}" name="title" required maxlength="200" value="{Html(entry.Title)}" autocomplete="off"></td>
+                <td data-label="Explaining video">
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="explainingVideo{entry.Id}" name="explainingVideo" maxlength="500" value="{Html(entry.ExplainingVideo)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="explainingVideoFile{entry.Id}">Browse</button>
+                        <input form="{updateFormId}" id="explainingVideoFile{entry.Id}" name="explainingVideoFile" type="file" accept="video/mp4,.mp4" data-target="explainingVideo{entry.Id}" data-upload-folder="/uploads/fashion-designs/">
+                    </span>
+                </td>
+                <td data-label="Description"><input form="{updateFormId}" name="description" required maxlength="2000" value="{Html(entry.Description)}" autocomplete="off"></td>
+                <td data-label="Gallery">
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="gallery{entry.Id}" name="gallery" maxlength="4000" value="{Html(entry.Gallery)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="galleryFiles{entry.Id}">Browse</button>
+                        <input form="{updateFormId}" id="galleryFiles{entry.Id}" name="galleryFiles" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple data-target="gallery{entry.Id}" data-upload-folder="/uploads/fashion-designs/">
+                    </span>
+                </td>
+                <td data-label="PDF URL">
+                    <span class="file-picker compact">
+                        <input form="{updateFormId}" id="fashionPdfUrl{entry.Id}" name="pdfUrl" maxlength="500" value="{Html(entry.PdfUrl)}" autocomplete="off">
+                        <button class="secondary" type="button" data-file-button="fashionPdfFile{entry.Id}">Browse</button>
+                        <input form="{updateFormId}" id="fashionPdfFile{entry.Id}" name="fashionPdfFile" type="file" accept="application/pdf,.pdf" data-target="fashionPdfUrl{entry.Id}" data-upload-folder="/uploads/fashion-designs/">
+                    </span>
+                </td>
+                <td data-label="Azioni">
+                    <form id="{updateFormId}" method="post" action="/dashboard/fashion-designs/{entry.Id}" enctype="multipart/form-data"></form>
+                    {RenderEditableRowActions("fashion-designs", entry.Id, index == 0, index == fashionDesignList.Count - 1, updateFormId)}
                 </td>
             </tr>
             """);
@@ -1283,39 +1370,39 @@ static string RenderDashboard(
 
         costumeDesignRows.Append($"""
             <tr data-order-row>
-                <td><input form="{updateFormId}" name="title" required maxlength="200" value="{Html(entry.Title)}" autocomplete="off"></td>
-                <td><input form="{updateFormId}" name="season" required maxlength="200" value="{Html(entry.Season)}" autocomplete="off"></td>
-                <td><input form="{updateFormId}" name="role" required maxlength="200" value="{Html(entry.Role)}" autocomplete="off"></td>
-                <td>
+                <td data-label="Title"><input form="{updateFormId}" name="title" required maxlength="200" value="{Html(entry.Title)}" autocomplete="off"></td>
+                <td data-label="Theater company"><input form="{updateFormId}" name="season" required maxlength="200" value="{Html(entry.Season)}" autocomplete="off"></td>
+                <td data-label="Role"><input form="{updateFormId}" name="role" required maxlength="200" value="{Html(entry.Role)}" autocomplete="off"></td>
+                <td data-label="Video">
                     <span class="file-picker compact">
                         <input form="{updateFormId}" id="costumeVideo{entry.Id}" name="video" maxlength="500" value="{Html(entry.Video)}" autocomplete="off">
                         <button class="secondary" type="button" data-file-button="costumeVideoFile{entry.Id}">Browse</button>
                         <input form="{updateFormId}" id="costumeVideoFile{entry.Id}" name="costumeVideoFile" type="file" accept="video/mp4,.mp4" data-target="costumeVideo{entry.Id}" data-upload-folder="/uploads/costume-designs/">
                     </span>
                 </td>
-                <td>
+                <td data-label="Gallery">
                     <span class="file-picker compact">
                         <input form="{updateFormId}" id="costumeGallery{entry.Id}" name="gallery" maxlength="4000" value="{Html(entry.Gallery)}" autocomplete="off">
                         <button class="secondary" type="button" data-file-button="costumeGalleryFiles{entry.Id}">Browse</button>
                         <input form="{updateFormId}" id="costumeGalleryFiles{entry.Id}" name="costumeGalleryFiles" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple data-target="costumeGallery{entry.Id}" data-upload-folder="/uploads/costume-designs/">
                     </span>
                 </td>
-                <td><input form="{updateFormId}" name="description" required maxlength="2000" value="{Html(entry.Description)}" autocomplete="off"></td>
-                <td><textarea form="{updateFormId}" name="credits" required maxlength="4000">{Html(entry.Credits)}</textarea></td>
-                <td>
+                <td data-label="Description"><input form="{updateFormId}" name="description" required maxlength="2000" value="{Html(entry.Description)}" autocomplete="off"></td>
+                <td data-label="Credits"><textarea form="{updateFormId}" name="credits" required maxlength="4000">{Html(entry.Credits)}</textarea></td>
+                <td data-label="PDF URL">
                     <span class="file-picker compact">
                         <input form="{updateFormId}" id="costumePdfUrl{entry.Id}" name="pdfUrl" maxlength="500" value="{Html(entry.PdfUrl ?? string.Empty)}" autocomplete="off">
                         <button class="secondary" type="button" data-file-button="costumePdfFile{entry.Id}">Browse</button>
                         <input form="{updateFormId}" id="costumePdfFile{entry.Id}" name="costumePdfFile" type="file" accept="application/pdf,.pdf" data-target="costumePdfUrl{entry.Id}" data-upload-folder="/uploads/costume-designs/">
                     </span>
                 </td>
-                <td>
+                <td data-label="Portfolio">
                     <span class="sr-only">{visibility}</span>
                     <input form="{updateFormId}" name="visible" type="checkbox"{checkedAttribute}>
                 </td>
-                <td>
+                <td data-label="Azioni">
                     <form id="{updateFormId}" method="post" action="/dashboard/costume-designs/{entry.Id}" enctype="multipart/form-data"></form>
-                    {RenderCostumeDesignRowActions(entry.Id, index == 0, index == costumeDesignList.Count - 1, updateFormId)}
+                    {RenderEditableRowActions("costume-designs", entry.Id, index == 0, index == costumeDesignList.Count - 1, updateFormId)}
                 </td>
             </tr>
             """);
@@ -1594,12 +1681,154 @@ static string RenderDashboard(
                 }
 
                 @media (max-width: 760px) {
+                    main {
+                        width: min(100% - 20px, 560px);
+                        margin: 16px auto;
+                    }
+
                     header {
-                        display: block;
+                        display: grid;
+                        gap: 12px;
+                        align-items: start;
+                        margin-bottom: 18px;
+                    }
+
+                    h1 {
+                        font-size: 24px;
+                    }
+
+                    .session {
+                        display: grid;
+                        gap: 10px;
+                        align-items: stretch;
+                    }
+
+                    .session form,
+                    .session button {
+                        width: 100%;
+                    }
+
+                    .count {
+                        line-height: 1.45;
+                    }
+
+                    section {
+                        border-radius: 6px;
+                        margin-bottom: 18px;
+                    }
+
+                    .section-title {
+                        padding: 14px 16px;
+                        font-size: 16px;
+                    }
+
+                    .group-title {
+                        margin: 26px 0 10px;
+                        font-size: 20px;
                     }
 
                     form.add {
                         grid-template-columns: 1fr;
+                        gap: 14px;
+                        padding: 16px;
+                    }
+
+                    .file-picker,
+                    .file-picker.compact {
+                        min-width: 0;
+                        grid-template-columns: minmax(0, 1fr);
+                    }
+
+                    .file-picker button {
+                        width: 100%;
+                    }
+
+                    .table-wrap {
+                        overflow-x: visible;
+                    }
+
+                    table,
+                    thead,
+                    tbody,
+                    tr,
+                    td {
+                        display: block;
+                        width: 100%;
+                    }
+
+                    thead {
+                        position: absolute;
+                        width: 1px;
+                        height: 1px;
+                        overflow: hidden;
+                        clip: rect(0, 0, 0, 0);
+                    }
+
+                    tr[data-order-row] {
+                        padding: 14px 16px;
+                        border-bottom: 1px solid var(--line);
+                    }
+
+                    tr[data-order-row]:last-child {
+                        border-bottom: 0;
+                    }
+
+                    td {
+                        display: grid;
+                        gap: 7px;
+                        padding: 0 0 12px;
+                        border-bottom: 0;
+                    }
+
+                    td:last-child {
+                        padding-bottom: 0;
+                    }
+
+                    td::before {
+                        content: attr(data-label);
+                        color: var(--muted);
+                        font-size: 11px;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                    }
+
+                    td.empty {
+                        display: block;
+                        padding: 24px 16px;
+                    }
+
+                    td.empty::before {
+                        content: "";
+                    }
+
+                    input,
+                    textarea,
+                    button {
+                        min-height: 42px;
+                    }
+
+                    textarea {
+                        min-height: 120px;
+                    }
+
+                    .actions {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        min-width: 0;
+                        gap: 8px;
+                    }
+
+                    .actions > button {
+                        grid-column: 1 / -1;
+                    }
+
+                    .actions form,
+                    .actions button {
+                        width: 100%;
+                    }
+
+                    .actions form:last-child {
+                        grid-column: 1 / -1;
                     }
                 }
             </style>
@@ -1936,27 +2165,7 @@ static string Html(string value)
     return WebUtility.HtmlEncode(value);
 }
 
-static string RenderRowActions(string resource, int id, bool isFirst, bool isLast)
-{
-    var upDisabled = isFirst ? " disabled" : string.Empty;
-    var downDisabled = isLast ? " disabled" : string.Empty;
-
-    return $"""
-        <div class="actions">
-            <form method="post" action="/dashboard/{resource}/{id}/move-up" data-move-form="up">
-                <button class="move" type="submit"{upDisabled}>Metti sopra</button>
-            </form>
-            <form method="post" action="/dashboard/{resource}/{id}/move-down" data-move-form="down">
-                <button class="move" type="submit"{downDisabled}>Metti sotto</button>
-            </form>
-            <form method="post" action="/dashboard/{resource}/{id}/delete">
-                <button class="danger" type="submit">Delete</button>
-            </form>
-        </div>
-        """;
-}
-
-static string RenderCostumeDesignRowActions(int id, bool isFirst, bool isLast, string updateFormId)
+static string RenderEditableRowActions(string resource, int id, bool isFirst, bool isLast, string updateFormId)
 {
     var upDisabled = isFirst ? " disabled" : string.Empty;
     var downDisabled = isLast ? " disabled" : string.Empty;
@@ -1964,13 +2173,13 @@ static string RenderCostumeDesignRowActions(int id, bool isFirst, bool isLast, s
     return $"""
         <div class="actions">
             <button type="submit" form="{updateFormId}">Save</button>
-            <form method="post" action="/dashboard/costume-designs/{id}/move-up" data-move-form="up">
+            <form method="post" action="/dashboard/{resource}/{id}/move-up" data-move-form="up">
                 <button class="move" type="submit"{upDisabled}>Metti sopra</button>
             </form>
-            <form method="post" action="/dashboard/costume-designs/{id}/move-down" data-move-form="down">
+            <form method="post" action="/dashboard/{resource}/{id}/move-down" data-move-form="down">
                 <button class="move" type="submit"{downDisabled}>Metti sotto</button>
             </form>
-            <form method="post" action="/dashboard/costume-designs/{id}/delete">
+            <form method="post" action="/dashboard/{resource}/{id}/delete">
                 <button class="danger" type="submit">Delete</button>
             </form>
         </div>

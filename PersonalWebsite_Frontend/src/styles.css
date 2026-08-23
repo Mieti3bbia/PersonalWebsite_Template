@@ -5104,8 +5104,7 @@ app-curriculum-vitae-page,
 .costume-page .costume-video-band::before,
 .costume-page .costume-gallery-band::before,
 .costume-page .costume-description::before,
-.costume-page .costume-credits::before,
-.costume-page .costume-pdf::before {
+.costume-page .costume-credits::before {
   display: block;
   margin-bottom: 8px;
   color: rgba(242, 7, 203, 0.78);
@@ -5134,11 +5133,6 @@ app-curriculum-vitae-page,
   text-align: left;
 }
 
-.costume-page .costume-pdf::before {
-  content: "/ pdf /";
-  text-align: left;
-}
-
 .costume-page .fashion-gallery-row > button {
   width: 100%;
   min-width: 0;
@@ -5160,8 +5154,7 @@ app-curriculum-vitae-page,
 }
 
 .costume-page .costume-description,
-.costume-page .costume-credits,
-.costume-page .costume-pdf {
+.costume-page .costume-credits {
   width: min(980px, 100%);
   padding: clamp(16px, 2vw, 24px);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -5179,6 +5172,7 @@ app-curriculum-vitae-page,
 .costume-page .costume-pdf {
   display: grid;
   gap: 10px;
+  width: min(980px, 100%);
 }
 
 .costume-page .costume-pdf .fashion-pdf-panel {
@@ -5223,8 +5217,7 @@ app-curriculum-vitae-page,
   }
 
   .costume-page .costume-description,
-  .costume-page .costume-credits,
-  .costume-page .costume-pdf {
+  .costume-page .costume-credits {
     padding: 14px;
   }
 
@@ -7148,8 +7141,7 @@ app-page-title-hero {
 }
 
 .project-detail-page .costume-page .costume-description::before,
-.project-detail-page .costume-page .costume-credits::before,
-.project-detail-page .costume-page .costume-pdf::before {
+.project-detail-page .costume-page .costume-credits::before {
   display: block;
   margin-bottom: 10px;
   color: #F207CB;
@@ -7167,10 +7159,6 @@ app-page-title-hero {
 
 .project-detail-page .costume-page .costume-credits::before {
   content: "/ credits /";
-}
-
-.project-detail-page .costume-page .costume-pdf::before {
-  content: "/ pdf /";
 }
 
 .project-detail-page .fashion-page .fashion-band:has(.fashion-video)::before,
@@ -7341,8 +7329,7 @@ app-page-title-hero {
   }
 
   .project-detail-page .costume-page .costume-description,
-  .project-detail-page .costume-page .costume-credits,
-  .project-detail-page .costume-page .costume-pdf {
+  .project-detail-page .costume-page .costume-credits {
     padding: clamp(14px, 4.4vw, 18px);
   }
 
@@ -8043,5 +8030,33 @@ body {
     white-space: nowrap;
     overflow-wrap: normal;
     word-break: normal;
+  }
+}
+
+/* Teachings portfolio title responsiveness */
+.project-detail-page .teachings-page .teaching-card-copy p:first-child {
+  max-width: 100%;
+  color: #F207CB;
+  font-size: clamp(18px, 2.2vw, 32px);
+  line-height: 1.16;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
+}
+
+@media (max-width: 900px) {
+  .project-detail-page .teachings-page .teaching-card-copy p:first-child {
+    font-size: clamp(17px, 4.8vw, 26px);
+    line-height: 1.18;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+}
+
+@media (max-width: 430px) {
+  .project-detail-page .teachings-page .teaching-card-copy p:first-child {
+    font-size: clamp(16px, 5.3vw, 22px);
+    line-height: 1.2;
   }
 }
