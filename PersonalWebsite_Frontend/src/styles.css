@@ -5176,26 +5176,13 @@ app-curriculum-vitae-page,
 }
 
 .costume-page .costume-pdf .fashion-pdf-panel {
-  display: grid;
-  place-items: center;
-  width: min(320px, 100%);
-  min-height: 58px;
-  border: 1px solid #F207CB;
-  border-radius: 12px;
-  background: rgba(242, 7, 203, 0.04);
-  color: #F207CB;
-  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
-  font-size: clamp(13px, 1vw, 16px);
-  line-height: 1;
-  text-align: center;
-  text-decoration: none;
-  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .costume-page .costume-pdf .fashion-pdf-panel:hover,
 .costume-page .costume-pdf .fashion-pdf-panel:focus-visible {
-  background: #F207CB;
-  color: #070707;
+  background: transparent;
+  color: #F207CB;
 }
 
 @media (max-width: 700px) {
@@ -8114,5 +8101,25 @@ body {
   .curriculum-vitae-page app-page-title-hero .services-hero h1,
   .services-page app-page-title-hero .services-hero h1 {
     font-size: 1.45rem;
+  }
+}
+
+/* Keep the featured collaborations heading from breaking inside words on mobile */
+@media (max-width: 760px) {
+  .curriculum-vitae-page .cv-featured h2 {
+    width: 100%;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    font-size: 2rem;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+}
+
+@media (max-width: 420px) {
+  .curriculum-vitae-page .cv-featured h2 {
+    font-size: 1.75rem;
   }
 }

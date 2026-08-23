@@ -676,4 +676,49 @@
   }
 }
 
+/* Compact navbar CTA, visually aligned with the home hero button */
+.book-now-nav-link {
+  min-width: clamp(108px, 10vw, 128px);
+  max-width: max-content;
+  min-height: 34px;
+  padding: 8px 18px;
+  border-radius: 12px;
+  background: transparent;
+  color: #F207CB;
+  font-family: "911 Porscha", Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: clamp(11px, 0.95vw, 13px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.book-now-nav-link:hover,
+.book-now-nav-link:focus-visible {
+  border-color: #F207CB;
+  background: transparent;
+  color: #F207CB;
+}
+
+@media (max-width: 430px) {
+  .book-now-nav-link {
+    min-width: clamp(84px, 25vw, 104px);
+    max-width: 104px;
+    min-height: 32px;
+    padding: 7px 12px;
+    border-radius: 12px;
+    font-size: clamp(8px, 2.35vw, 10px);
+  }
+}
+
+@media (max-width: 360px) {
+  .book-now-nav-link {
+    min-width: 76px;
+    max-width: 82px;
+    min-height: 30px;
+    padding: 6px 9px;
+    font-size: 7px;
+    white-space: nowrap;
+  }
+}
+
 
