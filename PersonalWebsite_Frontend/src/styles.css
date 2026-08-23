@@ -7534,3 +7534,454 @@ app-page-title-hero {
   font-family: "Roboto Condensed Medium", Arial, Helvetica, sans-serif;
   font-weight: 500;
 }
+
+/* Responsive hardening for CV and services */
+.curriculum-vitae-page,
+.services-page {
+  overflow-x: clip;
+}
+
+.curriculum-vitae-page .cv-profile,
+.curriculum-vitae-page .cv-skills,
+.curriculum-vitae-page .cv-featured,
+.curriculum-vitae-page .cv-timeline-section,
+.services-page .services-list,
+.services-page .service-card,
+.services-page .service-card-copy,
+.services-page .service-details,
+.services-page .service-media {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.curriculum-vitae-page .cv-profile p,
+.curriculum-vitae-page .cv-chip-grid span,
+.curriculum-vitae-page .cv-language-list p,
+.curriculum-vitae-page .cv-featured-grid span,
+.curriculum-vitae-page .cv-featured-grid h3,
+.curriculum-vitae-page .cv-featured-grid p,
+.curriculum-vitae-page .cv-timeline-date,
+.curriculum-vitae-page .cv-timeline-card h3,
+.curriculum-vitae-page .cv-timeline-card p,
+.curriculum-vitae-page .cv-timeline-card li,
+.services-page .service-eyebrow,
+.services-page .service-card h2,
+.services-page .service-summary,
+.services-page .service-details p,
+.services-page .service-actions a {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+
+.curriculum-vitae-page .cv-profile,
+.curriculum-vitae-page .cv-skills,
+.curriculum-vitae-page .cv-featured,
+.curriculum-vitae-page .cv-timeline-section {
+  width: 100%;
+  padding-inline: 72px;
+}
+
+.curriculum-vitae-page .cv-profile {
+  grid-template-columns: minmax(0, 160px) minmax(0, 860px);
+  justify-content: center;
+  column-gap: 56px;
+  row-gap: 18px;
+}
+
+.curriculum-vitae-page .cv-profile h2 {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.curriculum-vitae-page .cv-profile div {
+  width: 100%;
+}
+
+.curriculum-vitae-page .cv-skills {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+}
+
+.curriculum-vitae-page .cv-skills article {
+  width: 100%;
+}
+
+.curriculum-vitae-page .cv-skills article h2 {
+  font-size: 2rem;
+  line-height: 1.12;
+}
+
+.curriculum-vitae-page .cv-chip-grid,
+.curriculum-vitae-page .cv-skills article .cv-chip-grid,
+.curriculum-vitae-page .cv-skills article:first-child .cv-chip-grid,
+.curriculum-vitae-page .cv-skills article:nth-child(2) .cv-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+}
+
+.curriculum-vitae-page .cv-language-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+
+.curriculum-vitae-page .cv-featured-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.5rem), 1fr));
+}
+
+.curriculum-vitae-page .cv-timeline {
+  --cv-axis: 180px;
+  width: min(980px, 100%);
+}
+
+.curriculum-vitae-page .cv-timeline-item {
+  grid-template-columns: minmax(0, var(--cv-axis)) minmax(0, 1fr);
+  gap: 36px;
+}
+
+.curriculum-vitae-page .cv-timeline-date {
+  padding-right: 24px;
+}
+
+.services-page app-page-title-hero .services-hero,
+.curriculum-vitae-page app-page-title-hero .services-hero {
+  min-height: 260px;
+  padding: 64px 32px;
+}
+
+.services-page app-page-title-hero .services-hero h1,
+.curriculum-vitae-page app-page-title-hero .services-hero h1 {
+  font-size: 4.25rem;
+  line-height: 1.04;
+}
+
+.services-page .services-list {
+  width: min(1420px, calc(100% - 64px));
+}
+
+.services-page .service-card {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.46fr);
+  gap: 40px;
+}
+
+.services-page .service-card h2 {
+  font-size: 2.1rem;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.services-page .service-summary {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.services-page .service-details p {
+  font-size: 0.95rem;
+  line-height: 1.48;
+}
+
+.services-page .service-actions {
+  min-width: 0;
+}
+
+.services-page .service-actions a {
+  white-space: normal;
+}
+
+.services-page .service-media {
+  align-self: stretch;
+}
+
+.services-page .service-media img {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  max-height: none;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+@media (max-width: 1180px) {
+  .curriculum-vitae-page .cv-profile,
+  .curriculum-vitae-page .cv-skills,
+  .curriculum-vitae-page .cv-featured,
+  .curriculum-vitae-page .cv-timeline-section {
+    padding-inline: 40px;
+  }
+
+  .curriculum-vitae-page .cv-profile {
+    grid-template-columns: minmax(0, 132px) minmax(0, 1fr);
+    column-gap: 32px;
+  }
+
+  .curriculum-vitae-page .cv-timeline {
+    --cv-axis: 150px;
+  }
+
+  .services-page .services-list {
+    width: min(100%, calc(100% - 40px));
+  }
+
+  .services-page .service-card {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 0.42fr);
+    gap: 28px;
+    padding: 32px;
+  }
+}
+
+@media (max-width: 1040px) {
+  .curriculum-vitae-page .cv-profile {
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+  }
+
+  .curriculum-vitae-page .cv-profile h2 {
+    width: 100%;
+  }
+
+  .curriculum-vitae-page .cv-timeline {
+    --cv-axis: 10px;
+    width: 100%;
+  }
+
+  .curriculum-vitae-page .cv-timeline:before {
+    left: var(--cv-axis);
+  }
+
+  .curriculum-vitae-page .cv-timeline-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding-left: 38px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-marker {
+    left: 3px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-date {
+    padding-right: 0;
+    text-align: left;
+  }
+
+  .services-page .service-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "media"
+      "details";
+  }
+
+  .services-page .service-media img {
+    height: auto;
+    max-height: 520px;
+  }
+}
+
+@media (max-width: 760px) {
+  .curriculum-vitae-page .cv-profile,
+  .curriculum-vitae-page .cv-skills,
+  .curriculum-vitae-page .cv-featured,
+  .curriculum-vitae-page .cv-timeline-section {
+    padding: 36px 20px;
+  }
+
+  .curriculum-vitae-page .cv-profile h2,
+  .curriculum-vitae-page .cv-skills h2,
+  .curriculum-vitae-page .cv-featured h2,
+  .curriculum-vitae-page .cv-timeline-section h2 {
+    font-size: 2rem;
+    line-height: 1.12;
+  }
+
+  .curriculum-vitae-page .cv-profile div,
+  .curriculum-vitae-page .cv-skills article,
+  .curriculum-vitae-page .cv-featured-grid article,
+  .curriculum-vitae-page .cv-timeline-card {
+    padding: 18px;
+  }
+
+  .curriculum-vitae-page .cv-chip-grid,
+  .curriculum-vitae-page .cv-skills article .cv-chip-grid,
+  .curriculum-vitae-page .cv-skills article:first-child .cv-chip-grid,
+  .curriculum-vitae-page .cv-skills article:nth-child(2) .cv-chip-grid,
+  .curriculum-vitae-page .cv-language-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .curriculum-vitae-page .cv-timeline-item {
+    padding-left: 34px;
+  }
+
+  .services-page app-page-title-hero .services-hero,
+  .curriculum-vitae-page app-page-title-hero .services-hero {
+    min-height: 190px;
+    padding: 40px 20px;
+  }
+
+  .services-page app-page-title-hero .services-hero h1,
+  .curriculum-vitae-page app-page-title-hero .services-hero h1 {
+    font-size: 2.25rem;
+    line-height: 1.08;
+  }
+
+  .services-page .services-list {
+    width: min(100%, calc(100% - 28px));
+    gap: 24px;
+    padding-top: 28px;
+  }
+
+  .services-page .service-card {
+    gap: 18px;
+    padding: 18px;
+  }
+
+  .services-page .service-card h2 {
+    font-size: 1.75rem;
+    line-height: 1.18;
+  }
+
+  .services-page .service-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .services-page .service-actions a {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .curriculum-vitae-page .cv-profile,
+  .curriculum-vitae-page .cv-skills,
+  .curriculum-vitae-page .cv-featured,
+  .curriculum-vitae-page .cv-timeline-section {
+    padding: 30px 14px;
+  }
+
+  .curriculum-vitae-page .cv-profile h2,
+  .curriculum-vitae-page .cv-skills h2,
+  .curriculum-vitae-page .cv-featured h2,
+  .curriculum-vitae-page .cv-timeline-section h2 {
+    font-size: 1.75rem;
+  }
+
+  .curriculum-vitae-page .cv-profile div,
+  .curriculum-vitae-page .cv-skills article,
+  .curriculum-vitae-page .cv-featured-grid article,
+  .curriculum-vitae-page .cv-timeline-card {
+    padding: 14px;
+  }
+
+  .curriculum-vitae-page .cv-timeline-item {
+    padding-left: 28px;
+  }
+
+  .services-page app-page-title-hero .services-hero,
+  .curriculum-vitae-page app-page-title-hero .services-hero {
+    min-height: 160px;
+    padding: 32px 14px;
+  }
+
+  .services-page app-page-title-hero .services-hero h1,
+  .curriculum-vitae-page app-page-title-hero .services-hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .services-page .services-list {
+    width: min(100%, calc(100% - 18px));
+  }
+
+  .services-page .service-card {
+    padding: 14px;
+  }
+
+  .services-page .service-card h2 {
+    font-size: 1.5rem;
+  }
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.curriculum-vitae-page *,
+.services-page * {
+  max-width: 100%;
+}
+
+.curriculum-vitae-page app-page-title-hero .services-hero h1,
+.curriculum-vitae-page .cv-profile h2,
+.curriculum-vitae-page .cv-skills h2,
+.curriculum-vitae-page .cv-featured h2,
+.curriculum-vitae-page .cv-timeline-section h2,
+.services-page app-page-title-hero .services-hero h1,
+.services-page .service-card h2 {
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.curriculum-vitae-page .cv-profile div,
+.curriculum-vitae-page .cv-skills article,
+.curriculum-vitae-page .cv-featured-grid article,
+.curriculum-vitae-page .cv-timeline-card,
+.services-page .service-card,
+.services-page .service-card-copy,
+.services-page .service-details {
+  overflow: hidden;
+}
+
+.curriculum-vitae-page .cv-profile p,
+.curriculum-vitae-page .cv-featured-grid p,
+.curriculum-vitae-page .cv-timeline-card p,
+.curriculum-vitae-page .cv-timeline-card li,
+.services-page .service-summary,
+.services-page .service-details p {
+  word-break: break-word;
+}
+
+@media (max-width: 760px) {
+  .curriculum-vitae-page app-page-title-hero .services-hero h1,
+  .services-page app-page-title-hero .services-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .services-page .service-card h2 {
+    font-size: 1.45rem;
+    line-height: 1.22;
+  }
+}
+
+@media (max-width: 420px) {
+  .curriculum-vitae-page app-page-title-hero .services-hero h1,
+  .services-page app-page-title-hero .services-hero h1 {
+    font-size: 1.45rem;
+  }
+
+  .services-page .service-card h2 {
+    font-size: 1.2rem;
+    line-height: 1.26;
+  }
+}
+
+/* Desktop-only CV heading repair */
+@media (min-width: 1041px) {
+  .curriculum-vitae-page .cv-profile {
+    grid-template-columns: minmax(220px, 260px) minmax(0, 860px);
+  }
+
+  .curriculum-vitae-page .cv-profile h2 {
+    width: max-content;
+    max-width: none;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+}

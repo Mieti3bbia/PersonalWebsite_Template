@@ -63,8 +63,8 @@ export class ServicesPage {
         'Sviluppo di moodboard, palette, silhouette, materiali, prototipi e soluzioni sartoriali coerenti con la drammaturgia.',
         'Accompagnamento dalla fase di idea alla realizzazione, con attenzione alla vestibilita, alla resistenza e alla funzionalita scenica.'
       ],
-      image: '/assets/home/landing-red-horizontal.jpg',
-      imageAlt: 'Costume design visual research',
+      image: '/assets/services/servizi-arti-performative.jpg',
+      imageAlt: 'Costume design per arti performative',
       portfolioRoute: '/portfolio/costume-design',
       contactType: 'Consulenza in Costume Design'
     },
@@ -77,7 +77,7 @@ export class ServicesPage {
         'Supporto nello sviluppo di collezione, schede tecniche, materiali, fornitori, fitting e campionario.',
         'Percorso pensato per trasformare un immaginario in un prodotto leggibile, coerente e realizzabile.'
       ],
-      image: '/assets/home/anteprima-imperfetto-divenire.png',
+      image: '/assets/services/servizi-fashion-design.jpg',
       imageAlt: 'Fashion design project preview',
       portfolioRoute: '/portfolio/fashion-design',
       contactType: 'Consulenza in Fashion Design'
@@ -91,7 +91,7 @@ export class ServicesPage {
         'Corsi individuali o mirati su disegno tecnico, modellistica, cucito e progettazione di moda.',
         'Metodo costruito su ascolto, revisione critica e strumenti concreti per rendere il progetto piu chiaro, personale e realizzabile.'
       ],
-      image: '/assets/teachings/pezzi-di-vetro-preview.png',
+      image: '/assets/services/servizi-insegnamento.jpg',
       imageAlt: 'Teaching project preview',
       portfolioRoute: '/portfolio/teachings',
       contactType: 'Lezione conoscitiva per il tutoraggio'
