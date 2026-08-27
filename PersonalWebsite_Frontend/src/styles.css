@@ -1677,6 +1677,10 @@ button,
   app-home-page .clients-section p {
     font-size: clamp(22px, 2.64vw, 38px);
   }
+
+  app-home-page .clients-ticker-track {
+    animation-duration: 14.70s;
+  }
 }
 
 @media (max-width: 420px) {
