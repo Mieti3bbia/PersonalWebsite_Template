@@ -122,6 +122,7 @@ const PROJECTS: Record<string, PortfolioProject> = {
                             [alt]="card.title + ' preview'"
                             (error)="card.previewImage = ''"
                           >
+                          <span class="teaching-preview-cta">CLICK HERE</span>
                         </a>
                         <button type="button" class="gallery-fullscreen-button" aria-label="Open preview fullscreen" (click)="openGalleryViewer([card.previewImage], 0)">
                           <svg viewBox="0 0 24 24" aria-hidden="true">
